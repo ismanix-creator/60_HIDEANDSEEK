@@ -1,0 +1,220 @@
+/**
+ * @file        Dialog.tsx
+ * @description Wiederverwendbare Dialog/Modal-Komponente (SEASIDE Dark Theme) - Responsive
+ * @version     0.4.1
+ * @created     2025-12-11 01:05:00 CET
+ * @updated     2026-01-07 19:22:00 CET
+ * @author      Claude Code CLI
+ *
+ * @props
+ *   open - Ob der Dialog geöffnet ist
+ *   onClose - Close-Handler
+ *   title - Dialog-Titel
+ *   children - Dialog-Inhalt
+ *   actions - Action-Buttons (preferred)
+ *   footer - Optionaler Footer-Bereich (deprecated, use actions)
+ *
+ * @changelog
+ *   0.4.1 - 2026-01-07 - Fix: actions Prop korrekt implementiert (war nur in Types definiert)
+ *   0.4.0 - 2025-12-14 - Responsive: Fullscreen auf Mobile, Touch-freundlicher Close-Button
+ *   0.3.0 - 2025-12-11 - Responsive Design, Tailwind-Classes durch spacingConfig ersetzt
+ *   0.2.0 - 2025-12-11 - SEASIDE Dark Theme, Config-Driven Colors
+ *   0.1.0 - 2025-12-11 - Initial version
+ */
+
+// ═══════════════════════════════════════════════════════
+// IMPORTS
+// ═══════════════════════════════════════════════════════
+import { useEffect, useCallback } from 'react';
+import type { DialogProps } from '@/types/ui.types';
+import { dialogConfig, colorsConfig, spacingConfig, breakpointsConfig } from '@/config';
+import { X } from 'lucide-react';
+import { useResponsive } from '@/hooks/useResponsive';
+
+const spacingBase = (key: number | string) => spacingConfig.base[String(key) as keyof typeof spacingConfig.base];
+
+// ═══════════════════════════════════════════════════════
+// COMPONENT
+// ═══════════════════════════════════════════════════════
+export function Dialog({ open = true, onClose, title, children, actions, footer, className = '' }: DialogProps) {
+  const { isMobile } = useResponsive();
+
+  // Handle escape key
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    },
+    [onClose]
+  );
+
+  useEffect(() => {
+    if (open) {
+      document.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [open, handleKeyDown]);
+
+  if (!open) {
+    return null;
+  }
+
+  // Touch-Target Minimum
+  const minTouchTarget = `${breakpointsConfig.touchMinSize}px`;
+
+  // ═══════════════════════════════════════════════════════
+  // RESPONSIVE STYLES
+  // ═══════════════════════════════════════════════════════
+
+  // Dialog Container Style
+  const containerStyle: React.CSSProperties = isMobile
+    ? {
+        // MOBILE: Fullscreen
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 10,
+        backgroundColor: colorsConfig.ui.backgroundCard,
+        borderRadius: 0,
+        padding: spacingConfig.mobile.lg,
+        overflow: 'auto',
+        display: 'flex',
+        flexDirection: 'column'
+      }
+    : {
+        // DESKTOP: Centered Modal
+        position: 'relative',
+        zIndex: 10,
+        backgroundColor: colorsConfig.ui.backgroundCard,
+        borderRadius: dialogConfig.container.borderRadius,
+        boxShadow: dialogConfig.container.shadow,
+        padding: spacingBase(dialogConfig.container.padding),
+        maxWidth: dialogConfig.container.maxWidth,
+        width: dialogConfig.container.width,
+        maxHeight: '90vh',
+        overflow: 'auto',
+        border: `1px solid ${colorsConfig.ui.border}`
+      };
+
+  // Close Button Style
+  const closeButtonStyle: React.CSSProperties = {
+    padding: spacingBase(1),
+    borderRadius: '0.375rem',
+    color: colorsConfig.text.tertiary,
+    backgroundColor: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    // Mobile: Größerer Touch-Target
+    minWidth: isMobile ? minTouchTarget : undefined,
+    minHeight: isMobile ? minTouchTarget : undefined,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  };
+
+  // Footer Style
+  const footerStyle: React.CSSProperties = {
+    display: 'flex',
+    justifyContent: isMobile ? 'stretch' : 'flex-end',
+    flexDirection: isMobile ? 'column' : 'row',
+    marginTop: isMobile ? 'auto' : spacingBase(dialogConfig.footer.marginTop),
+    paddingTop: isMobile ? spacingConfig.mobile.lg : undefined,
+    gap: isMobile ? spacingConfig.mobile.sm : spacingBase(dialogConfig.footer.gap)
+  };
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 50,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+    >
+      {/* Overlay - nur auf Desktop */}
+      {!isMobile && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundColor: dialogConfig.overlay.bg,
+            cursor: 'pointer'
+          }}
+          onClick={onClose}
+        />
+      )}
+
+      {/* Dialog Container */}
+      <div className={className} style={containerStyle}>
+        {/* Header */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: isMobile ? spacingConfig.mobile.lg : spacingBase(4)
+          }}
+        >
+          <h2
+            style={{
+              fontSize: isMobile ? '1.25rem' : dialogConfig.header.fontSize,
+              fontWeight: dialogConfig.header.fontWeight,
+              color: colorsConfig.text.primary
+            }}
+          >
+            {title}
+          </h2>
+          <button
+            onClick={onClose}
+            style={closeButtonStyle}
+            onMouseEnter={(e) => {
+              if (!isMobile) {
+                e.currentTarget.style.backgroundColor = colorsConfig.neutral[200];
+                e.currentTarget.style.color = colorsConfig.text.primary;
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isMobile) {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = colorsConfig.text.tertiary;
+              }
+            }}
+            aria-label="Schließen"
+          >
+            <X
+              style={{
+                height: isMobile ? '1.5rem' : '1.25rem',
+                width: isMobile ? '1.5rem' : '1.25rem'
+              }}
+            />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: isMobile ? spacingConfig.mobile.lg : spacingBase(dialogConfig.body.gap),
+            flex: isMobile ? 1 : undefined
+          }}
+        >
+          {children}
+        </div>
+
+        {/* Footer with Actions (prefer actions over footer) */}
+        {(actions || footer) && <div style={footerStyle}>{actions || footer}</div>}
+      </div>
+    </div>
+  );
+}

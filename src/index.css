@@ -1,0 +1,194 @@
+/**
+ * @file        index.css
+ * @description Globale CSS-Styles mit Tailwind-Directives (SEASIDE Dark Theme)
+ * @version     0.2.0
+ * @created     2025-12-11 00:57:02 CET
+ * @updated     2025-12-15 22:27:01 CET
+ * @author      Claude Code CLI
+ *
+ * @note
+ *   Dark Theme basierend auf 99_SEASIDE_WERBETECHNIK
+ *
+ * @changelog
+ *   0.2.0 - 2025-12-11 - SEASIDE Dark Theme integriert
+ *   0.1.0 - 2025-12-11 - Initial version
+ */
+
+@import 'tailwindcss';
+
+/* ═══════════════════════════════════════════════════════
+   CSS VARIABLES (SEASIDE Dark Theme)
+   ═══════════════════════════════════════════════════════ */
+
+:root {
+  /* Button-Farben */
+  --color-button-gray: #3d3d3d;
+  --color-button-active: #454545;
+  --color-button-customer: #1f1f1f;
+  --color-button-offer: #252525;
+  --color-button-order: #303030;
+  --color-button-invoice: #383838;
+
+  /* Text-Farben */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #cccccc;
+  --color-text-tertiary: #999999;
+
+  /* Status-Farben */
+  --color-error: #e74c3c;
+  --color-warning: #f39c12;
+  --color-success: #27ae60;
+  --color-info: #3498db;
+
+  /* Hintergrund-Farben */
+  --color-bg-main: #1e1e1e;
+  --color-bg-light: #2d2d2d;
+  --color-table-stripe-1: #1a1a1a;
+  --color-table-stripe-2: #2a2a2a;
+  --color-table-selection: #353535;
+  --color-border: #3d3d3d;
+}
+
+/* ═══════════════════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════════════════ */
+
+html {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: var(--color-bg-main);
+  color: var(--color-text-primary);
+}
+
+/* ═══════════════════════════════════════════════════════
+   CUSTOM UTILITIES
+   ═══════════════════════════════════════════════════════ */
+
+/* Monospace für Währung/Zahlen */
+.font-mono-currency {
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hidden Scrollbar (funktional aber unsichtbar) */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ═══════════════════════════════════════════════════════
+   SCROLLBAR STYLING (Dark Theme)
+   ═══════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-main);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-button-gray);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4d4d4d;
+}
+
+/* ═══════════════════════════════════════════════════════
+   FORM ELEMENTS (Dark Theme)
+   ═══════════════════════════════════════════════════════ */
+
+input,
+select,
+textarea {
+  background-color: var(--color-bg-light);
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-info);
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+/* Number input spinner buttons - hidden */
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Select centered text */
+select {
+  text-align: center;
+  text-align-last: center;
+}
+
+/* ═══════════════════════════════════════════════════════
+   TABLE STYLES (Dark Theme)
+   ═══════════════════════════════════════════════════════ */
+
+table {
+  border-color: var(--color-border);
+}
+
+th {
+  background-color: var(--color-bg-light);
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+tr:nth-child(odd) {
+  background-color: var(--color-table-stripe-1);
+}
+
+tr:nth-child(even) {
+  background-color: var(--color-table-stripe-2);
+}
+
+tr:hover {
+  background-color: var(--color-table-selection);
+}
+
+/* ═══════════════════════════════════════════════════════
+   BUTTON BASE (Dark Theme)
+   ═══════════════════════════════════════════════════════ */
+
+button {
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

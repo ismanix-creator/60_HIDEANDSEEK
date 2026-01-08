@@ -1,0 +1,29 @@
+{
+  "_meta": {
+    "version": "0.3.0",
+    "created": "2026-01-06 19:14:38 CET",
+    "updated": "2026-01-08 00:12:00 CET",
+    "changelog": [
+      "0.3.0 - 2026-01-08 - src/config wieder added (server baut src/config mit), @/* paths",
+      "0.2.0 - 2026-01-08 - Server verwendet kompilierte src/config (nicht selbst kompilieren)",
+      "0.1.2 - 2026-01-07 - baseUrl + paths added (für @/* imports)",
+      "0.1.1 - 2026-01-07 - rootDir entfernt + src/config added (server importiert src/config)",
+      "0.1.0 - 2026-01-06 - Initial scaffold"
+    ]
+  },
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "outDir": "dist/server",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["server", "src/config", "src/types"]
+}

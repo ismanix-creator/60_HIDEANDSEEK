@@ -1,0 +1,42 @@
+/**
+ * @file        tailwind.config.ts
+ * @description Tailwind CSS Konfiguration
+ * @version     0.1.0
+ * @created     2026-01-06 19:14:38 CET
+ * @updated     2026-01-06 19:14:38 CET
+ * @author      agenten-koordinator
+ *
+ * @changelog
+ *   0.1.0 - 2026-01-06 - Initial scaffold (SEASIDE Dark Basis)
+ */
+
+import type { Config } from 'tailwindcss';
+
+const config: Config = {
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a'
+        }
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace']
+      }
+    }
+  },
+  plugins: []
+};
+
+export default config;
