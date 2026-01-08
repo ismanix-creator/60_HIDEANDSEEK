@@ -1,16 +1,17 @@
 /**
  * @file        useApi.ts
  * @description Custom Hook für API-Calls mit Type-Safety und Error-Handling
- * @version     0.2.0
+ * @version     0.2.2
  * @created     2026-01-07 01:18:02 CET
- * @updated     2026-01-07 15:30:00 CET
- * @author      frontend-entwickler
+ * @updated     2026-01-08 16:45:00 CET
+ * @author      Akki Scholze
  *
  * @usage
  *   const api = useApi();
  *   const result = await api.fetch<Material[]>('/api/material');
  *
  * @changelog
+ *   0.2.2 - 2026-01-08 - Strikt nur API-URL aus config.toml (kein Fallback)
  *   0.2.0 - 2026-01-07 - Simplified to generic fetch method
  *   0.1.0 - 2026-01-07 - Initial version mit GET/POST/PUT/DELETE
  */

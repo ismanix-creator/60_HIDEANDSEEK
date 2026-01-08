@@ -1,12 +1,18 @@
 /**
  * @file        MaterialPage.tsx
  * @description Material-Verwaltung mit Bar/Kombi-Buchungen und Historie
- * @version     0.1.0
+ * @version     0.3.4
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-07 01:36:51 CET
- * @author      frontend-entwickler
+ * @updated     2026-01-08 16:25:00 CET
+ * @author      Akki Scholze
  *
  * @changelog
+ *   0.3.4 - 2026-01-08 - Dialog-Inhalte + Aktionen horizontal zentriert und verschlankt
+ *   0.3.3 - 2026-01-08 - Dialog-Felder horizontal zentriert/verschlankt
+ *   0.3.2 - 2026-01-08 - Validierung/Fehlermeldung im Material-Dialog (Erstellen) sichtbar gemacht
+ *   0.3.1 - 2026-01-08 - Preis-Schritte (EK Stück 0.10, EK Gesamt 5.0, VK Stück 0.10) und Min-Grenze 0
+ *   0.3.0 - 2026-01-08 - Material-Dialog neu aufgebaut (Datum-Picker, EK-Stück/Gesamt Umschalter, VK Stückpflicht)
+ *   0.2.0 - 2026-01-08 - Preisumschaltung (Stück/Gesamt) im Material-Dialog + Berechnungen korrigiert
  *   0.1.0 - 2026-01-07 - Initial implementation mit BAR/KOMBI-Dialogen
  */
 
@@ -49,13 +55,22 @@ export function MaterialPage() {
   const [kombiDialogOpen, setKombiDialogOpen] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
 
+  // Preissteuerung für Material-Dialog
+  const [ekPreisMode, setEkPreisMode] = useState<'stueck' | 'gesamt'>('stueck');
+
   // Form States
   const [formData, setFormData] = useState<CreateMaterialRequest>({
     datum: new Date().toISOString().split('T')[0],
     bezeichnung: '',
     menge: 0,
     ek_stueck: 0,
+    ek_gesamt: 0,
     vk_stueck: 0,
+    bestand: 0,
+    einnahmen_bar: 0,
+    einnahmen_kombi: 0,
+    gewinn_aktuell: 0,
+    gewinn_theoretisch: 0,
     notiz: ''
   });
 
@@ -78,6 +93,7 @@ export function MaterialPage() {
   });
 
   const [preisMode, setPreisMode] = useState<'stueck' | 'gesamt'>('stueck');
+  const calcEkStueckAusGesamt = (gesamt: number, menge: number) => (menge > 0 ? gesamt / menge : 0);
 
   // Load Material
   const loadMaterial = async () => {
@@ -123,10 +139,65 @@ export function MaterialPage() {
 
   // Create Material
   const handleCreate = async () => {
+    setError(null);
+    if (!formData.datum) {
+      setError('Datum erforderlich');
+      return;
+    }
+    if (!formData.bezeichnung.trim()) {
+      setError('Bezeichnung erforderlich');
+      return;
+    }
+    if (formData.menge <= 0) {
+      setError('Menge muss größer 0 sein');
+      return;
+    }
+    if (ekPreisMode === 'stueck' && formData.ek_stueck <= 0) {
+      setError('EK Stück muss größer 0 sein');
+      return;
+    }
+    if (ekPreisMode === 'gesamt' && formData.ek_gesamt <= 0) {
+      setError('EK Gesamt muss größer 0 sein');
+      return;
+    }
+    if (formData.vk_stueck <= 0) {
+      setError('VK Stück muss größer 0 sein');
+      return;
+    }
+
+    const ekGesamt = ekPreisMode === 'stueck' ? formData.ek_stueck * formData.menge : formData.ek_gesamt;
+    const vkStueck = formData.vk_stueck;
+    const bestand = formData.menge;
+    const gewinnTheoretisch = (vkStueck - formData.ek_stueck) * formData.menge;
+
+    const baseName = formData.bezeichnung.trim().toUpperCase();
+    if (!baseName) {
+      setError('Bezeichnung erforderlich');
+      return;
+    }
+    const monthPart = (() => {
+      const d = new Date(formData.datum);
+      const m = Number.isFinite(d.getTime()) ? d.getMonth() + 1 : NaN;
+      return Number.isFinite(m) ? String(m).padStart(2, '0') : '??';
+    })();
+    const existingCount = materialien.filter((m) => m.bezeichnung.toUpperCase().startsWith(baseName)).length;
+    const nextIndex = existingCount + 1;
+    const finalName = `${baseName}${nextIndex}/${monthPart}`;
+
     try {
       const result = await api.fetch('/api/material', {
         method: 'POST',
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          bezeichnung: finalName,
+          ek_gesamt: ekGesamt,
+          bestand,
+          einnahmen_bar: 0,
+          einnahmen_kombi: 0,
+          gewinn_aktuell: 0,
+          gewinn_theoretisch: gewinnTheoretisch,
+          notiz: formData.notiz?.toUpperCase() ?? ''
+        })
       });
       if (result.success) {
         setCreateDialogOpen(false);
@@ -144,9 +215,15 @@ export function MaterialPage() {
   const handleUpdate = async () => {
     if (!selectedMaterial) return;
     try {
+      const ekGesamt = ekPreisMode === 'stueck' ? formData.ek_stueck * formData.menge : formData.ek_gesamt;
+      const bestand = formData.menge;
+      const gewinnTheoretisch = (formData.vk_stueck - formData.ek_stueck) * formData.menge;
       const updateData: UpdateMaterialRequest = {
         id: selectedMaterial.id,
-        ...formData
+        ...formData,
+        ek_gesamt: ekGesamt,
+        bestand,
+        gewinn_theoretisch: gewinnTheoretisch
       };
       const result = await api.fetch(`/api/material/${selectedMaterial.id}`, {
         method: 'PUT',
@@ -182,6 +259,56 @@ export function MaterialPage() {
     } catch (err) {
       setError('Netzwerkfehler');
     }
+  };
+
+  // Preis-Helpers für Material-Dialog (Einkauf)
+  const handleCreateEkMode = (mode: 'stueck' | 'gesamt') => {
+    setEkPreisMode(mode);
+    setFormData((prev) => {
+      if (mode === 'gesamt') {
+        return { ...prev, ek_gesamt: prev.ek_stueck * prev.menge };
+      }
+      return { ...prev };
+    });
+  };
+
+  const handleCreateMengeChange = (value: string) => {
+    const menge = parseFloat(value) || 0;
+    setFormData((prev) => {
+      const next: CreateMaterialRequest = { ...prev, menge, bestand: menge };
+      if (ekPreisMode === 'stueck') {
+        next.ek_gesamt = next.ek_stueck * menge;
+      } else {
+        next.ek_stueck = calcEkStueckAusGesamt(prev.ek_gesamt, menge);
+      }
+      next.gewinn_theoretisch = (prev.vk_stueck - next.ek_stueck) * menge;
+      return next;
+    });
+  };
+
+  const handleCreateEkPreisChange = (value: string) => {
+    const preis = parseFloat(value) || 0;
+    setFormData((prev) => {
+      const next = { ...prev };
+      if (ekPreisMode === 'stueck') {
+        next.ek_stueck = preis;
+        next.ek_gesamt = preis * prev.menge;
+      } else {
+        next.ek_gesamt = preis;
+        next.ek_stueck = calcEkStueckAusGesamt(preis, prev.menge);
+      }
+      next.gewinn_theoretisch = (prev.vk_stueck - next.ek_stueck) * prev.menge;
+      return next;
+    });
+  };
+
+  const handleCreateVkStueckChange = (value: string) => {
+    const preis = parseFloat(value) || 0;
+    setFormData((prev) => ({
+      ...prev,
+      vk_stueck: preis,
+      gewinn_theoretisch: (preis - prev.ek_stueck) * prev.menge
+    }));
   };
 
   // Bar Bewegung
@@ -246,9 +373,16 @@ export function MaterialPage() {
       bezeichnung: m.bezeichnung,
       menge: m.menge,
       ek_stueck: m.ek_stueck,
+      ek_gesamt: m.ek_gesamt,
       vk_stueck: m.vk_stueck,
+      bestand: m.bestand,
+      einnahmen_bar: m.einnahmen_bar,
+      einnahmen_kombi: m.einnahmen_kombi,
+      gewinn_aktuell: m.gewinn_aktuell,
+      gewinn_theoretisch: m.gewinn_theoretisch,
       notiz: m.notiz || ''
     });
+    setEkPreisMode('stueck');
     setEditDialogOpen(true);
   };
 
@@ -297,9 +431,16 @@ export function MaterialPage() {
       bezeichnung: '',
       menge: 0,
       ek_stueck: 0,
+      ek_gesamt: 0,
       vk_stueck: 0,
+      bestand: 0,
+      einnahmen_bar: 0,
+      einnahmen_kombi: 0,
+      gewinn_aktuell: 0,
+      gewinn_theoretisch: 0,
       notiz: ''
     });
+    setEkPreisMode('stueck');
   };
 
   const resetBarForm = () => {
@@ -417,6 +558,7 @@ export function MaterialPage() {
           open={createDialogOpen}
           onClose={() => {
             setCreateDialogOpen(false);
+            setError(null);
             resetForm();
           }}
           title="Neues Material"
@@ -426,6 +568,7 @@ export function MaterialPage() {
                 variant="secondary"
                 onClick={() => {
                   setCreateDialogOpen(false);
+                  setError(null);
                   resetForm();
                 }}
               >
@@ -435,43 +578,80 @@ export function MaterialPage() {
             </>
           }
         >
-          <div className="space-y-4">
+          <div className="space-y-4 flex flex-col items-center text-center">
+            {createDialogOpen && error && (
+              <div className="p-3 rounded border border-red-500/60 bg-red-500/10 text-sm text-red-300 max-w-sm w-full">
+                {error}
+              </div>
+            )}
             <Input
               label="Datum"
               type="date"
               value={formData.datum}
               onChange={(e) => setFormData({ ...formData, datum: e.target.value })}
+              className="w-full max-w-sm text-center"
             />
             <Input
               label="Bezeichnung"
               value={formData.bezeichnung}
-              onChange={(e) => setFormData({ ...formData, bezeichnung: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, bezeichnung: e.target.value.toUpperCase() })}
+              className="w-full max-w-sm text-center"
             />
             <Input
               label="Menge"
               type="number"
+              min="0"
               step="0.01"
               value={formData.menge}
-              onChange={(e) => setFormData({ ...formData, menge: parseFloat(e.target.value) || 0 })}
+              onChange={(e) => handleCreateMengeChange(e.target.value)}
+              className="w-full max-w-sm text-center"
             />
+            <div className="space-y-2 w-full max-w-sm">
+              <div className="flex gap-2 justify-center">
+                <Button
+                  size="sm"
+                  variant={ekPreisMode === 'stueck' ? 'primary' : 'secondary'}
+                  onClick={() => handleCreateEkMode('stueck')}
+                >
+                  EK Stück
+                </Button>
+                <Button
+                  size="sm"
+                  variant={ekPreisMode === 'gesamt' ? 'primary' : 'secondary'}
+                  onClick={() => handleCreateEkMode('gesamt')}
+                >
+                  EK Gesamt
+                </Button>
+              </div>
+              <Input
+                label={ekPreisMode === 'stueck' ? 'EK Stück' : 'EK Gesamt'}
+                type="number"
+                min="0"
+                step={ekPreisMode === 'stueck' ? '0.1' : '5'}
+                value={ekPreisMode === 'stueck' ? formData.ek_stueck : formData.ek_gesamt}
+                onChange={(e) => handleCreateEkPreisChange(e.target.value)}
+                className="w-full"
+              />
+              <p className="text-sm text-neutral-400 text-center">
+                {ekPreisMode === 'stueck'
+                  ? `EK Gesamt: ${formatCurrency(formData.ek_stueck * formData.menge || 0)}`
+                  : `EK Stück: ${formatCurrency(calcEkStueckAusGesamt(formData.ek_gesamt, formData.menge) || 0)}`}
+              </p>
+            </div>
             <Input
-              label="EK Stück"
+              label="VK Stück (Mindest-VK)"
               type="number"
-              step="0.01"
-              value={formData.ek_stueck}
-              onChange={(e) => setFormData({ ...formData, ek_stueck: parseFloat(e.target.value) || 0 })}
-            />
-            <Input
-              label="VK Stück"
-              type="number"
-              step="0.01"
+              min="0"
+              step="0.1"
               value={formData.vk_stueck}
-              onChange={(e) => setFormData({ ...formData, vk_stueck: parseFloat(e.target.value) || 0 })}
+              onChange={(e) => handleCreateVkStueckChange(e.target.value)}
+              className="w-full max-w-sm text-center"
             />
             <Input
               label="Notiz (optional)"
               value={formData.notiz}
-              onChange={(e) => setFormData({ ...formData, notiz: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, notiz: e.target.value.toUpperCase() })}
+              className="w-full max-w-sm text-center"
             />
           </div>
         </Dialog>
@@ -516,6 +696,7 @@ export function MaterialPage() {
             <Input
               label="Menge"
               type="number"
+              min="0"
               step="0.01"
               value={formData.menge}
               onChange={(e) => setFormData({ ...formData, menge: parseFloat(e.target.value) || 0 })}
@@ -523,17 +704,50 @@ export function MaterialPage() {
             <Input
               label="EK Stück"
               type="number"
-              step="0.01"
+              min="0"
+              step="0.1"
               value={formData.ek_stueck}
               onChange={(e) => setFormData({ ...formData, ek_stueck: parseFloat(e.target.value) || 0 })}
             />
             <Input
-              label="VK Stück"
+              label="VK Stück (Mindest-VK)"
               type="number"
-              step="0.01"
+              min="0"
+              step="0.1"
               value={formData.vk_stueck}
-              onChange={(e) => setFormData({ ...formData, vk_stueck: parseFloat(e.target.value) || 0 })}
+              onChange={(e) => handleCreateVkStueckChange(e.target.value)}
             />
+            <div className="space-y-2">
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant={ekPreisMode === 'stueck' ? 'primary' : 'secondary'}
+                  onClick={() => handleCreateEkMode('stueck')}
+                >
+                  EK Stück
+                </Button>
+                <Button
+                  size="sm"
+                  variant={ekPreisMode === 'gesamt' ? 'primary' : 'secondary'}
+                  onClick={() => handleCreateEkMode('gesamt')}
+                >
+                  EK Gesamt
+                </Button>
+              </div>
+              <Input
+                label={ekPreisMode === 'stueck' ? 'EK Stück' : 'EK Gesamt'}
+                type="number"
+                min="0"
+                step={ekPreisMode === 'stueck' ? '0.1' : '5'}
+                value={ekPreisMode === 'stueck' ? formData.ek_stueck : formData.ek_gesamt}
+                onChange={(e) => handleCreateEkPreisChange(e.target.value)}
+              />
+              <p className="text-sm text-neutral-400">
+                {ekPreisMode === 'stueck'
+                  ? `EK Gesamt: ${formatCurrency(formData.ek_stueck * formData.menge || 0)}`
+                  : `EK Stück: ${formatCurrency(calcEkStueckAusGesamt(formData.ek_gesamt, formData.menge) || 0)}`}
+              </p>
+            </div>
             <Input
               label="Notiz (optional)"
               value={formData.notiz}

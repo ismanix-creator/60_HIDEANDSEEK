@@ -3,7 +3,7 @@
 // @version     1.1.0
 // @created     2026-01-08 15:00:00 CET
 // @updated     2026-01-08 15:30:00 CET
-// @author      agenten-koordinator
+// @author      Akki Scholze
 //
 // @changelog
 //   1.1.0 - 2026-01-08 - Tests vereinfacht, baseURL verwendet

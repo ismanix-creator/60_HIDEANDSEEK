@@ -4,7 +4,7 @@
  * @version     0.10.0
  * @created     2025-12-11 01:05:00 CET
  * @updated     2026-01-07 01:36:51 CET
- * @author      frontend-entwickler
+ * @author      Akki Scholze
  *
  * @changelog
  *   0.10.0 - 2026-01-07 - Ohne Auth: useAuth entfernt, alle Nav-Items sichtbar

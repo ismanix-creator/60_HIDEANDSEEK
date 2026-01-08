@@ -1,12 +1,15 @@
 /**
  * @file        env.ts
  * @description Global ENV loader with prefix mapping (HIDEANDSEEK_* -> unprefixed)
- * @version     1.0.0
+ * @version     1.2.0
  * @created     2026-01-08 02:45:00 CET
- * @updated     2026-01-08 02:45:00 CET
- * @author      agenten-koordinator
+ * @updated     2026-01-08 18:12:00 CET
+ * @author      Akki Scholze
  *
  * @changelog
+ *   1.2.0 - 2026-01-08 - Keine Fallback-Defaults (ENV muss aus KeePass/.env kommen)
+ *   1.1.1 - 2026-01-08 - Entfernt CLIENT/HIDEANDSEEK_CLIENT Mapping (ENV nur laut .env.example)
+ *   1.1.0 - 2026-01-08 - HIDEANDSEEK_CLIENT_* Mappings (Port/ApiUrl/NgrokUrl)
  *   1.0.0 - 2026-01-08 - Initial version: loads /home/akki/.config/.env and maps prefixed keys
  *
  * @usage
@@ -16,7 +19,7 @@
  * @security
  *   - Does NOT log secrets
  *   - Only maps HIDEANDSEEK_* prefixed keys
- *   - Falls back to defaults if prefixed keys missing
+ *   - Keine Defaults: ENV muss bereitgestellt werden
  */
 
 import { config } from 'dotenv';
@@ -28,7 +31,7 @@ const globalEnvPath = '/home/akki/.config/.env';
 try {
   config({ path: resolve(globalEnvPath) });
 } catch (error) {
-  // Silent fail - defaults will be used
+  // Silent fail
 }
 
 // Mapping: HIDEANDSEEK_* -> unprefixed
@@ -49,9 +52,3 @@ for (const [unprefixed, prefixed] of Object.entries(mappings)) {
     process.env[unprefixed] = process.env[prefixed];
   }
 }
-
-// Defaults (only if still not set)
-if (!process.env.FRONTEND_PORT) process.env.FRONTEND_PORT = '5173';
-if (!process.env.BACKEND_HOST) process.env.BACKEND_HOST = 'localhost';
-if (!process.env.BACKEND_PORT) process.env.BACKEND_PORT = '3001';
-if (!process.env.VITE_ALLOWED_HOSTS) process.env.VITE_ALLOWED_HOSTS = 'localhost,.ngrok-free.dev';

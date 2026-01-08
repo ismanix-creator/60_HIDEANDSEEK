@@ -4,7 +4,7 @@
  * @version     0.1.0
  * @created     2026-01-06 22:20:42 CET
  * @updated     2026-01-06 22:20:42 CET
- * @author      agenten-koordinator
+ * @author      Akki Scholze
  *
  * @changelog
  *   0.1.0 - 2026-01-06 - Initial scaffold

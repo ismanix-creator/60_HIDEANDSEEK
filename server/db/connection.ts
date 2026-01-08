@@ -4,7 +4,7 @@
  * @version     0.1.2
  * @created     2026-01-06 19:14:38 CET
  * @updated     2026-01-06 22:20:42 CET
- * @author      agenten-koordinator
+ * @author      Akki Scholze
  *
  * @changelog
  *   0.1.0 - 2026-01-06 - Initial scaffold
@@ -19,7 +19,10 @@ import { runtimeConfig } from '../config/runtime.config.js';
 import { schemaStatements } from './schema.js';
 
 export function openDatabase(overridePath?: string) {
-  const dbPath = overridePath ?? runtimeConfig.database?.path ?? 'data/material-tracker.db';
+  const dbPath = overridePath ?? runtimeConfig.database?.path;
+  if (!dbPath) {
+    throw new Error('Database path missing (runtimeConfig.database.path)');
+  }
   if (dbPath === ':memory:') {
     return new Database(dbPath);
   }

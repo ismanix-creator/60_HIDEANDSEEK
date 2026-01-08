@@ -3,7 +3,7 @@
 // @version     1.0.0
 // @created     2026-01-08 15:40:00 CET
 // @updated     2026-01-08 15:40:00 CET
-// @author      agenten-koordinator
+// @author      Akki Scholze
 //
 // @changelog
 //   1.0.0 - 2026-01-08 - Smoke Test erstellt
@@ -18,7 +18,7 @@ test.describe('Smoke Tests', () => {
 
   test('Root Element existiert', async ({ page }) => {
     await page.goto('/');
-    const root = await page.locator('#root');
+    const root = page.locator('#root');
     await expect(root).toBeAttached();
   });
 
@@ -30,10 +30,12 @@ test.describe('Smoke Tests', () => {
         // Ignoriere bekannte nicht-kritische Fehler:
         // - 404 für Ressourcen
         // - API fetch errors (Server könnte nicht laufen)
-        if (!text.includes('404') && 
-            !text.includes('Failed to load resource') &&
-            !text.includes('Failed to fetch') &&
-            !text.includes('API fetch error')) {
+        if (
+          !text.includes('404') &&
+          !text.includes('Failed to load resource') &&
+          !text.includes('Failed to fetch') &&
+          !text.includes('API fetch error')
+        ) {
           criticalErrors.push(text);
         }
       }

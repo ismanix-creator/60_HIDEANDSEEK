@@ -4,7 +4,7 @@
  * @version     0.2.0
  * @created     2025-12-11 01:05:00 CET
  * @updated     2025-12-15 22:27:01 CET
- * @author      Claude Code CLI
+ * @author      Akki Scholze
  *
  * @props
  *   month - Monat (1-12 oder "2025-12")

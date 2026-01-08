@@ -4,7 +4,7 @@
  * @version     1.0.1
  * @created     2026-01-07 19:45:00 CET
  * @updated     2026-01-08 00:22:00 CET
- * @author      agenten-koordinator
+ * @author      Akki Scholze
  *
  * @changelog
  *   1.0.1 - 2026-01-08 - Added .js extensions for Node ESM compatibility

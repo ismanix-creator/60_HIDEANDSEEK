@@ -4,7 +4,7 @@
  * @version     0.6.0
  * @created     2025-12-11 01:05:00 CET
  * @updated     2025-12-15 22:27:01 CET
- * @author      Claude Code CLI
+ * @author      Akki Scholze
  *
  * @props
  *   variant - Button-Variante (primary, secondary, outline, ghost, danger, success, warning)

@@ -4,7 +4,7 @@
  * @version     0.1.0
  * @created     2026-01-07 01:36:51 CET
  * @updated     2026-01-07 01:36:51 CET
- * @author      frontend-entwickler
+ * @author      Akki Scholze
  *
  * @changelog
  *   0.1.0 - 2026-01-07 - Initial types für API-Modelle
@@ -147,7 +147,13 @@ export interface CreateMaterialRequest {
   bezeichnung: string;
   menge: number;
   ek_stueck: number;
+  ek_gesamt: number;
   vk_stueck: number;
+  bestand: number;
+  einnahmen_bar?: number;
+  einnahmen_kombi?: number;
+  gewinn_aktuell?: number;
+  gewinn_theoretisch?: number;
   notiz?: string;
 }
 

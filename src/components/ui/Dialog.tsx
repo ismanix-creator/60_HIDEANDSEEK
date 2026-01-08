@@ -4,7 +4,7 @@
  * @version     0.4.1
  * @created     2025-12-11 01:05:00 CET
  * @updated     2026-01-07 19:22:00 CET
- * @author      Claude Code CLI
+ * @author      Akki Scholze
  *
  * @props
  *   open - Ob der Dialog geöffnet ist
@@ -121,14 +121,16 @@ export function Dialog({ open = true, onClose, title, children, actions, footer,
   };
 
   // Footer Style
-  const footerStyle: React.CSSProperties = {
-    display: 'flex',
-    justifyContent: isMobile ? 'stretch' : 'flex-end',
-    flexDirection: isMobile ? 'column' : 'row',
-    marginTop: isMobile ? 'auto' : spacingBase(dialogConfig.footer.marginTop),
-    paddingTop: isMobile ? spacingConfig.mobile.lg : undefined,
-    gap: isMobile ? spacingConfig.mobile.sm : spacingBase(dialogConfig.footer.gap)
-  };
+const footerStyle: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: isMobile ? 'stretch' : 'center',
+  flexDirection: isMobile ? 'column' : 'row',
+  marginTop: isMobile ? 'auto' : dialogConfig.footer.marginTop,
+  paddingTop: isMobile ? spacingConfig.mobile.lg : undefined,
+  paddingLeft: isMobile ? spacingConfig.mobile.lg : dialogConfig.container.padding,
+  paddingRight: isMobile ? spacingConfig.mobile.lg : dialogConfig.container.padding,
+  gap: isMobile ? spacingConfig.mobile.sm : dialogConfig.footer.gap
+};
 
   return (
     <div

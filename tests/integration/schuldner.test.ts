@@ -4,7 +4,7 @@
  * @version     0.1.0
  * @created     2026-01-07 00:47:18 CET
  * @updated     2026-01-07 00:47:18 CET
- * @author      backend-entwickler
+ * @author      Akki Scholze
  *
  * @changelog
  *   0.1.0 - 2026-01-07 - Initial scaffold

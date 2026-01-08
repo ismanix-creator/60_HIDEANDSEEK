@@ -4,7 +4,7 @@
  * @version     0.2.0
  * @created     2026-01-07 01:18:02 CET
  * @updated     2026-01-08 02:10:00 CET
- * @author      agenten-koordinator
+ * @author      Akki Scholze
  *
  * @note        Auth ist implementiert aber standardmäßig deaktiviert (auth.enabled=false)
  *              Login/Logout über localStorage persistence

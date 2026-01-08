@@ -4,7 +4,7 @@
  * @version     0.1.0
  * @created     2026-01-07 00:03:06 CET
  * @updated     2026-01-07 00:03:06 CET
- * @author      codex
+ * @author      Akki Scholze
  *
  * @changelog
  *   0.1.0 - 2026-01-07 - Initialer Migrations-Script

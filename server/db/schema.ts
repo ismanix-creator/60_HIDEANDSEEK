@@ -4,7 +4,7 @@
  * @version     0.2.0
  * @created     2026-01-06 19:14:38 CET
  * @updated     2026-01-08 01:05:00 CET
- * @author      agenten-koordinator
+ * @author      Akki Scholze
  *
  * @changelog
  *   0.2.0 - 2026-01-08 - Added users table for auth/setup system

@@ -4,7 +4,7 @@
  * @version     1.0.0
  * @created     2026-01-07 20:00:00 CET
  * @updated     2026-01-07 20:00:00 CET
- * @author      agenten-koordinator
+ * @author      Akki Scholze
  *
  * @description
  * Dieser Test stellt sicher, dass config.toml jederzeit mit dem Zod Schema übereinstimmt.

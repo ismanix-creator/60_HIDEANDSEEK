@@ -1,12 +1,13 @@
 /**
  * @file        vite.config.ts
  * @description Vite-Konfiguration (Ports/Hosts via ENV; config.toml bleibt SoT für App-Config)
- * @version     0.4.0
+ * @version     0.4.1
  * @created     2026-01-06 19:14:38 CET
- * @updated     2026-01-08 02:45:00 CET
- * @author      agenten-koordinator
+ * @updated     2026-01-08 18:15:00 CET
+ * @author      Akki Scholze
  *
  * @changelog
+ *   0.4.1 - 2026-01-08 - ENV ist Pflicht (keine Hardcoded Ports/Hosts)
  *   0.4.0 - 2026-01-08 - Global ENV loading via src/config/env.ts (HIDEANDSEEK_* mapping)
  *   0.3.0 - 2026-01-08 - Robustere ENV-Port/Host Auswertung + optional sourcemap toggle
  *   0.2.0 - 2026-01-07 - strictPort: true hinzugefuegt (Port 5173 MUSS frei sein)
@@ -18,24 +19,35 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'node:path';
 
-function readPort(envValue: string | undefined, fallback: number): number {
-  const n = Number(envValue);
-  return Number.isFinite(n) ? n : fallback;
+function requireNumber(name: string): number {
+  const n = Number(process.env[name]);
+  if (!Number.isFinite(n)) {
+    throw new Error(`Missing numeric ENV ${name}`);
+  }
+  return n;
 }
 
-function readCsv(envValue: string | undefined, fallback: string[]): string[] {
-  if (!envValue) return fallback;
-  return envValue
+function requireString(name: string): string {
+  const v = process.env[name];
+  if (!v) {
+    throw new Error(`Missing ENV ${name}`);
+  }
+  return v;
+}
+
+function parseCsvStrict(name: string): string[] {
+  const raw = requireString(name);
+  return raw
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean);
 }
 
-const backendHost = process.env.BACKEND_HOST ?? 'localhost';
-const backendPort = readPort(process.env.BACKEND_PORT, 3001);
+const backendHost = requireString('BACKEND_HOST');
+const backendPort = requireNumber('BACKEND_PORT');
 
-const frontendPort = readPort(process.env.FRONTEND_PORT, 5173);
-const allowedHosts = readCsv(process.env.VITE_ALLOWED_HOSTS, ['localhost', '.ngrok-free.dev']);
+const frontendPort = requireNumber('FRONTEND_PORT');
+const allowedHosts = parseCsvStrict('VITE_ALLOWED_HOSTS');
 
 const enableSourcemap = process.env.VITE_SOURCEMAP === 'true' || process.env.NODE_ENV !== 'production';
 

@@ -4,7 +4,7 @@
  * @version     1.0.0
  * @created     2026-01-07 01:18:02 CET
  * @updated     2026-01-08 02:20:00 CET
- * @author      agenten-koordinator
+ * @author      Akki Scholze
  *
  * @usage
  *   import { navigationConfig } from '@/config';

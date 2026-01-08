@@ -1,12 +1,14 @@
 /**
  * @file        load.ts
  * @description Config Loader mit Zod strict Validation
- * @version     1.0.1
+ * @version     1.1.1
  * @created     2026-01-07 19:45:00 CET
- * @updated     2026-01-08 00:25:00 CET
- * @author      agenten-koordinator
+ * @updated     2026-01-08 17:25:00 CET
+ * @author      Akki Scholze
  *
  * @changelog
+ *   1.1.1 - 2026-01-08 - Entfernt CLIENT/HIDEANDSEEK_CLIENT Overrides (SoT .env.example/Keepass)
+ *   1.1.0 - 2026-01-08 - Optional ENV-Overrides für client.port/apiUrl/ngrokUrl (HIDEANDSEEK_CLIENT_*)
  *   1.0.1 - 2026-01-08 - Added .js extensions for Node ESM
  *   1.0.0 - 2026-01-07 - Initial loader mit strict validation
  */

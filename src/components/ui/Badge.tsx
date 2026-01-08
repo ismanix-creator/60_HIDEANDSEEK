@@ -4,7 +4,7 @@
  * @version     0.1.0
  * @created     2025-12-11 01:05:00 CET
  * @updated     2025-12-11 01:05:00 CET
- * @author      Claude Code CLI
+ * @author      Akki Scholze
  *
  * @props
  *   variant - Badge-Variante (success, error, warning, pending, neutral)

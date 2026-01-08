@@ -4,7 +4,7 @@
  * @version     1.0.0
  * @created     2026-01-08 01:45:00 CET
  * @updated     2026-01-08 01:45:00 CET
- * @author      agenten-koordinator
+ * @author      Akki Scholze
  *
  * @changelog
  *   1.0.0 - 2026-01-08 - Initial setup page

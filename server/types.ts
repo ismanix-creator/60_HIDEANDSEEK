@@ -4,7 +4,7 @@
  * @version     0.2.0
  * @created     2026-01-06 22:20:42 CET
  * @updated     2026-01-08 01:40:00 CET
- * @author      agenten-koordinator
+ * @author      Akki Scholze
  *
  * @changelog
  *   0.2.0 - 2026-01-08 - Added user to context variables

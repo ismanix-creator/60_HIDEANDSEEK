@@ -4,7 +4,7 @@
  * @version     0.1.0
  * @created     2026-01-06 19:14:38 CET
  * @updated     2026-01-06 19:14:38 CET
- * @author      agenten-koordinator
+ * @author      Akki Scholze
  *
  * @changelog
  *   0.1.0 - 2026-01-06 - Initial scaffold
@@ -20,7 +20,7 @@ const outputPath = path.resolve(__dirname, '..', 'src', 'config', 'generated', '
 const raw = fs.readFileSync(configPath, 'utf-8');
 const parsed = toml.parse(raw);
 
-const header = `/**\n * @file        config-from-toml.ts\n * @description Generated config from config.toml (do not edit)\n * @version     0.1.0\n * @created     2026-01-06 19:14:38 CET\n * @updated     2026-01-06 19:14:38 CET\n * @author      config-generator\n *\n * @changelog\n *   0.1.0 - 2026-01-06 - Initial generation\n */\n\n`;
+const header = `/**\n * @file        config-from-toml.ts\n * @description Generated config from config.toml (do not edit)\n * @version     0.1.0\n * @created     2026-01-06 19:14:38 CET\n * @updated     2026-01-06 19:14:38 CET\n * @author      Akki Scholze
 
 const body = `export const configFromToml = ${JSON.stringify(parsed, null, 2)} as const;\n`;
 

@@ -4,7 +4,7 @@
  * @version     0.4.0
  * @created     2026-01-06 19:14:38 CET
  * @updated     2026-01-08 01:55:00 CET
- * @author      agenten-koordinator
+ * @author      Akki Scholze
  *
  * @changelog
  *   0.4.0 - 2026-01-08 - Setup und Login Pages hinzugefügt

@@ -4,7 +4,7 @@
  * @version     0.3.0
  * @created     2026-01-06 22:20:42 CET
  * @updated     2026-01-08 02:45:00 CET
- * @author      agenten-koordinator
+ * @author      Akki Scholze
  *
  * @changelog
  *   0.3.0 - 2026-01-08 - Global ENV loading via ../src/config/env (HIDEANDSEEK_* mapping)
@@ -26,8 +26,14 @@ ensureBootstrapAdmin(db);
 
 const app = createApp(db);
 
-const port = Number(runtimeConfig.server?.port ?? 3001);
-const host = runtimeConfig.server?.host ?? '127.0.0.1';
+const port = Number(runtimeConfig.server?.port);
+if (!Number.isFinite(port)) {
+  throw new Error('Server port missing (runtimeConfig.server.port)');
+}
+const host = runtimeConfig.server?.host;
+if (!host) {
+  throw new Error('Server host missing (runtimeConfig.server.host)');
+}
 
 console.log(`Server starting on ${host}:${port}`);
 serve({ fetch: app.fetch, port, hostname: host });
