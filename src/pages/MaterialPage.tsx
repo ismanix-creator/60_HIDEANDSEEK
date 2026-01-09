@@ -1,12 +1,13 @@
 /**
  * @file        MaterialPage.tsx
  * @description Material-Verwaltung mit Bar/Kombi-Buchungen und Historie
- * @version     0.6.0
+ * @version     0.7.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-09 20:55:55 CET
+ * @updated     2026-01-09 21:51:40 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.7.0 - 2026-01-09 21:51:40 - 9 verbleibende Hardcodes durch appConfig.ui.labels.* ersetzt (Phase 2.3.B)
  *   0.6.0 - 2026-01-09 20:55:55 - 44 UI-Text-Hardcodes entfernt (Phase 2.3.1)
  *   0.5.1 - 2026-01-09 - Bezeichnung-Spalte als Monospace (type: 'input')
  *   0.5.0 - 2026-01-09 - Button als actions Prop an PageLayout übergeben (horizontal zentriert)
@@ -617,7 +618,7 @@ export function MaterialPage() {
               </p>
             </div>
             <Input
-              label="VK Stück (Mindest-VK)"
+              label={appConfig.ui.labels.price_per_unit}
               type="number"
               min={0}
               step="0.1"
@@ -626,7 +627,7 @@ export function MaterialPage() {
               className="w-full max-w-sm text-center"
             />
             <Input
-              label="Notiz (optional)"
+              label={appConfig.ui.labels.note}
               value={formData.notiz}
               onChange={(e) => setFormData({ ...formData, notiz: e.target.value.toUpperCase() })}
               className="w-full max-w-sm text-center"
@@ -680,7 +681,7 @@ export function MaterialPage() {
               onChange={(e) => setFormData({ ...formData, menge: parseFloat(e.target.value) || 0 })}
             />
             <Input
-              label="EK Stück"
+              label={appConfig.ui.labels.purchase_price}
               type="number"
               min={0}
               step="0.1"
@@ -688,7 +689,7 @@ export function MaterialPage() {
               onChange={(e) => setFormData({ ...formData, ek_stueck: parseFloat(e.target.value) || 0 })}
             />
             <Input
-              label="VK Stück (Mindest-VK)"
+              label={appConfig.ui.labels.price_per_unit}
               type="number"
               min={0}
               step="0.1"
@@ -727,7 +728,7 @@ export function MaterialPage() {
               </p>
             </div>
             <Input
-              label="Notiz (optional)"
+              label={appConfig.ui.labels.note}
               value={formData.notiz}
               onChange={(e) => setFormData({ ...formData, notiz: e.target.value })}
             />
@@ -840,12 +841,12 @@ export function MaterialPage() {
               )}
             </div>
             <Input
-              label="Info (optional)"
+              label={appConfig.ui.labels.info}
               value={barFormData.info}
               onChange={(e) => setBarFormData({ ...barFormData, info: e.target.value })}
             />
             <Input
-              label="Notiz (optional)"
+              label={appConfig.ui.labels.note}
               value={barFormData.notiz}
               onChange={(e) => setBarFormData({ ...barFormData, notiz: e.target.value })}
             />
@@ -934,7 +935,7 @@ export function MaterialPage() {
               )}
             </div>
             <Input
-              label="Notiz (optional)"
+              label={appConfig.ui.labels.note}
               value={kombiFormData.notiz}
               onChange={(e) => setKombiFormData({ ...kombiFormData, notiz: e.target.value })}
             />
@@ -949,7 +950,7 @@ export function MaterialPage() {
             setSelectedMaterial(null);
             setHistorie([]);
           }}
-          title={selectedMaterial ? `Historie: ${selectedMaterial.bezeichnung}` : "Historie"}
+          title={selectedMaterial ? `${appConfig.ui.dialog_titles.history}: ${selectedMaterial.bezeichnung}` : appConfig.ui.dialog_titles.history}
           actions={
             <Button onClick={() => {
               setHistorieDialogOpen(false);

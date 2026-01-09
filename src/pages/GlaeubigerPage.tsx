@@ -1,12 +1,13 @@
 /**
  * @file        GlaeubigerPage.tsx
  * @description Gläubiger-Verwaltung Seite
- * @version     0.4.0
+ * @version     0.5.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-09 21:03:15 CET
+ * @updated     2026-01-09 21:51:40 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.5.0 - 2026-01-09 21:51:40 - 4 verbleibende Hardcodes durch appConfig.ui.labels.* ersetzt (Phase 2.3.B)
  *   0.4.0 - 2026-01-09 21:03:15 - 30 UI-Text-Hardcodes entfernt (Phase 2.3.3)
  *   0.3.1 - 2026-01-09 - Name + Betrag-Spalten als Monospace (type: 'input')
  *   0.3.0 - 2026-01-09 - Button als actions Prop an PageLayout übergeben (horizontal zentriert)

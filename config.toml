@@ -571,6 +571,13 @@ designation = "Bezeichnung"
 quantity = "Menge"
 amount = "Betrag"
 payment_amount = "Zahlungsbetrag"
+material = "Material"
+note = "Notiz (optional)"
+price_per_unit = "VK Stück (Mindest-VK)"
+purchase_price = "EK Stück"
+info = "Info (optional)"
+due_date = "Fälligkeit (optional)"
+open_amount = "Offener Betrag"
 
 [ui.tooltips]
 bar_transaction = "BAR"
@@ -582,20 +589,23 @@ new_customer = "Neuer Kunde"
 new_creditor = "Neuer Gläubiger"
 new_debtor = "Neuer Schuldner"
 payment = "Zahlung"
+create = "Erstellen"
+record = "Verbuchen"
 
-[ui.page_titles]
+[ui.pages]
 material = "Material"
 customers = "Kunden"
 creditors = "Gläubiger"
 debtors = "Schuldner"
 settings = "Einstellungen"
 
-[ui.dialog_titles]
+[ui.dialogs]
 new_material = "Neues Material"
 edit_material = "Material bearbeiten"
 delete_material = "Material löschen"
 bar_transaction = "BAR-Bewegung"
 kombi_transaction = "KOMBI-Bewegung"
+history = "Historie"
 new_customer = "Neuer Kunde"
 edit_customer = "Kunde bearbeiten"
 delete_customer = "Kunde löschen"

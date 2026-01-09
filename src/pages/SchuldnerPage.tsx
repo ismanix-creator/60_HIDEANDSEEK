@@ -1,12 +1,13 @@
 /**
  * @file        SchuldnerPage.tsx
  * @description Schuldner-Verwaltung Seite
- * @version     0.3.1
+ * @version     0.4.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-09 13:43:15 CET
+ * @updated     2026-01-09 21:48:22 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.4.0 - 2026-01-09 - 19 Hardcodes durch appConfig.ui.* ersetzt (Phase 2.3)
  *   0.3.1 - 2026-01-09 - Name + Betrag-Spalten als Monospace (type: 'input')
  *   0.3.0 - 2026-01-09 - Button als actions Prop an PageLayout übergeben (horizontal zentriert)
  *   0.2.0 - 2026-01-09 - Doppelten Header entfernt (PageLayout zeigt bereits Titel)
@@ -24,6 +25,7 @@ import { useApi } from '@/hooks/useApi';
 import { formatCurrency, formatDate } from '@/utils/format';
 import { Wallet, Pencil, Trash2, DollarSign } from 'lucide-react';
 import type { Schuldner, CreateSchuldnerRequest, UpdateSchuldnerRequest, ZahlungRequest } from '@/types';
+import { appConfig } from '@/config';
 
 export function SchuldnerPage() {
   const api = useApi();
@@ -219,10 +221,10 @@ export function SchuldnerPage() {
       render: (s: Schuldner) => (
         <div className="flex gap-2">
           {s.offen > 0 && (
-            <Button icon={<DollarSign />} iconOnly size="sm" variant="success" onClick={() => openZahlungDialog(s)} title="Zahlung" />
+            <Button icon={<DollarSign />} iconOnly size="sm" variant="success" onClick={() => openZahlungDialog(s)} title={appConfig.ui.tooltips.record} />
           )}
-          <Button icon={<Pencil />} iconOnly size="sm" variant="secondary" onClick={() => openEditDialog(s)} title="Bearbeiten" />
-          <Button icon={<Trash2 />} iconOnly size="sm" variant="danger" onClick={() => openDeleteDialog(s)} title="Löschen" />
+          <Button icon={<Pencil />} iconOnly size="sm" variant="secondary" onClick={() => openEditDialog(s)} title={appConfig.ui.tooltips.edit} />
+          <Button icon={<Trash2 />} iconOnly size="sm" variant="danger" onClick={() => openDeleteDialog(s)} title={appConfig.ui.tooltips.delete} />
         </div>
       )
     }
@@ -230,9 +232,9 @@ export function SchuldnerPage() {
 
   return (
     <PageLayout 
-      title="Schuldner"
+      title={appConfig.ui.pages.debtors}
       actions={
-        <Button icon={<Wallet />} iconOnly variant="transparent" size="lg" onClick={() => setCreateDialogOpen(true)} title="Neuer Schuldner" />
+        <Button icon={<Wallet />} iconOnly variant="transparent" size="lg" onClick={() => setCreateDialogOpen(true)} title={appConfig.ui.tooltips.create} />
       }
     >
       <div className="space-y-4">
@@ -240,7 +242,7 @@ export function SchuldnerPage() {
         {error && <div className="p-4 bg-red-500/10 border border-red-500 rounded text-red-400">{error}</div>}
 
         {/* Table */}
-        <Table data={schuldner} columns={columns} loading={loading} emptyMessage="Keine Schuldner vorhanden" />
+        <Table data={schuldner} columns={columns} loading={loading} emptyMessage={appConfig.ui.empty_states.no_debtors} />
 
         {/* Create Dialog */}
         <Dialog
@@ -249,7 +251,7 @@ export function SchuldnerPage() {
             setCreateDialogOpen(false);
             resetForm();
           }}
-          title="Neuer Schuldner"
+          title={appConfig.ui.dialogs.new_debtor}
           actions={
             <>
               <Button
@@ -259,39 +261,39 @@ export function SchuldnerPage() {
                   resetForm();
                 }}
               >
-                Abbrechen
+                {appConfig.ui.buttons.cancel}
               </Button>
-              <Button onClick={handleCreate}>Erstellen</Button>
+              <Button onClick={handleCreate}>{appConfig.ui.buttons.create}</Button>
             </>
           }
         >
           <div className="space-y-4">
             <Input
-              label="Datum"
+              label={appConfig.ui.labels.date}
               type="date"
               value={formData.datum}
               onChange={(e) => setFormData({ ...formData, datum: e.target.value })}
             />
             <Input
-              label="Name"
+              label={appConfig.ui.labels.name}
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
             <Input
-              label="betrag"
+              label={appConfig.ui.labels.amount}
               type="number"
               step="0.01"
               value={formData.betrag}
               onChange={(e) => setFormData({ ...formData, betrag: parseFloat(e.target.value) || 0 })}
             />
             <Input
-              label="Fälligkeit (optional)"
+              label={appConfig.ui.labels.due_date}
               type="date"
               value={formData.faelligkeit}
               onChange={(e) => setFormData({ ...formData, faelligkeit: e.target.value })}
             />
             <Input
-              label="Notiz (optional)"
+              label={appConfig.ui.labels.note}
               value={formData.notiz}
               onChange={(e) => setFormData({ ...formData, notiz: e.target.value })}
             />
@@ -306,7 +308,7 @@ export function SchuldnerPage() {
             setSelectedSchuldner(null);
             resetForm();
           }}
-          title="Schuldner bearbeiten"
+          title={appConfig.ui.dialogs.edit_debtor}
           actions={
             <>
               <Button
@@ -317,39 +319,39 @@ export function SchuldnerPage() {
                   resetForm();
                 }}
               >
-                Abbrechen
+                {appConfig.ui.buttons.cancel}
               </Button>
-              <Button onClick={handleUpdate}>Speichern</Button>
+              <Button onClick={handleUpdate}>{appConfig.ui.buttons.save}</Button>
             </>
           }
         >
           <div className="space-y-4">
             <Input
-              label="Datum"
+              label={appConfig.ui.labels.date}
               type="date"
               value={formData.datum}
               onChange={(e) => setFormData({ ...formData, datum: e.target.value })}
             />
             <Input
-              label="Name"
+              label={appConfig.ui.labels.name}
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
             <Input
-              label="betrag"
+              label={appConfig.ui.labels.amount}
               type="number"
               step="0.01"
               value={formData.betrag}
               onChange={(e) => setFormData({ ...formData, betrag: parseFloat(e.target.value) || 0 })}
             />
             <Input
-              label="Fälligkeit (optional)"
+              label={appConfig.ui.labels.due_date}
               type="date"
               value={formData.faelligkeit}
               onChange={(e) => setFormData({ ...formData, faelligkeit: e.target.value })}
             />
             <Input
-              label="Notiz (optional)"
+              label={appConfig.ui.labels.note}
               value={formData.notiz}
               onChange={(e) => setFormData({ ...formData, notiz: e.target.value })}
             />
@@ -363,7 +365,7 @@ export function SchuldnerPage() {
             setDeleteDialogOpen(false);
             setSelectedSchuldner(null);
           }}
-          title="Schuldner löschen"
+          title={appConfig.ui.dialogs.delete_debtor}
           actions={
             <>
               <Button
@@ -373,15 +375,15 @@ export function SchuldnerPage() {
                   setSelectedSchuldner(null);
                 }}
               >
-                Abbrechen
+                {appConfig.ui.buttons.cancel}
               </Button>
               <Button variant="danger" onClick={handleDelete}>
-                Löschen
+                {appConfig.ui.buttons.delete}
               </Button>
             </>
           }
         >
-          <p className="text-neutral-300">Möchten Sie den Schuldner "{selectedSchuldner?.name}" wirklich löschen?</p>
+          <p className="text-neutral-300">{appConfig.ui.messages.confirm_delete_debtor.replace('{name}', selectedSchuldner?.name || '')}</p>
         </Dialog>
 
         {/* Zahlung Dialog */}
@@ -392,7 +394,7 @@ export function SchuldnerPage() {
             setSelectedSchuldner(null);
             setZahlungbetrag(0);
           }}
-          title="Zahlung verbuchen"
+          title={appConfig.ui.dialogs.record_payment}
           actions={
             <>
               <Button
@@ -403,19 +405,19 @@ export function SchuldnerPage() {
                   setZahlungbetrag(0);
                 }}
               >
-                Abbrechen
+                {appConfig.ui.buttons.cancel}
               </Button>
-              <Button onClick={handleZahlung}>Verbuchen</Button>
+              <Button onClick={handleZahlung}>{appConfig.ui.buttons.record}</Button>
             </>
           }
         >
           <div className="space-y-4">
             <div className="p-4 bg-neutral-800 rounded">
-              <p className="text-neutral-400 text-sm">Offener betrag</p>
+              <p className="text-neutral-400 text-sm">{appConfig.ui.labels.open_amount}</p>
               <p className="text-2xl font-semibold text-neutral-50">{formatCurrency(selectedSchuldner?.offen || 0)}</p>
             </div>
             <Input
-              label="Zahlungsbetrag"
+              label={appConfig.ui.labels.payment_amount}
               type="number"
               step="0.01"
               value={zahlungbetrag}

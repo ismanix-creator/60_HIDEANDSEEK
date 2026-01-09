@@ -1,12 +1,13 @@
 /**
  * @file        KundenPage.tsx
  * @description Kunden-Verwaltung mit Übersicht und Detail-Ansicht
- * @version     0.4.0
+ * @version     0.5.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-09 21:00:20 CET
+ * @updated     2026-01-09 21:51:40 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.5.0 - 2026-01-09 21:51:40 - 3 verbleibende Hardcodes durch appConfig.ui.labels.* ersetzt (Phase 2.3.B)
  *   0.4.0 - 2026-01-09 21:00:20 - 38 UI-Text-Hardcodes entfernt (Phase 2.3.2)
  *   0.3.1 - 2026-01-09 - Name-Spalte als Monospace (type: 'input')
  *   0.3.0 - 2026-01-09 - Button als actions Prop an PageLayout übergeben (horizontal zentriert)
@@ -666,7 +667,7 @@ export function KundenPage() {
               onChange={(e) => setPostenMatFormData({ ...postenMatFormData, datum: e.target.value })}
             />
             <Select
-              label="Material"
+              label={appConfig.ui.labels.material}
               value={postenMatFormData.material_id.toString()}
               onChange={(e) => setPostenMatFormData({ ...postenMatFormData, material_id: parseInt(e.target.value) })}
               options={materialien.map((m) => ({ value: m.id.toString(), label: m.bezeichnung }))}
@@ -686,7 +687,7 @@ export function KundenPage() {
               onChange={(e) => setPostenMatFormData({ ...postenMatFormData, preis: parseFloat(e.target.value) || 0 })}
             />
             <Input
-              label="Notiz (optional)"
+              label={appConfig.ui.labels.note}
               value={postenMatFormData.notiz}
               onChange={(e) => setPostenMatFormData({ ...postenMatFormData, notiz: e.target.value })}
             />
@@ -738,7 +739,7 @@ export function KundenPage() {
               }
             />
             <Input
-              label="Notiz (optional)"
+              label={appConfig.ui.labels.note}
               value={postenNoMatFormData.notiz}
               onChange={(e) => setPostenNoMatFormData({ ...postenNoMatFormData, notiz: e.target.value })}
             />

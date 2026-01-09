@@ -611,7 +611,14 @@ export const configFromToml = {
       "designation": "Bezeichnung",
       "quantity": "Menge",
       "amount": "Betrag",
-      "payment_amount": "Zahlungsbetrag"
+      "payment_amount": "Zahlungsbetrag",
+      "material": "Material",
+      "note": "Notiz (optional)",
+      "price_per_unit": "VK Stück (Mindest-VK)",
+      "purchase_price": "EK Stück",
+      "info": "Info (optional)",
+      "due_date": "Fälligkeit (optional)",
+      "open_amount": "Offener Betrag"
     },
     "tooltips": {
       "bar_transaction": "BAR",
@@ -622,21 +629,24 @@ export const configFromToml = {
       "new_customer": "Neuer Kunde",
       "new_creditor": "Neuer Gläubiger",
       "new_debtor": "Neuer Schuldner",
-      "payment": "Zahlung"
+      "payment": "Zahlung",
+      "create": "Erstellen",
+      "record": "Verbuchen"
     },
-    "page_titles": {
+    "pages": {
       "material": "Material",
       "customers": "Kunden",
       "creditors": "Gläubiger",
       "debtors": "Schuldner",
       "settings": "Einstellungen"
     },
-    "dialog_titles": {
+    "dialogs": {
       "new_material": "Neues Material",
       "edit_material": "Material bearbeiten",
       "delete_material": "Material löschen",
       "bar_transaction": "BAR-Bewegung",
       "kombi_transaction": "KOMBI-Bewegung",
+      "history": "Historie",
       "new_customer": "Neuer Kunde",
       "edit_customer": "Kunde bearbeiten",
       "delete_customer": "Kunde löschen",
