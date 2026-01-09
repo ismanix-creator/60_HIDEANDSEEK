@@ -1,9 +1,9 @@
 /**
  * @file        Infobox.tsx
  * @description Wiederverwendbare Infobox-Komponente (SEASIDE Dark Theme) - Responsive
- * @version     0.3.0
+ * @version     0.4.0
  * @created     2025-12-11 01:05:00 CET
- * @updated     2025-12-15 22:27:01 CET
+ * @updated     2026-01-09 20:45:09 CET
  * @author      Akki Scholze
  *
  * @props
@@ -12,6 +12,7 @@
  *   children - Infobox-Inhalt
  *
  * @changelog
+ *   0.4.0 - 2026-01-09 - Import auf appConfig.components.infobox umgestellt (Phase 2.2.5)
  *   0.3.0 - 2025-12-14 - Responsive: Kompaktere Mobile-Abstände, volle Breite
  *   0.2.0 - 2025-12-11 - 100% Config-Driven, Tailwind-Hardcodes entfernt
  *   0.1.0 - 2025-12-11 - Initial version
@@ -21,9 +22,14 @@
 // IMPORTS
 // ═══════════════════════════════════════════════════════
 import type { InfoboxProps } from '@/types/ui.types';
-import { infoboxConfig, colorsConfig, spacingConfig, typographyConfig } from '@/config';
+import { appConfig, spacingConfig } from '@/config';
 import { Info, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
 import { useResponsive } from '@/hooks/useResponsive';
+
+const infoboxConfig = appConfig.components.infobox;
+
+const colorsConfig = appConfig.theme.colors;
+const typographyConfig = appConfig.theme.typography;
 
 const spacingBase = (key: number | string) => spacingConfig.base[String(key) as keyof typeof spacingConfig.base];
 

@@ -13,7 +13,6 @@
  *   0.1.0 - 2026-01-06 - Initial server scaffold
  */
 
-import '../src/config/env.js';
 import { serve } from '@hono/node-server';
 import { initializeSchema, openDatabase } from './db/connection.js';
 import { ensureBootstrapAdmin } from './db/bootstrap-admin.js';

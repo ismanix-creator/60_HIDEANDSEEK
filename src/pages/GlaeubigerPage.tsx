@@ -1,12 +1,16 @@
 /**
  * @file        GlaeubigerPage.tsx
  * @description Gläubiger-Verwaltung Seite
- * @version     0.1.0
+ * @version     0.4.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-07 01:36:51 CET
+ * @updated     2026-01-09 21:03:15 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.4.0 - 2026-01-09 21:03:15 - 30 UI-Text-Hardcodes entfernt (Phase 2.3.3)
+ *   0.3.1 - 2026-01-09 - Name + Betrag-Spalten als Monospace (type: 'input')
+ *   0.3.0 - 2026-01-09 - Button als actions Prop an PageLayout übergeben (horizontal zentriert)
+ *   0.2.0 - 2026-01-09 - Doppelten Header entfernt (PageLayout zeigt bereits Titel)
  *   0.1.0 - 2026-01-07 - Initial implementation
  */
 
@@ -19,6 +23,8 @@ import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { useApi } from '@/hooks/useApi';
 import { formatCurrency, formatDate } from '@/utils/format';
+import { appConfig } from '@/config';
+import { HandCoins, Pencil, Trash2, DollarSign } from 'lucide-react';
 import type { Glaeubiger, CreateGlaeubigerRequest, UpdateGlaeubigerRequest, ZahlungRequest } from '@/types';
 
 export function GlaeubigerPage() {
@@ -53,10 +59,10 @@ export function GlaeubigerPage() {
       if (result.success && result.data) {
         setGlaeubiger(result.data);
       } else {
-        setError(result.error || 'Fehler beim Laden');
+        setError(result.error || appConfig.ui.errors.load_failed);
       }
     } catch (err) {
-      setError('Netzwerkfehler');
+      setError(appConfig.ui.errors.network_error);
     } finally {
       setLoading(false);
     }
@@ -78,10 +84,10 @@ export function GlaeubigerPage() {
         resetForm();
         loadGlaeubiger();
       } else {
-        setError(result.error || 'Fehler beim Erstellen');
+        setError(result.error || appConfig.ui.errors.create_failed);
       }
     } catch (err) {
-      setError('Netzwerkfehler');
+      setError(appConfig.ui.errors.network_error);
     }
   };
 
@@ -103,10 +109,10 @@ export function GlaeubigerPage() {
         resetForm();
         loadGlaeubiger();
       } else {
-        setError(result.error || 'Fehler beim Aktualisieren');
+        setError(result.error || appConfig.ui.errors.update_failed);
       }
     } catch (err) {
-      setError('Netzwerkfehler');
+      setError(appConfig.ui.errors.network_error);
     }
   };
 
@@ -122,10 +128,10 @@ export function GlaeubigerPage() {
         setSelectedGlaeubiger(null);
         loadGlaeubiger();
       } else {
-        setError(result.error || 'Fehler beim Löschen');
+        setError(result.error || appConfig.ui.errors.delete_failed);
       }
     } catch (err) {
-      setError('Netzwerkfehler');
+      setError(appConfig.ui.errors.network_error);
     }
   };
 
@@ -144,10 +150,10 @@ export function GlaeubigerPage() {
         setZahlungbetrag(0);
         loadGlaeubiger();
       } else {
-        setError(result.error || 'Fehler beim Verbuchen');
+        setError(result.error || appConfig.ui.errors.booking_failed);
       }
     } catch (err) {
-      setError('Netzwerkfehler');
+      setError(appConfig.ui.errors.network_error);
     }
   };
 
@@ -190,9 +196,9 @@ export function GlaeubigerPage() {
 
   // Table Columns
   const columns = [
-    { key: 'datum', label: 'Datum', render: (g: Glaeubiger) => formatDate(g.datum) },
-    { key: 'name', label: 'Name' },
-    { key: 'betrag', label: 'betrag', render: (g: Glaeubiger) => formatCurrency(g.betrag) },
+    { key: 'datum', label: appConfig.ui.labels.date, render: (g: Glaeubiger) => formatDate(g.datum) },
+    { key: 'name', label: appConfig.ui.labels.name, type: 'input' as const },
+    { key: 'betrag', label: appConfig.ui.labels.amount, type: 'input' as const, render: (g: Glaeubiger) => <span style={{ fontFamily: 'JetBrains Mono, monospace' }}>{formatCurrency(g.betrag)}</span> },
     { key: 'bezahlt', label: 'Bezahlt', render: (g: Glaeubiger) => formatCurrency(g.bezahlt) },
     { key: 'offen', label: 'Offen', render: (g: Glaeubiger) => formatCurrency(g.offen) },
     {
@@ -215,35 +221,28 @@ export function GlaeubigerPage() {
       render: (g: Glaeubiger) => (
         <div className="flex gap-2">
           {g.offen > 0 && (
-            <Button size="sm" variant="success" onClick={() => openZahlungDialog(g)}>
-              Zahlung
-            </Button>
+            <Button icon={<DollarSign />} iconOnly size="sm" variant="success" onClick={() => openZahlungDialog(g)} title={appConfig.ui.tooltips.payment} />
           )}
-          <Button size="sm" variant="secondary" onClick={() => openEditDialog(g)}>
-            Bearbeiten
-          </Button>
-          <Button size="sm" variant="danger" onClick={() => openDeleteDialog(g)}>
-            Löschen
-          </Button>
+          <Button icon={<Pencil />} iconOnly size="sm" variant="secondary" onClick={() => openEditDialog(g)} title={appConfig.ui.tooltips.edit} />
+          <Button icon={<Trash2 />} iconOnly size="sm" variant="danger" onClick={() => openDeleteDialog(g)} title={appConfig.ui.tooltips.delete} />
         </div>
       )
     }
   ];
 
   return (
-    <PageLayout title="Gläubiger">
+    <PageLayout 
+      title={appConfig.ui.page_titles.creditors}
+      actions={
+        <Button icon={<HandCoins />} iconOnly variant="transparent" size="lg" onClick={() => setCreateDialogOpen(true)} title={appConfig.ui.dialog_titles.new_creditor} />
+      }
+    >
       <div className="space-y-4">
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-semibold text-neutral-50">Gläubiger-Verwaltung</h2>
-          <Button onClick={() => setCreateDialogOpen(true)}>Neuer Gläubiger</Button>
-        </div>
-
         {/* Error */}
         {error && <div className="p-4 bg-red-500/10 border border-red-500 rounded text-red-400">{error}</div>}
 
         {/* Table */}
-        <Table data={glaeubiger} columns={columns} loading={loading} emptyMessage="Keine Gläubiger vorhanden" />
+        <Table data={glaeubiger} columns={columns} loading={loading} emptyMessage={appConfig.ui.empty_states.no_creditors} />
 
         {/* Create Dialog */}
         <Dialog
@@ -252,7 +251,7 @@ export function GlaeubigerPage() {
             setCreateDialogOpen(false);
             resetForm();
           }}
-          title="Neuer Gläubiger"
+          title={appConfig.ui.dialog_titles.new_creditor}
           actions={
             <>
               <Button
@@ -262,26 +261,26 @@ export function GlaeubigerPage() {
                   resetForm();
                 }}
               >
-                Abbrechen
+                {appConfig.ui.buttons.cancel}
               </Button>
-              <Button onClick={handleCreate}>Erstellen</Button>
+              <Button onClick={handleCreate}>{appConfig.ui.buttons.create}</Button>
             </>
           }
         >
           <div className="space-y-4">
             <Input
-              label="Datum"
+              label={appConfig.ui.labels.date}
               type="date"
               value={formData.datum}
               onChange={(e) => setFormData({ ...formData, datum: e.target.value })}
             />
             <Input
-              label="Name"
+              label={appConfig.ui.labels.name}
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
             <Input
-              label="betrag"
+              label={appConfig.ui.labels.amount}
               type="number"
               step="0.01"
               value={formData.betrag}
@@ -309,7 +308,7 @@ export function GlaeubigerPage() {
             setSelectedGlaeubiger(null);
             resetForm();
           }}
-          title="Gläubiger bearbeiten"
+          title={appConfig.ui.dialog_titles.edit_creditor}
           actions={
             <>
               <Button
@@ -320,26 +319,26 @@ export function GlaeubigerPage() {
                   resetForm();
                 }}
               >
-                Abbrechen
+                {appConfig.ui.buttons.cancel}
               </Button>
-              <Button onClick={handleUpdate}>Speichern</Button>
+              <Button onClick={handleUpdate}>{appConfig.ui.buttons.save}</Button>
             </>
           }
         >
           <div className="space-y-4">
             <Input
-              label="Datum"
+              label={appConfig.ui.labels.date}
               type="date"
               value={formData.datum}
               onChange={(e) => setFormData({ ...formData, datum: e.target.value })}
             />
             <Input
-              label="Name"
+              label={appConfig.ui.labels.name}
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
             <Input
-              label="betrag"
+              label={appConfig.ui.labels.amount}
               type="number"
               step="0.01"
               value={formData.betrag}
@@ -366,7 +365,7 @@ export function GlaeubigerPage() {
             setDeleteDialogOpen(false);
             setSelectedGlaeubiger(null);
           }}
-          title="Gläubiger löschen"
+          title={appConfig.ui.dialog_titles.delete_creditor}
           actions={
             <>
               <Button
@@ -376,15 +375,15 @@ export function GlaeubigerPage() {
                   setSelectedGlaeubiger(null);
                 }}
               >
-                Abbrechen
+                {appConfig.ui.buttons.cancel}
               </Button>
               <Button variant="danger" onClick={handleDelete}>
-                Löschen
+                {appConfig.ui.buttons.delete}
               </Button>
             </>
           }
         >
-          <p className="text-neutral-300">Möchten Sie den Gläubiger "{selectedGlaeubiger?.name}" wirklich löschen?</p>
+          <p className="text-neutral-300">{appConfig.ui.messages.confirm_delete_creditor.replace('{name}', selectedGlaeubiger?.name || '')}</p>
         </Dialog>
 
         {/* Zahlung Dialog */}
@@ -395,7 +394,7 @@ export function GlaeubigerPage() {
             setSelectedGlaeubiger(null);
             setZahlungbetrag(0);
           }}
-          title="Zahlung verbuchen"
+          title={appConfig.ui.dialog_titles.record_payment}
           actions={
             <>
               <Button
@@ -406,19 +405,19 @@ export function GlaeubigerPage() {
                   setZahlungbetrag(0);
                 }}
               >
-                Abbrechen
+                {appConfig.ui.buttons.cancel}
               </Button>
-              <Button onClick={handleZahlung}>Verbuchen</Button>
+              <Button onClick={handleZahlung}>{appConfig.ui.buttons.record}</Button>
             </>
           }
         >
           <div className="space-y-4">
             <div className="p-4 bg-neutral-800 rounded">
-              <p className="text-neutral-400 text-sm">Offener betrag</p>
+              <p className="text-neutral-400 text-sm">Offener {appConfig.ui.labels.amount}</p>
               <p className="text-2xl font-semibold text-neutral-50">{formatCurrency(selectedGlaeubiger?.offen || 0)}</p>
             </div>
             <Input
-              label="Zahlungsbetrag"
+              label={appConfig.ui.labels.payment_amount}
               type="number"
               step="0.01"
               value={zahlungbetrag}

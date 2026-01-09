@@ -1,11 +1,12 @@
 # @file        config.toml
 # @description Single Source of Truth für App-Konfiguration
-# @version     1.1.0
+# @version     1.2.0
 # @created     2026-01-06 15:35:00 CET
-# @updated     2026-01-08 01:00:00 CET
+# @updated     2026-01-09 17:11:43 CET
 # @author      Akki Scholze
 #
 # @changelog
+#   1.2.0 - 2026-01-09 - Theme-Extensions + Component-Configs + UI-Texte (~471 Zeilen)
 #   1.1.0 - 2026-01-08 - Auth config added (disabled by default)
 #   1.0.0 - 2026-01-07 - Complete config with theme values (SoT)
 #   0.1.1 - 2026-01-07 - TOML-Kommentare korrigiert (# statt /*/)
@@ -198,22 +199,6 @@ sm = "16px"
 md = "18px"
 lg = "20px"
 
-[theme.breakpoints]
-sm = "640px"
-md = "768px"
-lg = "1024px"
-xl = "1280px"
-"2xl" = "1536px"
-mobile = 767
-desktop = 1024
-
-[theme.borderRadius]
-none = "0"
-sm = "0.25rem"
-md = "0.5rem"
-lg = "1rem"
-full = "9999px"
-
 [theme.shadows]
 sm = "0 1px 2px 0 rgba(0, 0, 0, 0.05)"
 md = "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
@@ -221,28 +206,441 @@ lg = "0 10px 15px -3px rgba(0, 0, 0, 0.1)"
 xl = "0 20px 25px -5px rgba(0, 0, 0, 0.1)"
 none = "none"
 
-# Components Configuration
+[theme.borderRadius]
+none = "0"
+sm = "0.125rem"
+md = "0.25rem"
+lg = "0.5rem"
+xl = "1rem"
+full = "9999px"
+
+[theme.breakpoints]
+xs = "320px"
+sm = "640px"
+md = "768px"
+lg = "1024px"
+xl = "1280px"
+xxl = "1536px"
+mobile = 767
+desktop = 1024
+
+[theme.breakpoints.devices.samsungS24]
+width = 360
+height = 780
+
+[theme.breakpoints.devices.iPhone15]
+width = 393
+height = 852
+
+[theme.breakpoints.devices.surface7]
+width = 1368
+height = 912
+
+[theme.responsive]
+bottomNavHeight = "60px"
+bottomNavPadding = "80px"
+sidebarWidth = "200px"
+touchMinSize = 44
+
+[theme.spacing.mobile]
+xxs = "0.0625rem"
+xs = "0.125rem"
+sm = "0.25rem"
+md = "0.5rem"
+lg = "0.75rem"
+xl = "1rem"
+xxl = "1.5rem"
+
+# ========================================
+# COMPONENT CONFIGURATIONS
+# ========================================
+
+[components.badge.base]
+padding = "0.25rem 0.5rem"
+paddingX = 2
+paddingY = 1
+borderRadius = "0.25rem"
+fontSize = "0.75rem"
+fontWeight = 500
+display = "inline-flex"
+alignItems = "center"
+gap = "0.25rem"
+
+[components.badge.variants.success]
+bg = "#27ae60"
+text = "#ffffff"
+
+[components.badge.variants.error]
+bg = "#e74c3c"
+text = "#ffffff"
+
+[components.badge.variants.warning]
+bg = "#f39c12"
+text = "#1e1e1e"
+
+[components.badge.variants.info]
+bg = "#3498db"
+text = "#ffffff"
+
+[components.badge.variants.pending]
+bg = "#9e9e9e"
+text = "#ffffff"
+
+[components.badge.variants.neutral]
+bg = "#424242"
+text = "#ffffff"
+
+[components.button]
+borderRadius = "0.25rem"
+
+[components.button.variants.primary]
+bg = "#2196f3"
+text = "#ffffff"
+hover = "#1976d2"
+
+[components.button.variants.secondary]
+bg = "#3d3d3d"
+text = "#ffffff"
+hover = "#454545"
+
+[components.button.variants.danger]
+bg = "#e74c3c"
+text = "#ffffff"
+hover = "#c0392b"
+
+[components.button.variants.outline]
+bg = "transparent"
+text = "#2196f3"
+hover = "#1e1e1e"
+border = "#2196f3"
+
+[components.button.variants.ghost]
+bg = "transparent"
+text = "#2196f3"
+hover = "#1e1e1e"
+
+[components.button.variants.success]
+bg = "#27ae60"
+text = "#ffffff"
+hover = "#229954"
+
+[components.button.variants.warning]
+bg = "#f39c12"
+text = "#1e1e1e"
+hover = "#e67e22"
+
+[components.button.variants.transparent]
+bg = "transparent"
+text = "#ffffff"
+hover = "#2d2d2d"
+
+[components.button.sizes.xs]
+padding = "0.25rem 0.5rem"
+paddingX = 2
+paddingY = 1
+fontSize = "xs"
+icon = "14px"
+height = "1.75rem"
+
+[components.button.sizes.sm]
+padding = "0.5rem 1rem"
+paddingX = 4
+paddingY = 2
+fontSize = "sm"
+icon = "16px"
+height = "2rem"
+
+[components.button.sizes.md]
+padding = "0.75rem 1.5rem"
+paddingX = 6
+paddingY = 3
+fontSize = "md"
+icon = "18px"
+height = "2.5rem"
+
+[components.button.sizes.lg]
+padding = "1rem 2rem"
+paddingX = 8
+paddingY = 4
+fontSize = "lg"
+icon = "20px"
+height = "3rem"
+
+[components.button.sizes.xl]
+padding = "1.25rem 2.5rem"
+paddingX = 10
+paddingY = 5
+fontSize = "xl"
+icon = "24px"
+height = "3.5rem"
+
+[components.dialog.overlay]
+bg = "rgba(0, 0, 0, 0.75)"
+
+[components.dialog.container]
+bg = "#2d2d2d"
+border = "#3d3d3d"
+borderRadius = "0.5rem"
+padding = "0"
+maxWidth = "90vw"
+width = "600px"
+shadow = "xl"
+
+[components.dialog.header]
+borderBottom = "#3d3d3d"
+padding = "1.5rem"
+fontSize = "lg"
+fontWeight = "semibold"
+
+[components.dialog.body]
+padding = "1.5rem"
+gap = "1rem"
+
+[components.dialog.footer]
+borderTop = "#3d3d3d"
+padding = "1rem 1.5rem"
+marginTop = "0"
+gap = "0.5rem"
+
+[components.divider.month]
+bg = "#252525"
+text = "#ffffff"
+border = "#3d3d3d"
+padding = "0.5rem 1rem"
+paddingY = 2
+paddingX = 4
+fontSize = "sm"
+fontWeight = "semibold"
+textTransform = "uppercase"
+
+[components.divider.horizontal]
+border = "#3d3d3d"
+margin = "1rem 0"
+marginY = 4
+height = "1px"
+thickness = "1px"
+color = "#3d3d3d"
+
+[components.infobox.base]
+padding = "1rem"
+borderRadius = "0.5rem"
+fontSize = "sm"
+borderWidth = "1px"
+
+[components.infobox.variants.info]
+bg = "#1e3a5f"
+border = "#3498db"
+icon = "info"
+iconColor = "#3498db"
+
+[components.infobox.variants.success]
+bg = "#1e4620"
+border = "#27ae60"
+icon = "check-circle"
+iconColor = "#27ae60"
+
+[components.infobox.variants.warning]
+bg = "#4a3c1e"
+border = "#f39c12"
+icon = "alert-triangle"
+iconColor = "#f39c12"
+
+[components.infobox.variants.error]
+bg = "#4a1e1e"
+border = "#e74c3c"
+icon = "x-circle"
+iconColor = "#e74c3c"
+
+[components.infobox.panel]
+bg = "#252525"
+border = "#3d3d3d"
+borderRadius = "0.5rem"
+padding = "1rem"
+
+[components.infobox.formCompact]
+containerWidth = "300px"
+inputWidth = "100px"
+buttonSize = "md"
+
+[components.input.base]
+bg = "#1e1e1e"
+border = "#3d3d3d"
+text = "#ffffff"
+padding = "0.5rem 0.75rem"
+paddingX = 3
+paddingY = 2
+borderRadius = "0.25rem"
+fontSize = "sm"
+height = "2.5rem"
+borderWidth = "1px"
+
+[components.input.states.focus]
+border = "#2196f3"
+bg = "#1e1e1e"
+outline = "2px solid rgba(33, 150, 243, 0.2)"
+
+[components.input.states.error]
+border = "#e74c3c"
+bg = "#1e1e1e"
+outline = "2px solid rgba(231, 76, 60, 0.2)"
+
+[components.input.states.disabled]
+border = "#3d3d3d"
+bg = "#2d2d2d"
+text = "#666666"
+
+[components.input.states.default]
+border = "#3d3d3d"
+bg = "#1e1e1e"
+
+[components.input.types.text]
+type = "text"
+
+[components.input.types.number]
+type = "number"
+
+[components.input.types.date]
+type = "date"
+
+[components.input.types.email]
+type = "email"
+
+[components.input.types.currency]
+type = "text"
+
 [components.pageHeader.button]
 className = "page-header-button"
 
-[components.table]
-# Note: table config uses extensive CSS classNames, defined via TOML/generator
-# Full structure defined in config-from-toml.ts
+[components.table.wrapper]
+bg = "#1e1e1e"
+border = "#3d3d3d"
+borderRadius = "0.5rem"
+shadow = "md"
 
-[components.badge]
-# Badge variants defined
+[components.table.header]
+bg = "#252525"
+text = "#ffffff"
+paddingX = "1rem"
+paddingY = "0.75rem"
+fontSize = "sm"
+fontWeight = "semibold"
+fontFamily = "base"
 
-[components.button]
-# Button variants and sizes defined
+[components.table.cell]
+text = "#ffffff"
+paddingX = "1rem"
+paddingY = "0.75rem"
+fontSize = "sm"
+fontFamily = "base"
 
-[components.dialog]
-# Dialog layout tokens defined
+[components.table.row]
+bgOdd = "#1a1a1a"
+bgEven = "#2a2a2a"
+bgHover = "#353535"
+borderBottom = "#3d3d3d"
 
-[components.divider]
-# Divider styling tokens defined
+[components.table.cellTypes.number]
+fontFamily = "mono"
 
-[components.infobox]
-# Infobox panel and variants defined
+[components.table.cellTypes.currency]
+fontFamily = "mono"
 
-[components.input]
-# Input field states and types defined
+[components.table.cellTypes.date]
+fontFamily = "base"
+
+[components.table.cellTypes.input]
+fontFamily = "mono"
+
+# ========================================
+# UI TEXT CONFIGURATION (i18n-ready)
+# ========================================
+
+[ui.buttons]
+save = "Speichern"
+cancel = "Abbrechen"
+delete = "Löschen"
+create = "Erstellen"
+edit = "Bearbeiten"
+close = "Schließen"
+record = "Verbuchen"
+
+[ui.labels]
+date = "Datum"
+name = "Name"
+designation = "Bezeichnung"
+quantity = "Menge"
+amount = "Betrag"
+payment_amount = "Zahlungsbetrag"
+
+[ui.tooltips]
+bar_transaction = "BAR"
+kombi_transaction = "KOMBI"
+edit = "Bearbeiten"
+delete = "Löschen"
+new_material = "Neues Material"
+new_customer = "Neuer Kunde"
+new_creditor = "Neuer Gläubiger"
+new_debtor = "Neuer Schuldner"
+payment = "Zahlung"
+
+[ui.page_titles]
+material = "Material"
+customers = "Kunden"
+creditors = "Gläubiger"
+debtors = "Schuldner"
+settings = "Einstellungen"
+
+[ui.dialog_titles]
+new_material = "Neues Material"
+edit_material = "Material bearbeiten"
+delete_material = "Material löschen"
+bar_transaction = "BAR-Bewegung"
+kombi_transaction = "KOMBI-Bewegung"
+new_customer = "Neuer Kunde"
+edit_customer = "Kunde bearbeiten"
+delete_customer = "Kunde löschen"
+new_material_post = "Neuer Material-Posten"
+new_other_post = "Neuer sonstiger Posten"
+record_payment = "Zahlung verbuchen"
+new_creditor = "Neuer Gläubiger"
+edit_creditor = "Gläubiger bearbeiten"
+delete_creditor = "Gläubiger löschen"
+new_debtor = "Neuer Schuldner"
+edit_debtor = "Schuldner bearbeiten"
+delete_debtor = "Schuldner löschen"
+
+[ui.messages]
+confirm_delete_material = "Möchten Sie das Material \"{name}\" wirklich löschen?"
+confirm_delete_customer = "Möchten Sie den Kunden \"{name}\" wirklich löschen?"
+confirm_delete_creditor = "Möchten Sie den Gläubiger \"{name}\" wirklich löschen?"
+confirm_delete_debtor = "Möchten Sie den Schuldner \"{name}\" wirklich löschen?"
+
+[ui.validation]
+date_required = "Datum erforderlich"
+designation_required = "Bezeichnung erforderlich"
+quantity_must_be_positive = "Menge muss größer 0 sein"
+ek_stueck_must_be_positive = "EK Stück muss größer 0 sein"
+ek_gesamt_must_be_positive = "EK Gesamt muss größer 0 sein"
+vk_stueck_must_be_positive = "VK Stück muss größer 0 sein"
+
+[ui.errors]
+create_failed = "Fehler beim Erstellen"
+update_failed = "Fehler beim Aktualisieren"
+delete_failed = "Fehler beim Löschen"
+load_failed = "Fehler beim Laden"
+booking_failed = "Fehler beim Buchen"
+network_error = "Netzwerkfehler"
+
+[ui.empty_states]
+no_history = "Keine Historie vorhanden"
+no_customers = "Keine Kunden vorhanden"
+no_material_posts = "Keine Material-Posten vorhanden"
+no_other_posts = "Keine sonstigen Posten vorhanden"
+no_creditors = "Keine Gläubiger vorhanden"
+no_debtors = "Keine Schuldner vorhanden"
+
+[ui.input_limits]
+quantity_min = 0
+quantity_step = 1
+price_min = 0
+price_step = 0.01

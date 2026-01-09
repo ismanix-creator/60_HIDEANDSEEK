@@ -1,9 +1,9 @@
 /**
  * @file        PageLayout.tsx
  * @description Seiten-Layout mit Titel und Actions (SEASIDE Dark Theme) - Responsive
- * @version     0.5.0
+ * @version     0.6.0
  * @created     2025-12-11 01:05:00 CET
- * @updated     2025-12-15 22:27:01 CET
+ * @updated     2026-01-09 12:59:24 CET
  * @author      Akki Scholze
  *
  * @props
@@ -13,6 +13,7 @@
  *   children - Seiteninhalt
  *
  * @changelog
+ *   0.6.0 - 2026-01-09 - Header + Actions horizontal zentriert mit festem Abstand
  *   0.5.0 - 2025-12-14 - Responsive: Mobile Bottom-Nav Padding, angepasste Abstände
  *   0.4.0 - 2025-12-12 - Config-Driven: Hardcodes durch spacingConfig/iconsConfig ersetzt
  *   0.3.0 - 2025-12-11 - Fixed: Removed maxWidth, added overflow: hidden for scrolling children
@@ -25,8 +26,11 @@
 // ═══════════════════════════════════════════════════════
 import type { PageLayoutProps } from '@/types/ui.types';
 import { Package, Users, ArrowDownCircle, ArrowUpCircle } from 'lucide-react';
-import { colorsConfig, spacingConfig, iconsConfig } from '@/config';
+import { appConfig, spacingConfig } from '@/config';
 import { useResponsive } from '@/hooks/useResponsive';
+
+const colorsConfig = appConfig.theme.colors;
+const iconsConfig = appConfig.theme.icons;
 
 // ═══════════════════════════════════════════════════════
 // ICON MAP
@@ -89,27 +93,25 @@ export function PageLayout({ title, icon, actions, children }: PageLayoutProps) 
     paddingBottom: isMobile ? spacingConfig.mobile.lg : spacingConfig.lg,
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'center',
     // Mobile: Buttons wrappen wenn zu eng
     flexWrap: isMobile ? 'wrap' : 'nowrap',
-    gap: isMobile ? spacingConfig.mobile.sm : undefined
+    gap: isMobile ? spacingConfig.mobile.sm : spacingConfig.lg
   };
 
   // Title Container Style
   const titleContainerStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: isMobile ? spacingConfig.mobile.sm : spacingConfig.sm,
-    flex: isMobile ? '1 1 100%' : 1
+    gap: isMobile ? spacingConfig.mobile.sm : spacingConfig.sm
   };
 
   // Actions Container Style
   const actionsContainerStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: isMobile ? 'flex-start' : 'center',
+    justifyContent: 'flex-start',
     gap: isMobile ? spacingConfig.mobile.sm : spacingConfig.xs,
-    // Mobile: Volle Breite für Action-Buttons
-    width: isMobile ? '100%' : undefined,
     flexWrap: isMobile ? 'wrap' : 'nowrap'
   };
 
@@ -160,11 +162,8 @@ export function PageLayout({ title, icon, actions, children }: PageLayoutProps) 
             <h1 style={titleStyle}>{title}</h1>
           </div>
 
-          {/* Actions - mittig (Desktop) / unter Titel (Mobile) */}
+          {/* Actions - neben Titel mit festem Abstand */}
           {actions && <div style={actionsContainerStyle}>{actions}</div>}
-
-          {/* Spacer - rechts (nur Desktop) */}
-          {!isMobile && <div style={{ flex: 1 }} />}
         </div>
       </header>
 

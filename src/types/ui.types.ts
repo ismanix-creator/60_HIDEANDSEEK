@@ -1,12 +1,13 @@
 /**
  * @file        ui.types.ts
  * @description TypeScript Type Definitions für UI-Komponenten
- * @version     0.1.0
+ * @version     0.2.0
  * @created     2026-01-07 01:18:02 CET
- * @updated     2026-01-07 01:18:02 CET
+ * @updated     2026-01-09 13:43:15 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.2.0 - 2026-01-09 - CellType um 'input' erweitert für Monospace User-Input Spalten
  *   0.1.0 - 2026-01-07 - Initial version mit allen UI-Komponenten-Types
  */
 
@@ -16,7 +17,7 @@ import type { ReactNode, CSSProperties } from 'react';
 // TABLE TYPES
 // ═══════════════════════════════════════════════════════
 
-export type CellType = 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions';
+export type CellType = 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input';
 
 export interface TableColumn<T = unknown> {
   key: string;
@@ -43,7 +44,7 @@ export interface TableProps<T = unknown> {
 // BUTTON TYPES
 // ═══════════════════════════════════════════════════════
 
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success' | 'warning';
+export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success' | 'warning' | 'transparent';
 
 export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -55,11 +56,13 @@ export interface ButtonProps {
   fullWidth?: boolean;
   activeBorder?: boolean;
   onClick?: () => void;
-  children: ReactNode;
+  children?: ReactNode;
   className?: string;
   type?: 'button' | 'submit' | 'reset';
   style?: CSSProperties;
   title?: string;
+  icon?: ReactNode;
+  iconOnly?: boolean;
 }
 
 // ═══════════════════════════════════════════════════════

@@ -26,9 +26,12 @@ import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Package, Users, ArrowDownCircle, ArrowUpCircle, Settings, UserCog, LogIn, LogOut } from 'lucide-react';
 import type { NavItem } from '@/types/ui.types';
-import { colorsConfig, spacingConfig, iconsConfig, breakpointsConfig, navigationConfig } from '@/config';
+import { appConfig, spacingConfig, breakpointsConfig, navigationConfig } from '@/config';
 import { useResponsive } from '@/hooks/useResponsive';
 import { useAuth } from '@/context/AuthContext';
+
+const colorsConfig = appConfig.theme.colors;
+const iconsConfig = appConfig.theme.icons;
 
 // ═══════════════════════════════════════════════════════
 // NAVIGATION ITEMS

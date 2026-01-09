@@ -1,12 +1,16 @@
 /**
  * @file        MaterialPage.tsx
  * @description Material-Verwaltung mit Bar/Kombi-Buchungen und Historie
- * @version     0.3.4
+ * @version     0.6.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-08 16:25:00 CET
+ * @updated     2026-01-09 20:55:55 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.6.0 - 2026-01-09 20:55:55 - 44 UI-Text-Hardcodes entfernt (Phase 2.3.1)
+ *   0.5.1 - 2026-01-09 - Bezeichnung-Spalte als Monospace (type: 'input')
+ *   0.5.0 - 2026-01-09 - Button als actions Prop an PageLayout übergeben (horizontal zentriert)
+ *   0.4.0 - 2026-01-09 - Grid-Layout entfernt (Tabelle volle Breite), Historie-Dialog hinzugefügt, Header entfernt
  *   0.3.4 - 2026-01-08 - Dialog-Inhalte + Aktionen horizontal zentriert und verschlankt
  *   0.3.3 - 2026-01-08 - Dialog-Felder horizontal zentriert/verschlankt
  *   0.3.2 - 2026-01-08 - Validierung/Fehlermeldung im Material-Dialog (Erstellen) sichtbar gemacht
@@ -25,8 +29,9 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Infobox } from '@/components/ui/Infobox';
 import { useApi } from '@/hooks/useApi';
-import { useResponsive } from '@/hooks/useResponsive';
 import { formatCurrency, formatDate } from '@/utils/format';
+import { appConfig } from '@/config';
+import { PackagePlus, Banknote, FileText, Pencil, Trash2 } from 'lucide-react';
 import type {
   Material,
   Kunde,
@@ -39,7 +44,6 @@ import type {
 
 export function MaterialPage() {
   const api = useApi();
-  const { isMobile } = useResponsive();
 
   const [materialien, setMaterialien] = useState<Material[]>([]);
   const [kunden, setKunden] = useState<Kunde[]>([]);
@@ -53,6 +57,7 @@ export function MaterialPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [barDialogOpen, setBarDialogOpen] = useState(false);
   const [kombiDialogOpen, setKombiDialogOpen] = useState(false);
+  const [historieDialogOpen, setHistorieDialogOpen] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
 
   // Preissteuerung für Material-Dialog
@@ -108,14 +113,14 @@ export function MaterialPage() {
       if (matResult.success && matResult.data) {
         setMaterialien(matResult.data);
       } else {
-        setError(matResult.error || 'Fehler beim Laden');
+        setError(matResult.error || appConfig.ui.errors.load_failed);
       }
 
       if (kundenResult.success && kundenResult.data) {
         setKunden(kundenResult.data);
       }
     } catch (err) {
-      setError('Netzwerkfehler');
+      setError(appConfig.ui.errors.network_error);
     } finally {
       setLoading(false);
     }
@@ -133,6 +138,15 @@ export function MaterialPage() {
     }
   };
 
+  /**
+   * Öffnet Historie-Dialog für ein Material
+   */
+  const openHistorieDialog = (material: Material) => {
+    setSelectedMaterial(material);
+    loadHistorie(material.id);
+    setHistorieDialogOpen(true);
+  };
+
   useEffect(() => {
     loadMaterial();
   }, []);
@@ -141,27 +155,27 @@ export function MaterialPage() {
   const handleCreate = async () => {
     setError(null);
     if (!formData.datum) {
-      setError('Datum erforderlich');
+      setError(appConfig.ui.validation.date_required);
       return;
     }
     if (!formData.bezeichnung.trim()) {
-      setError('Bezeichnung erforderlich');
+      setError(appConfig.ui.validation.designation_required);
       return;
     }
     if (formData.menge <= 0) {
-      setError('Menge muss größer 0 sein');
+      setError(appConfig.ui.validation.quantity_must_be_positive);
       return;
     }
     if (ekPreisMode === 'stueck' && formData.ek_stueck <= 0) {
-      setError('EK Stück muss größer 0 sein');
+      setError(appConfig.ui.validation.ek_stueck_must_be_positive);
       return;
     }
     if (ekPreisMode === 'gesamt' && formData.ek_gesamt <= 0) {
-      setError('EK Gesamt muss größer 0 sein');
+      setError(appConfig.ui.validation.ek_gesamt_must_be_positive);
       return;
     }
     if (formData.vk_stueck <= 0) {
-      setError('VK Stück muss größer 0 sein');
+      setError(appConfig.ui.validation.vk_stueck_must_be_positive);
       return;
     }
 
@@ -172,7 +186,7 @@ export function MaterialPage() {
 
     const baseName = formData.bezeichnung.trim().toUpperCase();
     if (!baseName) {
-      setError('Bezeichnung erforderlich');
+      setError(appConfig.ui.validation.designation_required);
       return;
     }
     const monthPart = (() => {
@@ -204,10 +218,10 @@ export function MaterialPage() {
         resetForm();
         loadMaterial();
       } else {
-        setError(result.error || 'Fehler beim Erstellen');
+        setError(result.error || appConfig.ui.errors.create_failed);
       }
     } catch (err) {
-      setError('Netzwerkfehler');
+      setError(appConfig.ui.errors.network_error);
     }
   };
 
@@ -235,10 +249,10 @@ export function MaterialPage() {
         resetForm();
         loadMaterial();
       } else {
-        setError(result.error || 'Fehler beim Aktualisieren');
+        setError(result.error || appConfig.ui.errors.update_failed);
       }
     } catch (err) {
-      setError('Netzwerkfehler');
+      setError(appConfig.ui.errors.network_error);
     }
   };
 
@@ -254,10 +268,10 @@ export function MaterialPage() {
         setSelectedMaterial(null);
         loadMaterial();
       } else {
-        setError(result.error || 'Fehler beim Löschen');
+        setError(result.error || appConfig.ui.errors.delete_failed);
       }
     } catch (err) {
-      setError('Netzwerkfehler');
+      setError(appConfig.ui.errors.network_error);
     }
   };
 
@@ -331,10 +345,10 @@ export function MaterialPage() {
           loadHistorie(selectedMaterial.id);
         }
       } else {
-        setError(result.error || 'Fehler beim Buchen');
+        setError(result.error || appConfig.ui.errors.create_failed);
       }
     } catch (err) {
-      setError('Netzwerkfehler');
+      setError(appConfig.ui.errors.network_error);
     }
   };
 
@@ -358,10 +372,10 @@ export function MaterialPage() {
           loadHistorie(selectedMaterial.id);
         }
       } else {
-        setError(result.error || 'Fehler beim Buchen');
+        setError(result.error || appConfig.ui.errors.create_failed);
       }
     } catch (err) {
-      setError('Netzwerkfehler');
+      setError(appConfig.ui.errors.network_error);
     }
   };
 
@@ -469,9 +483,9 @@ export function MaterialPage() {
 
   // Table Columns
   const columns = [
-    { key: 'datum', label: 'Datum', render: (m: Material) => formatDate(m.datum) },
-    { key: 'bezeichnung', label: 'Bezeichnung' },
-    { key: 'menge', label: 'Menge', render: (m: Material) => m.menge.toFixed(2) },
+    { key: 'datum', label: appConfig.ui.labels.date, render: (m: Material) => formatDate(m.datum) },
+    { key: 'bezeichnung', label: appConfig.ui.labels.designation, type: 'input' as const },
+    { key: 'menge', label: appConfig.ui.labels.quantity, render: (m: Material) => m.menge.toFixed(2) },
     { key: 'ek_stueck', label: 'EK Stück', render: (m: Material) => formatCurrency(m.ek_stueck) },
     { key: 'ek_gesamt', label: 'EK Gesamt', render: (m: Material) => formatCurrency(m.ek_gesamt) },
     { key: 'vk_stueck', label: 'VK Stück', render: (m: Material) => formatCurrency(m.vk_stueck) },
@@ -487,70 +501,34 @@ export function MaterialPage() {
       label: 'Aktionen',
       render: (m: Material) => (
         <div className="flex gap-2 flex-wrap">
-          <Button size="sm" variant="success" onClick={() => openBarDialog(m)}>
-            BAR
-          </Button>
-          <Button size="sm" variant="primary" onClick={() => openKombiDialog(m)}>
-            KOMBI
-          </Button>
-          <Button size="sm" variant="secondary" onClick={() => openEditDialog(m)}>
-            Bearbeiten
-          </Button>
-          <Button size="sm" variant="danger" onClick={() => openDeleteDialog(m)}>
-            Löschen
-          </Button>
+          <Button icon={<Banknote />} iconOnly size="sm" variant="success" onClick={() => openBarDialog(m)} title={appConfig.ui.tooltips.bar_transaction} />
+          <Button icon={<FileText />} iconOnly size="sm" variant="primary" onClick={() => openKombiDialog(m)} title={appConfig.ui.tooltips.kombi_transaction} />
+          <Button icon={<Pencil />} iconOnly size="sm" variant="secondary" onClick={() => openEditDialog(m)} title={appConfig.ui.tooltips.edit} />
+          <Button icon={<Trash2 />} iconOnly size="sm" variant="danger" onClick={() => openDeleteDialog(m)} title={appConfig.ui.tooltips.delete} />
         </div>
       )
     }
   ];
 
   return (
-    <PageLayout title="Material">
-      <div className={isMobile ? 'space-y-6' : 'grid grid-cols-[70%_30%] gap-6'}>
-        {/* Left Column: Table */}
-        <div className="space-y-4">
-          {/* Header */}
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-semibold text-neutral-50">Material-Verwaltung</h2>
-            <Button onClick={() => setCreateDialogOpen(true)}>Neues Material</Button>
-          </div>
+    <PageLayout 
+      title={appConfig.ui.page_titles.material}
+      actions={
+        <Button icon={<PackagePlus />} iconOnly variant="transparent" size="lg" onClick={() => setCreateDialogOpen(true)} title={appConfig.ui.dialog_titles.new_material} />
+      }
+    >
+      <div className="space-y-4">
+        {/* Error */}
+        {error && <div className="p-4 bg-red-500/10 border border-red-500 rounded text-red-400">{error}</div>}
 
-          {/* Error */}
-          {error && <div className="p-4 bg-red-500/10 border border-red-500 rounded text-red-400">{error}</div>}
-
-          {/* Table */}
-          <Table data={materialien} columns={columns} loading={loading} emptyMessage="Kein Material vorhanden" />
-        </div>
-
-        {/* Right Column: Historie */}
-        <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-neutral-50">Historie</h3>
-          {selectedMaterial && historie.length > 0 ? (
-            <div className="space-y-2">
-              {historie.map((item, idx) => (
-                <Infobox
-                  key={idx}
-                  variant={item.typ === 'bar' ? 'success' : 'info'}
-                  title={`${item.typ.toUpperCase()} - ${formatDate(item.datum)}`}
-                >
-                  <div className="space-y-1 text-sm">
-                    <p>Menge: {item.menge.toFixed(2)}</p>
-                    <p>Preis: {formatCurrency(item.preis)}</p>
-                    {item.kunde_name && <p>Kunde: {item.kunde_name}</p>}
-                    {item.info && <p>Info: {item.info}</p>}
-                    {item.notiz && <p>Notiz: {item.notiz}</p>}
-                  </div>
-                </Infobox>
-              ))}
-            </div>
-          ) : (
-            <p className="text-neutral-400 text-sm">
-              {selectedMaterial
-                ? 'Keine Historie vorhanden'
-                : 'Wählen Sie ein Material aus, um die Historie anzuzeigen'}
-            </p>
-          )}
-        </div>
+        {/* Table - VOLLE BREITE */}
+        <Table 
+          data={materialien} 
+          columns={columns} 
+          loading={loading} 
+          emptyMessage={appConfig.ui.empty_states.no_material_posts}
+          onRowClick={(m) => openHistorieDialog(m)}
+        />
 
         {/* Dialogs */}
         {/* Create Material Dialog */}
@@ -561,7 +539,7 @@ export function MaterialPage() {
             setError(null);
             resetForm();
           }}
-          title="Neues Material"
+          title={appConfig.ui.dialog_titles.new_material}
           actions={
             <>
               <Button
@@ -572,9 +550,9 @@ export function MaterialPage() {
                   resetForm();
                 }}
               >
-                Abbrechen
+                {appConfig.ui.buttons.cancel}
               </Button>
-              <Button onClick={handleCreate}>Erstellen</Button>
+              <Button onClick={handleCreate}>{appConfig.ui.buttons.create}</Button>
             </>
           }
         >
@@ -585,22 +563,22 @@ export function MaterialPage() {
               </div>
             )}
             <Input
-              label="Datum"
+              label={appConfig.ui.labels.date}
               type="date"
               value={formData.datum}
               onChange={(e) => setFormData({ ...formData, datum: e.target.value })}
               className="w-full max-w-sm text-center"
             />
             <Input
-              label="Bezeichnung"
+              label={appConfig.ui.labels.designation}
               value={formData.bezeichnung}
               onChange={(e) => setFormData({ ...formData, bezeichnung: e.target.value.toUpperCase() })}
               className="w-full max-w-sm text-center"
             />
             <Input
-              label="Menge"
+              label={appConfig.ui.labels.quantity}
               type="number"
-              min="0"
+              min={0}
               step="0.01"
               value={formData.menge}
               onChange={(e) => handleCreateMengeChange(e.target.value)}
@@ -626,7 +604,7 @@ export function MaterialPage() {
               <Input
                 label={ekPreisMode === 'stueck' ? 'EK Stück' : 'EK Gesamt'}
                 type="number"
-                min="0"
+                min={0}
                 step={ekPreisMode === 'stueck' ? '0.1' : '5'}
                 value={ekPreisMode === 'stueck' ? formData.ek_stueck : formData.ek_gesamt}
                 onChange={(e) => handleCreateEkPreisChange(e.target.value)}
@@ -641,7 +619,7 @@ export function MaterialPage() {
             <Input
               label="VK Stück (Mindest-VK)"
               type="number"
-              min="0"
+              min={0}
               step="0.1"
               value={formData.vk_stueck}
               onChange={(e) => handleCreateVkStueckChange(e.target.value)}
@@ -664,7 +642,7 @@ export function MaterialPage() {
             setSelectedMaterial(null);
             resetForm();
           }}
-          title="Material bearbeiten"
+          title={appConfig.ui.dialog_titles.edit_material}
           actions={
             <>
               <Button
@@ -675,28 +653,28 @@ export function MaterialPage() {
                   resetForm();
                 }}
               >
-                Abbrechen
+                {appConfig.ui.buttons.cancel}
               </Button>
-              <Button onClick={handleUpdate}>Speichern</Button>
+              <Button onClick={handleUpdate}>{appConfig.ui.buttons.save}</Button>
             </>
           }
         >
           <div className="space-y-4">
             <Input
-              label="Datum"
+              label={appConfig.ui.labels.date}
               type="date"
               value={formData.datum}
               onChange={(e) => setFormData({ ...formData, datum: e.target.value })}
             />
             <Input
-              label="Bezeichnung"
+              label={appConfig.ui.labels.designation}
               value={formData.bezeichnung}
               onChange={(e) => setFormData({ ...formData, bezeichnung: e.target.value })}
             />
             <Input
-              label="Menge"
+              label={appConfig.ui.labels.quantity}
               type="number"
-              min="0"
+              min={0}
               step="0.01"
               value={formData.menge}
               onChange={(e) => setFormData({ ...formData, menge: parseFloat(e.target.value) || 0 })}
@@ -704,7 +682,7 @@ export function MaterialPage() {
             <Input
               label="EK Stück"
               type="number"
-              min="0"
+              min={0}
               step="0.1"
               value={formData.ek_stueck}
               onChange={(e) => setFormData({ ...formData, ek_stueck: parseFloat(e.target.value) || 0 })}
@@ -712,7 +690,7 @@ export function MaterialPage() {
             <Input
               label="VK Stück (Mindest-VK)"
               type="number"
-              min="0"
+              min={0}
               step="0.1"
               value={formData.vk_stueck}
               onChange={(e) => handleCreateVkStueckChange(e.target.value)}
@@ -737,7 +715,7 @@ export function MaterialPage() {
               <Input
                 label={ekPreisMode === 'stueck' ? 'EK Stück' : 'EK Gesamt'}
                 type="number"
-                min="0"
+                min={0}
                 step={ekPreisMode === 'stueck' ? '0.1' : '5'}
                 value={ekPreisMode === 'stueck' ? formData.ek_stueck : formData.ek_gesamt}
                 onChange={(e) => handleCreateEkPreisChange(e.target.value)}
@@ -763,7 +741,7 @@ export function MaterialPage() {
             setDeleteDialogOpen(false);
             setSelectedMaterial(null);
           }}
-          title="Material löschen"
+          title={appConfig.ui.dialog_titles.delete_material}
           actions={
             <>
               <Button
@@ -773,16 +751,16 @@ export function MaterialPage() {
                   setSelectedMaterial(null);
                 }}
               >
-                Abbrechen
+                {appConfig.ui.buttons.cancel}
               </Button>
               <Button variant="danger" onClick={handleDelete}>
-                Löschen
+                {appConfig.ui.buttons.delete}
               </Button>
             </>
           }
         >
           <p className="text-neutral-300">
-            Möchten Sie das Material "{selectedMaterial?.bezeichnung}" wirklich löschen?
+            {appConfig.ui.messages.confirm_delete_material.replace('{name}', selectedMaterial?.bezeichnung || '')}
           </p>
         </Dialog>
 
@@ -805,10 +783,10 @@ export function MaterialPage() {
                   resetBarForm();
                 }}
               >
-                Abbrechen
+                {appConfig.ui.buttons.cancel}
               </Button>
               <Button variant="success" onClick={handleBarBewegung}>
-                Buchen
+                {appConfig.ui.buttons.record}
               </Button>
             </>
           }
@@ -819,13 +797,13 @@ export function MaterialPage() {
               <p className="text-2xl font-semibold text-neutral-50">{selectedMaterial?.bestand.toFixed(2) || '0.00'}</p>
             </div>
             <Input
-              label="Datum"
+              label={appConfig.ui.labels.date}
               type="date"
               value={barFormData.datum}
               onChange={(e) => setBarFormData({ ...barFormData, datum: e.target.value })}
             />
             <Input
-              label="Menge"
+              label={appConfig.ui.labels.quantity}
               type="number"
               step="0.01"
               value={barFormData.menge}
@@ -893,10 +871,10 @@ export function MaterialPage() {
                   resetKombiForm();
                 }}
               >
-                Abbrechen
+                {appConfig.ui.buttons.cancel}
               </Button>
               <Button variant="primary" onClick={handleKombiBewegung}>
-                Buchen
+                {appConfig.ui.buttons.record}
               </Button>
             </>
           }
@@ -907,19 +885,19 @@ export function MaterialPage() {
               <p className="text-2xl font-semibold text-neutral-50">{selectedMaterial?.bestand.toFixed(2) || '0.00'}</p>
             </div>
             <Select
-              label="Kunde"
+              label={appConfig.ui.labels.name}
               value={kombiFormData.kunde_id.toString()}
               onChange={(e) => setKombiFormData({ ...kombiFormData, kunde_id: parseInt(e.target.value) })}
               options={kunden.map((k) => ({ value: k.id.toString(), label: k.name }))}
             />
             <Input
-              label="Datum"
+              label={appConfig.ui.labels.date}
               type="date"
               value={kombiFormData.datum}
               onChange={(e) => setKombiFormData({ ...kombiFormData, datum: e.target.value })}
             />
             <Input
-              label="Menge"
+              label={appConfig.ui.labels.quantity}
               type="number"
               step="0.01"
               value={kombiFormData.menge}
@@ -961,6 +939,50 @@ export function MaterialPage() {
               onChange={(e) => setKombiFormData({ ...kombiFormData, notiz: e.target.value })}
             />
           </div>
+        </Dialog>
+
+        {/* Historie Dialog */}
+        <Dialog
+          open={historieDialogOpen}
+          onClose={() => {
+            setHistorieDialogOpen(false);
+            setSelectedMaterial(null);
+            setHistorie([]);
+          }}
+          title={selectedMaterial ? `Historie: ${selectedMaterial.bezeichnung}` : "Historie"}
+          actions={
+            <Button onClick={() => {
+              setHistorieDialogOpen(false);
+              setSelectedMaterial(null);
+              setHistorie([]);
+            }}>
+              {appConfig.ui.buttons.close}
+            </Button>
+          }
+        >
+          {historie.length > 0 ? (
+            <div className="space-y-2 max-h-[60vh] overflow-y-auto">
+              {historie.map((item, idx) => (
+                <Infobox
+                  key={idx}
+                  variant={item.typ === 'bar' ? 'success' : 'info'}
+                  title={`${item.typ.toUpperCase()} - ${formatDate(item.datum)}`}
+                >
+                  <div className="space-y-1 text-sm">
+                    <p>Menge: {item.menge.toFixed(2)}</p>
+                    <p>Preis: {formatCurrency(item.preis)}</p>
+                    {item.kunde_name && <p>Kunde: {item.kunde_name}</p>}
+                    {item.info && <p>Info: {item.info}</p>}
+                    {item.notiz && <p>Notiz: {item.notiz}</p>}
+                  </div>
+                </Infobox>
+              ))}
+            </div>
+          ) : (
+            <p className="text-neutral-400 text-sm text-center py-4">
+              {appConfig.ui.empty_states.no_history}
+            </p>
+          )}
         </Dialog>
       </div>
     </PageLayout>

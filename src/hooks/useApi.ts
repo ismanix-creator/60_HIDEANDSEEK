@@ -17,7 +17,6 @@
  */
 
 import { useCallback } from 'react';
-import { appConfig } from '@/config';
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -30,7 +29,9 @@ export interface UseApiResult {
   fetch: <T = unknown>(endpoint: string, options?: RequestInit) => Promise<ApiResponse<T>>;
 }
 
-const API_BASE_URL = appConfig.client?.apiUrl || '';
+// DEV: Use relative URLs (Vite proxy handles /api → backend)
+// PROD: Set VITE_APP_BASE_URL for absolute URL (ngrok/production)
+const API_BASE_URL = import.meta.env.VITE_APP_BASE_URL ?? '';
 
 /**
  * Hook für API-Calls (ohne Endpoint-Binding)

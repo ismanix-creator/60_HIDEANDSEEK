@@ -1,9 +1,9 @@
 /**
  * @file        Badge.tsx
  * @description Wiederverwendbare Badge-Komponente
- * @version     0.1.0
+ * @version     0.2.0
  * @created     2025-12-11 01:05:00 CET
- * @updated     2025-12-11 01:05:00 CET
+ * @updated     2026-01-09 20:44:36 CET
  * @author      Akki Scholze
  *
  * @props
@@ -12,6 +12,7 @@
  *   children - Badge-Inhalt
  *
  * @changelog
+ *   0.2.0 - 2026-01-09 - Import auf appConfig.components.badge umgestellt (Phase 2.2.1)
  *   0.1.0 - 2025-12-11 - Initial version
  */
 
@@ -19,8 +20,12 @@
 // IMPORTS
 // ═══════════════════════════════════════════════════════
 import type { BadgeProps } from '@/types/ui.types';
-import { badgeConfig, colorsConfig } from '@/config';
+import { appConfig } from '@/config';
 import { Check, X, AlertTriangle, Clock } from 'lucide-react';
+
+const badgeConfig = appConfig.components.badge;
+
+const colorsConfig = appConfig.theme.colors;
 
 // ═══════════════════════════════════════════════════════
 // HELPERS

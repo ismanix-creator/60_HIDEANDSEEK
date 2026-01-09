@@ -1,12 +1,13 @@
 /**
  * @file        env-from-keepass.ts
  * @description Erzeugt .env aus KeePassXC Custom Attributes (Global + Projekt), gefiltert via .env.example
- * @version     0.2.0
+ * @version     0.3.0
  * @created     2026-01-08 17:25:00 CET
- * @updated     2026-01-08 18:00:00 CET
+ * @updated     2026-01-08 16:30:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.3.0 - 2026-01-08 - Keyfile-only unlock (kein Master-Password), OPTIONAL-Section Support
  *   0.2.0 - 2026-01-08 - Parsing via keepassxc-cli show --all (KEY: VALUE Zeilen), Missing-Key Fail
  *   0.1.0 - 2026-01-08 - Initiale Implementierung (Global -> Projekt Override, Whitelist aus .env.example)
  */
@@ -25,6 +26,7 @@ const ENV_TMP_PATH = join(PROJECT_ROOT, '.env.tmp');
 const ENV_PATH = join(PROJECT_ROOT, '.env');
 
 const KEEPASS_DB = '/home/akki/vault/secrets/Secrets.kdbx';
+const KEEPASS_KEYFILE = '/home/akki/vault/secrets/Secrets.keyx';
 const GLOBAL_ENTRY_PATH = '02_Global/.env';
 const PROJECT_ENTRY_PATH = '03_Projects/.env';
 
@@ -38,9 +40,12 @@ function fail(message: string): never {
 }
 
 function runKeepass(args: string[], purpose: string): string {
+  if (!existsSync(KEEPASS_KEYFILE)) {
+    fail(`Keyfile not found: ${KEEPASS_KEYFILE}`);
+  }
   const result = spawnSync('keepassxc-cli', args, {
     encoding: 'utf-8',
-    stdio: ['inherit', 'pipe', 'inherit']
+    stdio: ['ignore', 'pipe', 'inherit']
   });
   if (result.error) {
     fail(`${purpose} failed: ${result.error.message}`);
@@ -70,7 +75,7 @@ function parseKeyValueLines(output: string): AttrMap {
 }
 
 function readEntryAttributes(entryPath: string, expectedUsername: string): AttrMap {
-  const out = runKeepass(['show', '--all', '-s', KEEPASS_DB, entryPath], `read entry ${entryPath}`);
+  const out = runKeepass(['show', '--no-password', '--key-file', KEEPASS_KEYFILE, '--all', '-s', KEEPASS_DB, entryPath], `read entry ${entryPath}`);
 
   const userLine = out
     .split('\n')
@@ -85,22 +90,43 @@ function readEntryAttributes(entryPath: string, expectedUsername: string): AttrM
   return attrs;
 }
 
-function readAllowedKeys(examplePath: string): string[] {
+interface KeySpec {
+  required: string[];
+  optional: string[];
+}
+
+function readAllowedKeys(examplePath: string): KeySpec {
   if (!existsSync(examplePath)) {
     fail(`.env.example not found at ${examplePath}`);
   }
   const content = readFileSync(examplePath, 'utf-8');
-  const keys = content
-    .split('\n')
-    .map((line) => line.trim())
-    .filter((line) => line && !line.startsWith('#') && line.includes('='))
-    .map((line) => line.replace(/=.*/, ''))
-    .filter(Boolean);
+  const lines = content.split('\n').map((line) => line.trim());
+  
+  const required: string[] = [];
+  const optional: string[] = [];
+  let inOptionalSection = false;
 
-  if (keys.length === 0) {
+  for (const line of lines) {
+    if (line.startsWith('# OPTIONAL')) {
+      inOptionalSection = true;
+      continue;
+    }
+    if (!line || line.startsWith('#') || !line.includes('=')) continue;
+    
+    const key = line.replace(/=.*/, '').trim();
+    if (!key) continue;
+    
+    if (inOptionalSection) {
+      optional.push(key);
+    } else {
+      required.push(key);
+    }
+  }
+
+  if (required.length === 0 && optional.length === 0) {
     fail('Whitelist from .env.example is empty');
   }
-  return keys;
+  return { required, optional };
 }
 
 function formatValue(value: string): string {
@@ -114,7 +140,8 @@ function formatValue(value: string): string {
 function main() {
   console.log('[env-from-keepass] Starting…');
 
-  const allowedKeys = readAllowedKeys(ENV_EXAMPLE_PATH);
+  const keySpec = readAllowedKeys(ENV_EXAMPLE_PATH);
+  const allKeys = [...keySpec.required, ...keySpec.optional];
 
   const globalAttrs = readEntryAttributes(GLOBAL_ENTRY_PATH, 'Global');
   console.log(`[env-from-keepass] Loaded ${Object.keys(globalAttrs).length} keys from global`);
@@ -124,20 +151,30 @@ function main() {
 
   const merged: AttrMap = { ...globalAttrs, ...projectAttrs };
 
-  const missing: string[] = [];
+  const missingRequired: string[] = [];
+  const missingOptional: string[] = [];
   const lines: string[] = [];
-  for (const key of allowedKeys) {
+  
+  for (const key of allKeys) {
     const val = merged[key];
     if (typeof val === 'undefined') {
-      missing.push(key);
+      if (keySpec.required.includes(key)) {
+        missingRequired.push(key);
+      } else {
+        missingOptional.push(key);
+      }
       lines.push(`${key}=`);
     } else {
       lines.push(`${key}=${formatValue(val)}`);
     }
   }
 
-  if (missing.length > 0) {
-    fail(`Missing required keys in KeePass data: ${missing.join(', ')}`);
+  if (missingOptional.length > 0) {
+    console.warn(`[env-from-keepass] WARNING: Missing optional keys: ${missingOptional.join(', ')}`);
+  }
+
+  if (missingRequired.length > 0) {
+    fail(`Missing required keys in KeePass data: ${missingRequired.join(', ')}`);
   }
 
   writeFileSync(ENV_TMP_PATH, lines.join('\n') + '\n', { encoding: 'utf-8', mode: 0o600 });

@@ -14,7 +14,6 @@
  *   0.1.0 - 2026-01-06 - Initial scaffold
  */
 
-import './src/config/env';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'node:path';

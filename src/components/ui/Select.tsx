@@ -1,9 +1,9 @@
 /**
  * @file        Select.tsx
  * @description Wiederverwendbare Select-Komponente
- * @version     0.1.0
+ * @version     0.2.0
  * @created     2025-12-11 01:05:00 CET
- * @updated     2025-12-15 22:27:01 CET
+ * @updated     2026-01-09 20:52:34 CET
  * @author      Akki Scholze
  *
  * @props
@@ -15,6 +15,7 @@
  *   disabled - Deaktiviert das Select
  *
  * @changelog
+ *   0.2.0 - 2026-01-09 - inputConfig Import entfernt, nutzt appConfig.components.input direkt
  *   0.1.0 - 2025-12-11 - Initial version
  */
 
@@ -22,7 +23,10 @@
 // IMPORTS
 // ═══════════════════════════════════════════════════════
 import type { SelectProps } from '@/types/ui.types';
-import { inputConfig, colorsConfig } from '@/config';
+import { appConfig } from '@/config';
+
+const colorsConfig = appConfig.theme.colors;
+const inputConfigBase = appConfig.components.input;
 
 // ═══════════════════════════════════════════════════════
 // HELPERS
@@ -54,7 +58,7 @@ export function Select({
   className = ''
 }: SelectProps) {
   const state = error ? 'error' : disabled ? 'disabled' : 'default';
-  const stateStyles = inputConfig.states[state];
+  const stateStyles = inputConfigBase.states[state];
 
   return (
     <div className={`flex flex-col gap-1 ${className}`}>
@@ -75,14 +79,14 @@ export function Select({
           ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
         `.trim()}
         style={{
-          height: inputConfig.base.height,
-          paddingLeft: inputConfig.base.paddingX,
+          height: inputConfigBase.base.height,
+          paddingLeft: inputConfigBase.base.paddingX,
           paddingRight: '2.5rem',
-          borderRadius: inputConfig.base.borderRadius,
-          borderWidth: inputConfig.base.borderWidth,
+          borderRadius: inputConfigBase.base.borderRadius,
+          borderWidth: inputConfigBase.base.borderWidth,
           borderStyle: 'solid',
           borderColor: getColorValue(stateStyles.border || colorsConfig.ui.border),
-          backgroundColor: getColorValue(stateStyles.bg || inputConfig.base.bg),
+          backgroundColor: getColorValue(stateStyles.bg || inputConfigBase.base.bg),
           appearance: 'none',
           backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
           backgroundPosition: 'right 0.5rem center',

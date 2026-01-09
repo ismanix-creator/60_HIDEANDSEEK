@@ -1,11 +1,12 @@
 // @file        tests/e2e/README.md
 // @description Anleitung für E2E-Tests
-// @version     1.1.0
+// @version     1.2.0
 // @created     2026-01-08 15:00:00 CET
-// @updated     2026-01-08 15:45:00 CET
+// @updated     2026-01-08 16:00:00 CET
 // @author      Akki Scholze
 //
 // @changelog
+//   1.2.0 - 2026-01-08 - Hardcoded URLs entfernt, baseURL kommt aus VITE_APP_BASE_URL ENV
 //   1.1.0 - 2026-01-08 - Wichtige Hinweise zu Server-Start hinzugefügt
 //   1.0.0 - 2026-01-08 - E2E-Test-Anleitung erstellt
 
@@ -37,7 +38,7 @@ Die E2E-Tests verwenden **Playwright** und testen die gesamte Anwendung von der 
    pnpm dev
    ```
 
-   Die Tests verwenden `baseURL: http://localhost:5173` aus `playwright.config.ts`.
+   Die Tests verwenden `baseURL` aus `VITE_APP_BASE_URL` ENV-Variable (geladen aus `.env`).
 
 ## Tests ausführen
 
@@ -93,7 +94,7 @@ Die Playwright-Konfiguration befindet sich in `playwright.config.ts`:
 
 - **testDir:** `tests/e2e`
 - **timeout:** 30 Sekunden pro Test
-- **baseURL:** `http://localhost:5173`
+- **baseURL:** Geladen aus `VITE_APP_BASE_URL` ENV-Variable
 - **webServer:** Startet automatisch `pnpm dev` wenn Tests laufen
 
 ## Bekannte Probleme

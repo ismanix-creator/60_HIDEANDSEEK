@@ -1,9 +1,9 @@
 /**
  * @file        Table.tsx
  * @description Wiederverwendbare Table-Komponente (SEASIDE Dark Theme) - Responsive
- * @version     0.5.0
+ * @version     0.7.0
  * @created     2025-12-11 01:05:00 CET
- * @updated     2025-12-15 22:27:01 CET
+ * @updated     2026-01-09 20:45:09 CET
  * @author      Akki Scholze
  *
  * @props
@@ -14,6 +14,8 @@
  *   emptyMessage - Nachricht bei leerer Tabelle
  *
  * @changelog
+ *   0.7.0 - 2026-01-09 - Import auf appConfig.components.table umgestellt (Phase 2.2.7)
+ *   0.6.0 - 2026-01-09 - overflowY:hidden für konsistente Border-Farbe an borderRadius-Ecken
  *   0.5.0 - 2025-12-14 - Responsive: Horizontal Scroll auf Mobile, WebkitOverflowScrolling
  *   0.4.2 - 2025-12-12 - Optionales rowStyle Callback für zeilenspezifische Styles
  *   0.4.1 - 2025-12-12 - Globale Cell-Font aus tableConfig.cell.fontFamily (Standard jetzt mono)
@@ -28,9 +30,14 @@
 // ═══════════════════════════════════════════════════════
 import type { CSSProperties } from 'react';
 import type { TableProps, TableColumn } from '@/types/ui.types';
-import { tableConfig, colorsConfig, typographyConfig, spacingConfig } from '@/config';
+import { appConfig, spacingConfig } from '@/config';
 import { formatCurrency, formatDate, formatNumber } from '@/utils/format';
 import { useResponsive } from '@/hooks/useResponsive';
+
+const tableConfig = appConfig.components.table;
+
+const colorsConfig = appConfig.theme.colors;
+const typographyConfig = appConfig.theme.typography;
 
 // ═══════════════════════════════════════════════════════
 // HELPERS
@@ -149,21 +156,26 @@ export function Table<T>({
   const { isMobile } = useResponsive();
 
   if (loading) {
+    // Fallback: loading nicht in config.toml definiert
+    const loadingPaddingY = '2rem';
+    const spinnerSize = 32;
+    const spinnerColor = colorsConfig.primary?.['500'] || '#3b82f6';
+
     return (
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          paddingTop: spacingBase(tableConfig.loading.paddingY),
-          paddingBottom: spacingBase(tableConfig.loading.paddingY)
+          paddingTop: loadingPaddingY,
+          paddingBottom: loadingPaddingY
         }}
       >
         <div
           style={{
-            width: `${tableConfig.loading.spinnerSize}px`,
-            height: `${tableConfig.loading.spinnerSize}px`,
-            border: `2px solid ${getColorValue(tableConfig.loading.spinnerColor)}`,
+            width: `${spinnerSize}px`,
+            height: `${spinnerSize}px`,
+            border: `2px solid ${spinnerColor}`,
             borderTopColor: 'transparent',
             borderRadius: '50%',
             animation: 'spin 1s linear infinite'
@@ -174,16 +186,21 @@ export function Table<T>({
   }
 
   if (data.length === 0) {
+    // Fallback: empty nicht in config.toml definiert
+    const emptyPaddingY = '2rem';
+    const emptyColor = colorsConfig.neutral?.['500'] || '#6b7280';
+    const emptyText = 'Keine Daten vorhanden';
+
     return (
       <div
         style={{
           textAlign: 'center',
-          paddingTop: spacingBase(tableConfig.empty.paddingY),
-          paddingBottom: spacingBase(tableConfig.empty.paddingY),
-          color: getColorValue(tableConfig.empty.color)
+          paddingTop: emptyPaddingY,
+          paddingBottom: emptyPaddingY,
+          color: emptyColor
         }}
       >
-        {emptyMessage || tableConfig.empty.text}
+        {emptyMessage || emptyText}
       </div>
     );
   }
@@ -203,11 +220,12 @@ export function Table<T>({
   // Wrapper Style mit Horizontal Scroll auf Mobile
   const wrapperStyle: CSSProperties = {
     overflowX: 'auto',
+    overflowY: 'hidden', // Border-Farbe konsistent an borderRadius-Ecken
     // Mobile: Smooth Scroll für iOS
     WebkitOverflowScrolling: isMobile ? 'touch' : undefined,
     backgroundColor: getColorValue(tableConfig.wrapper.bg),
     borderRadius: tableConfig.wrapper.borderRadius,
-    border: `1px solid ${getColorValue(tableConfig.wrapper.border)}`,
+    border: `2px solid ${getColorValue(tableConfig.wrapper.border)}`,
     boxShadow: tableConfig.wrapper.shadow || 'none'
   };
 
@@ -271,7 +289,7 @@ export function Table<T>({
                   backgroundColor:
                     rowIndex % 2 === 0 ? getColorValue(tableConfig.row.bgOdd) : getColorValue(tableConfig.row.bgEven),
                   cursor: onRowClick ? 'pointer' : 'default',
-                  borderBottom: `1px solid ${getColorValue(tableConfig.row.borderBottom)}`,
+                  borderBottom: `2px solid ${getColorValue(tableConfig.row.borderBottom)}`,
                   ...(rowStyle ? rowStyle(item) : undefined)
                 }}
                 onMouseEnter={(e) => {

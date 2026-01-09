@@ -1,9 +1,9 @@
 /**
  * @file        Input.tsx
  * @description Wiederverwendbare Input-Komponente (SEASIDE Dark Theme) - Responsive
- * @version     0.4.0
+ * @version     0.5.0
  * @created     2025-12-11 01:05:00 CET
- * @updated     2025-12-15 22:27:01 CET
+ * @updated     2026-01-09 20:45:09 CET
  * @author      Akki Scholze
  *
  * @props
@@ -15,6 +15,7 @@
  *   disabled - Deaktiviert das Input
  *
  * @changelog
+ *   0.5.0 - 2026-01-09 - Import auf appConfig.components.input umgestellt (Phase 2.2.6)
  *   0.4.0 - 2025-12-14 - Responsive: Touch-Targets 44px, fontSize 16px für iOS Zoom
  *   0.3.0 - 2025-12-11 - Text-Zentrierung für alle Input-Typen (wie Infobox)
  *   0.2.0 - 2025-12-11 - SEASIDE Dark Theme, Config-Driven Colors
@@ -25,8 +26,12 @@
 // IMPORTS
 // ═══════════════════════════════════════════════════════
 import type { InputProps } from '@/types/ui.types';
-import { inputConfig, colorsConfig, breakpointsConfig } from '@/config';
+import { appConfig, breakpointsConfig } from '@/config';
 import { useResponsive } from '@/hooks/useResponsive';
+
+const inputConfig = appConfig.components.input;
+
+const colorsConfig = appConfig.theme.colors;
 
 // ═══════════════════════════════════════════════════════
 // HELPERS

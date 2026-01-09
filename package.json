@@ -1,19 +1,20 @@
 {
   "_meta": {
-    "version": "0.1.5",
+    "version": "0.1.7",
     "created": "2026-01-06 19:14:38 CET",
-    "updated": "2026-01-08 15:20:04 CET",
+    "updated": "2026-01-08 16:00:00 CET",
     "changelog": [
       "0.1.0 - 2026-01-06 - Initial scaffold",
       "0.1.1 - 2026-01-07 - DB Migration/Seed Scripts hinzugefuegt",
       "0.1.2 - 2026-01-07 - Port 5173 explizit in dev script gesetzt",
       "0.1.3 - 2026-01-08 - Server build kompiliert src/config direkt",
-      "0.1.4 - 2026-01-08 - Global ENV loading (/home/akki/.config/.env) mit HIDEANDSEEK_* mapping",
-      "0.1.5 - 2026-01-08 - QA/Test Scripts und Fast-Check Scaffold hinzugefuegt"
+      "0.1.4 - 2026-01-08 - Global ENV loading (/home/akki/.config/.env) mit HIDEANDSEEK_* mapping (obsolete)",
+      "0.1.5 - 2026-01-08 - QA/Test Scripts und Fast-Check Scaffold hinzugefuegt",
+      "0.1.6 - 2026-01-08 - Deleted src/config/env.ts - ENV auto-loads from project root .env via standard dotenv",
+      "0.1.7 - 2026-01-08 - Playwright Tests laden nun .env via env:pull, hardcoded URLs aus README entfernt"
     ]
   },
   "name": "material-tracker",
-  "version": "0.0.0",
   "description": "Material-Verwaltungs-App (Material, Kundenposten, offene Posten)",
   "type": "module",
   "scripts": {
@@ -36,8 +37,6 @@
     "db:seed": "tsx scripts/seed-db.ts",
     "generate:config": "node scripts/generate-config-from-toml.cjs",
     "generate:reference": "node scripts/generate-config-reference.cjs",
-    "env:check": "node -e \"require('fs').accessSync('/home/akki/.config/.env')\"",
-    "env:print": "node -e \"require('dotenv').config({ path: '/home/akki/.config/.env' }); console.log(Object.fromEntries(Object.entries(process.env).filter(([k]) => k.startsWith('HIDEANDSEEK_'))));\"",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"tests/**/*.{ts,tsx}\"",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\"",

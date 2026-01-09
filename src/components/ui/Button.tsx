@@ -1,21 +1,27 @@
 /**
  * @file        Button.tsx
- * @description Wiederverwendbare Button-Komponente (Dark Theme, größere Buttons) - Responsive
- * @version     0.6.0
+ * @description Wiederverwendbare Button-Komponente mit Icon-Support (Dark Theme, Responsive)
+ * @version     0.10.0
  * @created     2025-12-11 01:05:00 CET
- * @updated     2025-12-15 22:27:01 CET
+ * @updated     2026-01-09 20:45:09 CET
  * @author      Akki Scholze
  *
  * @props
- *   variant - Button-Variante (primary, secondary, outline, ghost, danger, success, warning)
+ *   variant - Button-Variante (primary, secondary, outline, ghost, danger, success, warning, transparent)
  *   size - Button-Größe (xs, sm, md, lg, xl)
  *   disabled - Deaktiviert den Button
  *   loading - Zeigt Ladeindikator
  *   onClick - Click-Handler
- *   children - Button-Inhalt
+ *   children - Button-Inhalt (optional wenn iconOnly)
  *   fullWidth - Volle Breite (auch auf Desktop)
+ *   icon - Icon für icon-only oder icon+text Mode
+ *   iconOnly - Wenn true: nur Icon ohne Text, transparent BG, colored icon
  *
  * @changelog
+ *   0.10.0 - 2026-01-09 - Import auf appConfig.components.button umgestellt (Phase 2.2.2)
+ *   0.9.0 - 2026-01-09 - Icon-Only: Padding entfernt (Button = Icon-Größe), keine Layout-Abstandssummierung
+ *   0.8.0 - 2026-01-09 - Icon-Only: Transparent bg, colored icon (variant.text), hover 10% opacity
+ *   0.7.0 - 2026-01-09 - Icon-only Mode integriert, transparent variant für Page-Action-Buttons
  *   0.6.0 - 2025-12-14 - Responsive: Touch-Targets 44px, kein Hover auf Mobile
  *   0.5.0 - 2025-12-12 - Config-Driven: Hardcodes durch iconsConfig ersetzt
  *   0.4.0 - 2025-12-11 - activeBorder Prop für Tab-Buttons mit sichtbarer Border
@@ -29,8 +35,14 @@
 // ═══════════════════════════════════════════════════════
 import { useState } from 'react';
 import type { ButtonProps } from '@/types/ui.types';
-import { buttonConfig, colorsConfig, typographyConfig, iconsConfig, breakpointsConfig } from '@/config';
+import { appConfig, breakpointsConfig } from '@/config';
 import { useResponsive } from '@/hooks/useResponsive';
+
+const buttonConfig = appConfig.components.button;
+
+const colorsConfig = appConfig.theme.colors;
+const typographyConfig = appConfig.theme.typography;
+const iconsConfig = appConfig.theme.icons;
 
 // ═══════════════════════════════════════════════════════
 // HELPERS
@@ -65,7 +77,9 @@ export function Button({
   className = '',
   style,
   title,
-  fullWidth = false
+  fullWidth = false,
+  icon,
+  iconOnly = false
 }: ButtonProps) {
   const [isHovered, setIsHovered] = useState(false);
   const { isMobile } = useResponsive();
@@ -87,8 +101,81 @@ export function Button({
 
   const spinnerSize = iconsConfig.button[size as keyof typeof iconsConfig.button];
 
+  // Icon Size Mapping (für icon-only und icon+text)
+  const iconSizeMap = {
+    xs: iconsConfig.sizes.sm,
+    sm: iconsConfig.sizes.sm,
+    md: iconsConfig.sizes.md,
+    lg: iconsConfig.sizes.lg,
+    xl: iconsConfig.sizes.lg
+  };
+  const iconSize = iconSizeMap[size];
+
   // Touch-Target Minimum (44px) auf Mobile
   const minTouchTarget = `${breakpointsConfig.touchMinSize}px`;
+
+  // ═══════════════════════════════════════════════════════
+  // ICON-ONLY MODE (transparent bg, colored icon)
+  // ═══════════════════════════════════════════════════════
+  if (iconOnly && icon) {
+    // Icon-Only: kein Padding, Button = Icon-Größe
+    const padding = '0';
+
+    // Icon-Only: Immer transparenter Hintergrund, nur Icon farbig
+    // Hover: leichte Hintergrundfarbe (10% opacity)
+    const iconColor = getColorValue(variantStyles.text);
+    const hoverBg = isHovered && !isDisabled && !isMobile 
+      ? `${getColorValue(variantStyles.text)}1a` // 10% opacity (#rrggbb + 1a)
+      : 'transparent';
+
+    return (
+      <button
+        type={type}
+        onClick={handleClick}
+        disabled={isDisabled}
+        title={title}
+        aria-label={title}
+        // Hover Events nur auf Desktop
+        onMouseEnter={() => !isMobile && setIsHovered(true)}
+        onMouseLeave={() => !isMobile && setIsHovered(false)}
+        className={`
+          inline-flex items-center justify-center
+          transition-all duration-150
+          ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+          ${className}
+        `.trim()}
+        style={{
+          backgroundColor: hoverBg,
+          color: iconColor,
+          borderRadius: buttonConfig.borderRadius,
+          padding: padding,
+          // Mobile: minHeight/minWidth für Touch-Target
+          minHeight: isMobile ? minTouchTarget : undefined,
+          minWidth: isMobile ? minTouchTarget : undefined,
+          border: 'none',
+          // Touch-freundlich: Kein user-select auf Mobile
+          WebkitTapHighlightColor: isMobile ? 'transparent' : undefined,
+          ...style
+        }}
+      >
+        <div
+          style={{
+            width: iconSize,
+            height: iconSize,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          {icon}
+        </div>
+      </button>
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // STANDARD MODE (mit Text, optional mit Icon)
+  // ═══════════════════════════════════════════════════════
 
   // Mobile: Größere Padding-Werte
   const mobilePaddingMultiplier = 1.25;
@@ -97,7 +184,9 @@ export function Button({
     : `${sizeStyles.paddingX * 0.25}rem`;
 
   // Mobile: Größere Schrift für bessere Lesbarkeit
-  const baseFontSize = typographyConfig.fontSize[sizeStyles.fontSize] || '0.875rem';
+  type FontSizeKey = keyof typeof typographyConfig.fontSize;
+  const fontSizeKey = sizeStyles.fontSize as FontSizeKey;
+  const baseFontSize = typographyConfig.fontSize[fontSizeKey] || '0.875rem';
   const fontSize = isMobile && size === 'xs' ? '0.875rem' : baseFontSize;
 
   return (
@@ -125,7 +214,7 @@ export function Button({
         paddingLeft: paddingX,
         paddingRight: paddingX,
         fontSize: fontSize,
-        border: 'border' in variantStyles ? `1px solid ${getColorValue(variantStyles.border)}` : 'none',
+        border: 'border' in variantStyles ? `1px solid ${getColorValue(variantStyles.border || 'transparent')}` : 'none',
         // fullWidth oder Mobile: 100% Breite
         width: fullWidth ? '100%' : undefined,
         // Touch-freundlich: Kein user-select auf Mobile
@@ -134,6 +223,9 @@ export function Button({
       }}
     >
       {loading && (
+        /* Loading spinner (based on Tailwind CSS example - MIT License)
+         * Source: https://tailwindcss.com/docs/animation#spin
+         */
         <svg
           className="animate-spin"
           style={{ height: spinnerSize, width: spinnerSize }}
@@ -148,6 +240,19 @@ export function Button({
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
           />
         </svg>
+      )}
+      {icon && (
+        <div
+          style={{
+            width: iconSize,
+            height: iconSize,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          {icon}
+        </div>
       )}
       {children}
     </button>

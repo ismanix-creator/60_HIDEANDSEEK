@@ -1,9 +1,9 @@
 /**
  * @file        Dialog.tsx
  * @description Wiederverwendbare Dialog/Modal-Komponente (SEASIDE Dark Theme) - Responsive
- * @version     0.4.1
+ * @version     0.5.0
  * @created     2025-12-11 01:05:00 CET
- * @updated     2026-01-07 19:22:00 CET
+ * @updated     2026-01-09 20:45:09 CET
  * @author      Akki Scholze
  *
  * @props
@@ -15,6 +15,7 @@
  *   footer - Optionaler Footer-Bereich (deprecated, use actions)
  *
  * @changelog
+ *   0.5.0 - 2026-01-09 - Import auf appConfig.components.dialog umgestellt (Phase 2.2.3)
  *   0.4.1 - 2026-01-07 - Fix: actions Prop korrekt implementiert (war nur in Types definiert)
  *   0.4.0 - 2025-12-14 - Responsive: Fullscreen auf Mobile, Touch-freundlicher Close-Button
  *   0.3.0 - 2025-12-11 - Responsive Design, Tailwind-Classes durch spacingConfig ersetzt
@@ -27,7 +28,11 @@
 // ═══════════════════════════════════════════════════════
 import { useEffect, useCallback } from 'react';
 import type { DialogProps } from '@/types/ui.types';
-import { dialogConfig, colorsConfig, spacingConfig, breakpointsConfig } from '@/config';
+import { appConfig, spacingConfig, breakpointsConfig } from '@/config';
+
+const dialogConfig = appConfig.components.dialog;
+
+const colorsConfig = appConfig.theme.colors;
 import { X } from 'lucide-react';
 import { useResponsive } from '@/hooks/useResponsive';
 

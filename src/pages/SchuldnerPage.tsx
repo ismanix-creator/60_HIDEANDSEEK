@@ -1,12 +1,15 @@
 /**
  * @file        SchuldnerPage.tsx
  * @description Schuldner-Verwaltung Seite
- * @version     0.1.0
+ * @version     0.3.1
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-07 01:36:51 CET
+ * @updated     2026-01-09 13:43:15 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.3.1 - 2026-01-09 - Name + Betrag-Spalten als Monospace (type: 'input')
+ *   0.3.0 - 2026-01-09 - Button als actions Prop an PageLayout übergeben (horizontal zentriert)
+ *   0.2.0 - 2026-01-09 - Doppelten Header entfernt (PageLayout zeigt bereits Titel)
  *   0.1.0 - 2026-01-07 - Initial implementation
  */
 
@@ -19,6 +22,7 @@ import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { useApi } from '@/hooks/useApi';
 import { formatCurrency, formatDate } from '@/utils/format';
+import { Wallet, Pencil, Trash2, DollarSign } from 'lucide-react';
 import type { Schuldner, CreateSchuldnerRequest, UpdateSchuldnerRequest, ZahlungRequest } from '@/types';
 
 export function SchuldnerPage() {
@@ -191,8 +195,8 @@ export function SchuldnerPage() {
   // Table Columns
   const columns = [
     { key: 'datum', label: 'Datum', render: (s: Schuldner) => formatDate(s.datum) },
-    { key: 'name', label: 'Name' },
-    { key: 'betrag', label: 'betrag', render: (s: Schuldner) => formatCurrency(s.betrag) },
+    { key: 'name', label: 'Name', type: 'input' as const },
+    { key: 'betrag', label: 'betrag', type: 'input' as const, render: (s: Schuldner) => <span style={{ fontFamily: 'JetBrains Mono, monospace' }}>{formatCurrency(s.betrag)}</span> },
     { key: 'bezahlt', label: 'Bezahlt', render: (s: Schuldner) => formatCurrency(s.bezahlt) },
     { key: 'offen', label: 'Offen', render: (s: Schuldner) => formatCurrency(s.offen) },
     {
@@ -215,30 +219,23 @@ export function SchuldnerPage() {
       render: (s: Schuldner) => (
         <div className="flex gap-2">
           {s.offen > 0 && (
-            <Button size="sm" variant="success" onClick={() => openZahlungDialog(s)}>
-              Zahlung
-            </Button>
+            <Button icon={<DollarSign />} iconOnly size="sm" variant="success" onClick={() => openZahlungDialog(s)} title="Zahlung" />
           )}
-          <Button size="sm" variant="secondary" onClick={() => openEditDialog(s)}>
-            Bearbeiten
-          </Button>
-          <Button size="sm" variant="danger" onClick={() => openDeleteDialog(s)}>
-            Löschen
-          </Button>
+          <Button icon={<Pencil />} iconOnly size="sm" variant="secondary" onClick={() => openEditDialog(s)} title="Bearbeiten" />
+          <Button icon={<Trash2 />} iconOnly size="sm" variant="danger" onClick={() => openDeleteDialog(s)} title="Löschen" />
         </div>
       )
     }
   ];
 
   return (
-    <PageLayout title="Schuldner">
+    <PageLayout 
+      title="Schuldner"
+      actions={
+        <Button icon={<Wallet />} iconOnly variant="transparent" size="lg" onClick={() => setCreateDialogOpen(true)} title="Neuer Schuldner" />
+      }
+    >
       <div className="space-y-4">
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-semibold text-neutral-50">Schuldner-Verwaltung</h2>
-          <Button onClick={() => setCreateDialogOpen(true)}>Neuer Schuldner</Button>
-        </div>
-
         {/* Error */}
         {error && <div className="p-4 bg-red-500/10 border border-red-500 rounded text-red-400">{error}</div>}
 

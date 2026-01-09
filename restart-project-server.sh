@@ -2,11 +2,12 @@
 #
 # @file        restart-project-server.sh
 # @description Stoppt und startet ausschließlich 60_HIDEANDSEEK (Ports aus ENV)
-# @version     1.2.4
-# @updated     2026-01-08 19:20:00 CET
+# @version     1.3.0
+# @updated     2026-01-08 16:30:00 CET
 # @author      Akki Scholze
 #
 # @changelog
+#   1.3.0 - 2026-01-08 - Freshness gate canonical (30min), Flags: --help zeigt Help, unbekannte Flags -> exit 2
 #   1.2.4 - 2026-01-08 - Ngrok-Domain aus APP_BASE_URL, keine NGROK_DOMAIN Referenz
 #   1.2.3 - 2026-01-08 - Ngrok startet wieder, Domain aus APP_BASE_URL abgeleitet
 #   1.2.2 - 2026-01-08 - Kein NGROK_DOMAIN im Code; ngrok start entfällt

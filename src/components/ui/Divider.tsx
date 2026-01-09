@@ -1,9 +1,9 @@
 /**
  * @file        Divider.tsx
  * @description Wiederverwendbare Divider-Komponente (SEASIDE Dark Theme)
- * @version     0.2.0
+ * @version     0.3.0
  * @created     2025-12-11 01:05:00 CET
- * @updated     2025-12-15 22:27:01 CET
+ * @updated     2026-01-09 20:45:09 CET
  * @author      Akki Scholze
  *
  * @props
@@ -11,6 +11,7 @@
  *   year - Jahr (optional)
  *
  * @changelog
+ *   0.3.0 - 2026-01-09 - Import auf appConfig.components.divider umgestellt (Phase 2.2.4)
  *   0.2.0 - 2025-12-11 - MonthDivider zentriert, Tailwind-Class entfernt
  *   0.1.0 - 2025-12-11 - Initial version
  */
@@ -19,7 +20,11 @@
 // IMPORTS
 // ═══════════════════════════════════════════════════════
 import type { MonthDividerProps } from '@/types/ui.types';
-import { dividerConfig, colorsConfig, spacingConfig } from '@/config';
+import { appConfig, spacingConfig } from '@/config';
+
+const dividerConfig = appConfig.components.divider;
+
+const colorsConfig = appConfig.theme.colors;
 
 const spacingBase = (key: number | string) => spacingConfig.base[String(key) as keyof typeof spacingConfig.base];
 
