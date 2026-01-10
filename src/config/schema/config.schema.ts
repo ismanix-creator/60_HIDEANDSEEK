@@ -1,13 +1,13 @@
 /**
  * @file        config.schema.ts
  * @description Zod Schema für config.toml Validation (STRICT)
- * @version     1.5.0
+ * @version     1.7.1
  * @created     2026-01-07 19:45:00 CET
- * @updated     2026-01-10 03:51:01 CET
+ * @updated     2026-01-10 11:24:00 CET
  * @author      Akki Scholze
  *
  * @changelog
- *   1.5.0 - 2026-01-10 - ZERO TOLERANCE: Alle .optional()/.default() entfernt, keine Fallbacks, keine Rückwärtskompatibilität
+ *   1.7.0 - 2026-01-10 12:00 CET - Added color schemas: black, red, gold, green, purple, orange, brown, teal, gray, white + OpacitySchema
  *   1.4.0 - 2026-01-10 - Table schema restructured (flat keys), ColumnSchema extended (monospace, buttons), UI duplicates removed
  *   1.3.0 - 2026-01-10 - Migrated ColumnSchema, TablePageSchema, TablePagesSchema from table.ts (schema consolidation)
  *   1.2.0 - 2026-01-10 - Added TableConfigSchema import + integrated pages config
@@ -30,37 +30,6 @@ const AppSchema = z
     name: z.string().min(1),
     version: z.string().regex(/^\d+\.\d+\.\d+$/),
     description: z.string()
-  })
-  .strict();
-
-/**
- * Server Schema
- */
-const ServerSchema = z
-  .object({
-    port: z.number().int().positive().max(65535),
-    host: z.string()
-  })
-  .strict();
-
-/**
- * Client Schema
- */
-const ClientSchema = z
-  .object({
-    port: z.number().int().positive().max(65535),
-    apiUrl: z.string().url(),
-    ngrokUrl: z.string().url()
-  })
-  .strict();
-
-/**
- * Database Schema
- */
-const DatabaseSchema = z
-  .object({
-    type: z.literal('sqlite'),
-    path: z.string()
   })
   .strict();
 
@@ -115,11 +84,43 @@ const ColorScaleSchema = z
   .strict();
 
 /**
+ * Color Scale Palette Types
+ */
+const BlackColorSchema = ColorScaleSchema;
+const RedColorSchema = ColorScaleSchema;
+const GoldColorSchema = ColorScaleSchema;
+const GelbColorSchema = ColorScaleSchema;
+const GreenColorSchema = ColorScaleSchema;
+const PurpleColorSchema = ColorScaleSchema;
+const OrangeColorSchema = ColorScaleSchema;
+const BrownColorSchema = ColorScaleSchema;
+const TealColorSchema = ColorScaleSchema;
+const GrayColorSchema = ColorScaleSchema;
+const WhiteColorSchema = ColorScaleSchema;
+
+/**
+ * Opacity Schema
+ */
+const OpacitySchema = z.record(z.string(), z.string());
+
+/**
  * Theme Colors Schema
  */
 const ThemeColorsSchema = z
   .object({
     primary: ColorScaleSchema,
+    black: BlackColorSchema,
+    red: RedColorSchema,
+    gold: GoldColorSchema,
+    gelb: GelbColorSchema,
+    green: GreenColorSchema,
+    purple: PurpleColorSchema,
+    orange: OrangeColorSchema,
+    brown: BrownColorSchema,
+    teal: TealColorSchema,
+    gray: GrayColorSchema,
+    white: WhiteColorSchema,
+    opacity: OpacitySchema,
     text: z
       .object({
         primary: hexColorSchema,
@@ -976,9 +977,6 @@ const UISchema = z
 export const ConfigSchema = z
   .object({
     app: AppSchema,
-    server: ServerSchema,
-    client: ClientSchema,
-    database: DatabaseSchema,
     auth: AuthSchema,
     navigation: NavigationSchema,
     theme: ThemeSchema,

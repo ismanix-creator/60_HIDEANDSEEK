@@ -1,16 +1,22 @@
 /**
  * @file        config.validation.test.ts
  * @description Config Validation Test - Verhindert Config Drift im CI
- * @version     1.0.0
+ * @version     2.0.0
  * @created     2026-01-07 20:00:00 CET
- * @updated     2026-01-07 20:00:00 CET
+ * @updated     2026-01-10 04:24:56 CET
  * @author      Akki Scholze
  *
  * @description
  * Dieser Test stellt sicher, dass config.toml jederzeit mit dem Zod Schema übereinstimmt.
  * Bei Drift (missing/unknown/wrong types) failt Build/CI und zwingt zur Korrektur.
  *
+ * ARCHITEKTUR:
+ * - config.toml = App-Konfiguration ONLY (theme, ui, components, etc.)
+ * - .env = Runtime-Variablen ONLY (Ports, Hosts, URLs, Secrets)
+ * - Keine Runtime-Config in config.toml!
+ *
  * @changelog
+ *   2.0.0 - 2026-01-10 - Entfernt server/client/database Tests (kommen aus .env, nicht config.toml)
  *   1.0.0 - 2026-01-07 - Initial drift enforcement test
  */
 
@@ -30,22 +36,11 @@ describe('Config Validation (Drift Prevention)', () => {
     expect(appConfig.app.version).toMatch(/^\d+\.\d+\.\d+$/);
   });
 
-  it('should have server config defined', () => {
-    expect(appConfig.server).toBeDefined();
-    expect(appConfig.server.port).toBeTypeOf('number');
-    expect(appConfig.server.host).toBeTypeOf('string');
-  });
-
-  it('should have client config defined', () => {
-    expect(appConfig.client).toBeDefined();
-    expect(appConfig.client.port).toBeTypeOf('number');
-    expect(appConfig.client.apiUrl).toMatch(/^https?:\/\//);
-  });
-
-  it('should have database config defined', () => {
-    expect(appConfig.database).toBeDefined();
-    expect(appConfig.database.type).toBeTypeOf('string');
-    expect(appConfig.database.path).toBeTypeOf('string');
+  it('should NOT have runtime-config (server/client/database come from .env)', () => {
+    // Architektur-Change: Runtime-Variablen sind NICHT in config.toml!
+    expect(appConfig.server).toBeUndefined();
+    expect(appConfig.client).toBeUndefined();
+    expect(appConfig.database).toBeUndefined();
   });
 
   it('should have complete theme config defined', () => {
