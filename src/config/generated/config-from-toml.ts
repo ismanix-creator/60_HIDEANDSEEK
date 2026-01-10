@@ -10,7 +10,7 @@
 export const configFromToml = {
   "app": {
     "name": "Material-Tracker",
-    "version": "0.0.0",
+    "version": "1.2.0",
     "description": "Material-Verwaltung mit Kundeninteraktionen und Schuldentracking"
   },
   "server": {
@@ -315,17 +315,20 @@ export const configFromToml = {
         "primary": {
           "bg": "#2196f3",
           "text": "#ffffff",
-          "hover": "#1976d2"
+          "hover": "#1976d2",
+          "border": "transparent"
         },
         "secondary": {
           "bg": "#3d3d3d",
           "text": "#ffffff",
-          "hover": "#454545"
+          "hover": "#454545",
+          "border": "transparent"
         },
         "danger": {
           "bg": "#e74c3c",
           "text": "#ffffff",
-          "hover": "#c0392b"
+          "hover": "#c0392b",
+          "border": "transparent"
         },
         "outline": {
           "bg": "transparent",
@@ -336,22 +339,26 @@ export const configFromToml = {
         "ghost": {
           "bg": "transparent",
           "text": "#2196f3",
-          "hover": "#1e1e1e"
+          "hover": "#1e1e1e",
+          "border": "transparent"
         },
         "success": {
           "bg": "#27ae60",
           "text": "#ffffff",
-          "hover": "#229954"
+          "hover": "#229954",
+          "border": "transparent"
         },
         "warning": {
           "bg": "#f39c12",
           "text": "#1e1e1e",
-          "hover": "#e67e22"
+          "hover": "#e67e22",
+          "border": "transparent"
         },
         "transparent": {
           "bg": "transparent",
           "text": "#ffffff",
-          "hover": "#2d2d2d"
+          "hover": "#2d2d2d",
+          "border": "transparent"
         }
       },
       "sizes": {
@@ -510,21 +517,26 @@ export const configFromToml = {
         "focus": {
           "border": "#2196f3",
           "bg": "#1e1e1e",
-          "outline": "2px solid rgba(33, 150, 243, 0.2)"
+          "outline": "2px solid rgba(33, 150, 243, 0.2)",
+          "text": "#ffffff"
         },
         "error": {
           "border": "#e74c3c",
           "bg": "#1e1e1e",
-          "outline": "2px solid rgba(231, 76, 60, 0.2)"
+          "outline": "2px solid rgba(231, 76, 60, 0.2)",
+          "text": "#ffffff"
         },
         "disabled": {
           "border": "#3d3d3d",
           "bg": "#2d2d2d",
-          "text": "#666666"
+          "text": "#666666",
+          "outline": "none"
         },
         "default": {
           "border": "#3d3d3d",
-          "bg": "#1e1e1e"
+          "bg": "#1e1e1e",
+          "text": "#ffffff",
+          "outline": "none"
         }
       },
       "types": {
@@ -551,6 +563,25 @@ export const configFromToml = {
       }
     },
     "table": {
+      "rowHeight": "40px",
+      "cellPaddingX": "1rem",
+      "cellPaddingY": "0.75rem",
+      "wrapperBg": "#1e1e1e",
+      "wrapperBorder": "#3d3d3d",
+      "wrapperBorderRadius": "0.5rem",
+      "wrapperShadow": "md",
+      "headerBg": "#252525",
+      "headerText": "#ffffff",
+      "headerFontSize": "sm",
+      "headerFontWeight": "semibold",
+      "headerFontFamily": "base",
+      "cellText": "#ffffff",
+      "cellFontSize": "sm",
+      "cellFontFamily": "base",
+      "rowBgOdd": "#1a1a1a",
+      "rowBgEven": "#2a2a2a",
+      "rowBgHover": "#353535",
+      "rowBorderBottom": "#3d3d3d",
       "wrapper": {
         "bg": "#1e1e1e",
         "border": "#3d3d3d",
@@ -592,6 +623,290 @@ export const configFromToml = {
         "input": {
           "fontFamily": "mono"
         }
+      },
+      "pages": {
+        "material": {
+          "columns": [
+            {
+              "key": "datum",
+              "label": "Datum",
+              "width": "12%",
+              "type": "date",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "bezeichnung",
+              "label": "Bezeichnung",
+              "width": "20%",
+              "type": "text",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "menge",
+              "label": "Menge",
+              "width": "10%",
+              "type": "number",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "ek_stueck",
+              "label": "EK Stück",
+              "width": "12%",
+              "type": "currency",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "ek_gesamt",
+              "label": "EK Gesamt",
+              "width": "12%",
+              "type": "currency",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "vk_stueck",
+              "label": "VK Stück",
+              "width": "12%",
+              "type": "currency",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "bestand",
+              "label": "Bestand",
+              "width": "10%",
+              "type": "number",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "einnahmen",
+              "label": "Einnahmen",
+              "width": "12%",
+              "type": "currency",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "gewinn_aktuell",
+              "label": "Gewinn",
+              "width": "12%",
+              "type": "currency",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "actions",
+              "label": "Aktionen",
+              "width": "8%",
+              "type": "actions",
+              "buttons": [
+                "bar",
+                "kombi",
+                "edit",
+                "delete"
+              ]
+            }
+          ]
+        },
+        "kunden": {
+          "columns": [
+            {
+              "key": "name",
+              "label": "Kunde",
+              "width": "20%",
+              "type": "text",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "gesamt",
+              "label": "Gesamt",
+              "width": "15%",
+              "type": "currency",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "bezahlt",
+              "label": "Bezahlt",
+              "width": "15%",
+              "type": "currency",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "offen",
+              "label": "Offener Betrag",
+              "width": "15%",
+              "type": "currency",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "status",
+              "label": "Status",
+              "width": "15%",
+              "type": "status",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "actions",
+              "label": "Aktionen",
+              "width": "20%",
+              "type": "actions",
+              "buttons": [
+                "edit",
+                "delete"
+              ]
+            }
+          ]
+        },
+        "glaeubiger": {
+          "columns": [
+            {
+              "key": "datum",
+              "label": "Datum",
+              "width": "12%",
+              "type": "date",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "name",
+              "label": "Name",
+              "width": "20%",
+              "type": "text",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "betrag",
+              "label": "Betrag",
+              "width": "13%",
+              "type": "currency",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "bezahlt",
+              "label": "Bezahlt",
+              "width": "13%",
+              "type": "currency",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "offen",
+              "label": "Offen",
+              "width": "13%",
+              "type": "currency",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "faelligkeit",
+              "label": "Fälligkeit",
+              "width": "12%",
+              "type": "date",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "status",
+              "label": "Status",
+              "width": "10%",
+              "type": "status",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "actions",
+              "label": "Aktionen",
+              "width": "7%",
+              "type": "actions",
+              "buttons": [
+                "edit",
+                "delete"
+              ]
+            }
+          ]
+        },
+        "schuldner": {
+          "columns": [
+            {
+              "key": "datum",
+              "label": "Datum",
+              "width": "12%",
+              "type": "date",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "name",
+              "label": "Name",
+              "width": "20%",
+              "type": "text",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "betrag",
+              "label": "Betrag",
+              "width": "13%",
+              "type": "currency",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "bezahlt",
+              "label": "Bezahlt",
+              "width": "13%",
+              "type": "currency",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "offen",
+              "label": "Offen",
+              "width": "13%",
+              "type": "currency",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "faelligkeit",
+              "label": "Fälligkeit",
+              "width": "12%",
+              "type": "date",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "status",
+              "label": "Status",
+              "width": "10%",
+              "type": "status",
+              "monospace": false,
+              "buttons": []
+            },
+            {
+              "key": "actions",
+              "label": "Aktionen",
+              "width": "7%",
+              "type": "actions",
+              "buttons": [
+                "edit",
+                "delete"
+              ]
+            }
+          ]
+        }
       }
     }
   },
@@ -611,14 +926,29 @@ export const configFromToml = {
       "designation": "Bezeichnung",
       "quantity": "Menge",
       "amount": "Betrag",
+      "amount_paid": "Bezahlt",
       "payment_amount": "Zahlungsbetrag",
       "material": "Material",
       "note": "Notiz (optional)",
       "price_per_unit": "VK Stück (Mindest-VK)",
       "purchase_price": "EK Stück",
+      "purchase_price_total": "EK Gesamt",
+      "selling_price_unit": "VK Stück",
       "info": "Info (optional)",
       "due_date": "Fälligkeit (optional)",
-      "open_amount": "Offener Betrag"
+      "open_amount": "Offener Betrag",
+      "status": "Status",
+      "actions": "Aktionen",
+      "stock": "Bestand",
+      "revenue": "Einnahmen",
+      "profit": "Gewinn",
+      "available": "Verfügbar",
+      "bar_sale": "Bar-Verkauf",
+      "kombi_booking": "Kombi-Buchung",
+      "total_price": "Preis Gesamt",
+      "total": "Gesamt",
+      "price": "Preis",
+      "customer": "Kunde"
     },
     "tooltips": {
       "bar_transaction": "BAR",
@@ -633,20 +963,19 @@ export const configFromToml = {
       "create": "Erstellen",
       "record": "Verbuchen"
     },
-    "pages": {
+    "page_titles": {
       "material": "Material",
       "customers": "Kunden",
       "creditors": "Gläubiger",
       "debtors": "Schuldner",
       "settings": "Einstellungen"
     },
-    "dialogs": {
+    "dialog_titles": {
       "new_material": "Neues Material",
       "edit_material": "Material bearbeiten",
       "delete_material": "Material löschen",
       "bar_transaction": "BAR-Bewegung",
       "kombi_transaction": "KOMBI-Bewegung",
-      "history": "Historie",
       "new_customer": "Neuer Kunde",
       "edit_customer": "Kunde bearbeiten",
       "delete_customer": "Kunde löschen",
@@ -658,7 +987,8 @@ export const configFromToml = {
       "delete_creditor": "Gläubiger löschen",
       "new_debtor": "Neuer Schuldner",
       "edit_debtor": "Schuldner bearbeiten",
-      "delete_debtor": "Schuldner löschen"
+      "delete_debtor": "Schuldner löschen",
+      "history": "Historie"
     },
     "messages": {
       "confirm_delete_material": "Möchten Sie das Material \"{name}\" wirklich löschen?",
@@ -689,6 +1019,11 @@ export const configFromToml = {
       "no_other_posts": "Keine sonstigen Posten vorhanden",
       "no_creditors": "Keine Gläubiger vorhanden",
       "no_debtors": "Keine Schuldner vorhanden"
+    },
+    "status": {
+      "paid": "Bezahlt",
+      "partial": "Teilweise",
+      "open": "Offen"
     },
     "input_limits": {
       "quantity_min": 0,

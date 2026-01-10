@@ -1,18 +1,22 @@
 /**
  * @file        SettingsPage.tsx
  * @description Einstellungen Seite mit Admin User Management
- * @version     1.0.0
+ * @version     1.2.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-08 01:58:00 CET
+ * @updated     2026-01-10 16:32:47 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   1.2.0 - 2026-01-10 - Inline-Styles entfernt, Tailwind mit theme.colors
+ *   1.1.0 - 2026-01-10 - UI-Components (Button, Select) statt Hardcoded Tailwind
  *   1.0.0 - 2026-01-08 - Admin User Management implementiert
  *   0.1.0 - 2026-01-07 - Initial placeholder
  */
 
 import { useState, useEffect } from 'react';
 import { PageLayout } from '@/components/layout/PageLayout';
+import { Button } from '@/components/ui/Button';
+import { Select } from '@/components/ui/Select';
 
 interface User {
   id: string;
@@ -105,7 +109,11 @@ export function SettingsPage() {
       <div className="space-y-8">
         {message && (
           <div
-            className={`p-4 rounded-md ${message.type === 'error' ? 'bg-red-100 text-red-900' : 'bg-green-100 text-green-900'}`}
+            className={`p-4 rounded-md ${
+              message.type === 'error'
+                ? 'bg-red-100 text-red-900'
+                : 'bg-green-100 text-green-900'
+            }`}
           >
             {message.text}
           </div>
@@ -130,24 +138,21 @@ export function SettingsPage() {
                     </div>
                   </div>
                   <div className="flex gap-2 items-center">
-                    <select
-                      value={selectedKunde[user.id] || ''}
-                      onChange={(e) => setSelectedKunde((prev) => ({ ...prev, [user.id]: Number(e.target.value) }))}
-                      className="border rounded px-3 py-2 flex-1"
-                    >
-                      <option value="">-- Kunde auswählen --</option>
-                      {kunden.map((k) => (
-                        <option key={k.id} value={k.id}>
-                          {k.name}
-                        </option>
-                      ))}
-                    </select>
-                    <button
+                    <Select
+                      value={String(selectedKunde[user.id] || '')}
+                      onChange={(val) => setSelectedKunde((prev) => ({ ...prev, [user.id]: Number(val) }))}
+                      options={[
+                        { value: '', label: '-- Kunde auswählen --' },
+                        ...kunden.map((k) => ({ value: String(k.id), label: k.name }))
+                      ]}
+                      className="flex-1"
+                    />
+                    <Button
                       onClick={() => handleApprove(user.id)}
-                      className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                      variant="success"
                     >
                       Freischalten
-                    </button>
+                    </Button>
                   </div>
                 </div>
               ))}
@@ -173,12 +178,12 @@ export function SettingsPage() {
                       </p>
                     </div>
                     {user.role !== 'admin' && (
-                      <button
+                      <Button
                         onClick={() => handleDisable(user.id)}
-                        className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                        variant="danger"
                       >
                         Deaktivieren
-                      </button>
+                      </Button>
                     )}
                   </div>
                 );

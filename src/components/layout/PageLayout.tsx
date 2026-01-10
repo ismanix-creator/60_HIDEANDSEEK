@@ -26,7 +26,7 @@
 // ═══════════════════════════════════════════════════════
 import type { PageLayoutProps } from '@/types/ui.types';
 import { Package, Users, ArrowDownCircle, ArrowUpCircle } from 'lucide-react';
-import { appConfig, spacingConfig } from '@/config';
+import { appConfig } from '@/config';
 import { useResponsive } from '@/hooks/useResponsive';
 
 const colorsConfig = appConfig.theme.colors;
@@ -80,30 +80,30 @@ export function PageLayout({ title, icon, actions, children }: PageLayoutProps) 
     flexDirection: 'column',
     backgroundColor: colorsConfig.ui.backgroundAlt,
     // Mobile: Padding unten für Bottom-Navigation
-    paddingBottom: isMobile ? spacingConfig.responsive.bottomNavPadding : undefined
+    paddingBottom: isMobile ? appConfig.theme.responsive.bottomNavPadding : undefined
   };
 
   // Header Container Style
   const headerContainerStyle: React.CSSProperties = {
-    maxWidth: spacingConfig.layout.contentMaxWidthRem,
+    maxWidth: appConfig.theme.spacing.layout.contentMaxWidthRem,
     margin: '0 auto',
-    paddingLeft: isMobile ? spacingConfig.mobile.md : spacingConfig.sm,
-    paddingRight: isMobile ? spacingConfig.mobile.md : spacingConfig.sm,
-    paddingTop: isMobile ? spacingConfig.mobile.lg : spacingConfig.lg,
-    paddingBottom: isMobile ? spacingConfig.mobile.lg : spacingConfig.lg,
+    paddingLeft: isMobile ? appConfig.theme.spacing.mobile.md : appConfig.theme.spacing.sm,
+    paddingRight: isMobile ? appConfig.theme.spacing.mobile.md : appConfig.theme.spacing.sm,
+    paddingTop: isMobile ? appConfig.theme.spacing.mobile.lg : appConfig.theme.spacing.lg,
+    paddingBottom: isMobile ? appConfig.theme.spacing.mobile.lg : appConfig.theme.spacing.lg,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     // Mobile: Buttons wrappen wenn zu eng
     flexWrap: isMobile ? 'wrap' : 'nowrap',
-    gap: isMobile ? spacingConfig.mobile.sm : spacingConfig.lg
+    gap: isMobile ? appConfig.theme.spacing.mobile.sm : appConfig.theme.spacing.lg
   };
 
   // Title Container Style
   const titleContainerStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: isMobile ? spacingConfig.mobile.sm : spacingConfig.sm
+    gap: isMobile ? appConfig.theme.spacing.mobile.sm : appConfig.theme.spacing.sm
   };
 
   // Actions Container Style
@@ -111,7 +111,7 @@ export function PageLayout({ title, icon, actions, children }: PageLayoutProps) 
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    gap: isMobile ? spacingConfig.mobile.sm : spacingConfig.xs,
+    gap: isMobile ? appConfig.theme.spacing.mobile.sm : appConfig.theme.spacing.xs,
     flexWrap: isMobile ? 'wrap' : 'nowrap'
   };
 
@@ -122,10 +122,10 @@ export function PageLayout({ title, icon, actions, children }: PageLayoutProps) 
     flexDirection: 'column',
     width: '100%',
     overflow: 'hidden',
-    paddingLeft: isMobile ? spacingConfig.mobile.md : spacingConfig.sm,
-    paddingRight: isMobile ? spacingConfig.mobile.md : spacingConfig.sm,
-    paddingTop: isMobile ? spacingConfig.mobile.lg : spacingConfig.lg,
-    paddingBottom: isMobile ? spacingConfig.mobile.lg : spacingConfig.lg
+    paddingLeft: isMobile ? appConfig.theme.spacing.mobile.md : appConfig.theme.spacing.sm,
+    paddingRight: isMobile ? appConfig.theme.spacing.mobile.md : appConfig.theme.spacing.sm,
+    paddingTop: isMobile ? appConfig.theme.spacing.mobile.lg : appConfig.theme.spacing.lg,
+    paddingBottom: isMobile ? appConfig.theme.spacing.mobile.lg : appConfig.theme.spacing.lg
   };
 
   // Title Style
@@ -151,9 +151,9 @@ export function PageLayout({ title, icon, actions, children }: PageLayoutProps) 
             {iconContent && (
               <div
                 style={{
-                  padding: isMobile ? spacingConfig.mobile.sm : spacingConfig.sm,
+                  padding: isMobile ? appConfig.theme.spacing.mobile.sm : appConfig.theme.spacing.sm,
                   backgroundColor: colorsConfig.info.light,
-                  borderRadius: spacingConfig.sm
+                  borderRadius: appConfig.theme.spacing.sm
                 }}
               >
                 {iconContent}

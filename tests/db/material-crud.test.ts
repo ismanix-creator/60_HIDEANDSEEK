@@ -69,14 +69,18 @@ describe('material CRUD', () => {
       updated_at: now
     });
 
-    const row = db.prepare('SELECT * FROM material WHERE id = ?').get(result.lastInsertRowid) as { bezeichnung: string };
+    const row = db.prepare('SELECT * FROM material WHERE id = ?').get(result.lastInsertRowid) as {
+      bezeichnung: string;
+    };
     expect(row).toBeTruthy();
     expect(row.bezeichnung).toBe('Testmaterial');
 
     const update = db.prepare('UPDATE material SET bestand = ? WHERE id = ?');
     update.run(3, result.lastInsertRowid);
 
-    const updated = db.prepare('SELECT bestand FROM material WHERE id = ?').get(result.lastInsertRowid) as { bestand: number };
+    const updated = db.prepare('SELECT bestand FROM material WHERE id = ?').get(result.lastInsertRowid) as {
+      bestand: number;
+    };
     expect(updated.bestand).toBe(3);
 
     const del = db.prepare('DELETE FROM material WHERE id = ?');

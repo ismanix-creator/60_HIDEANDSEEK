@@ -26,7 +26,7 @@ import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Package, Users, ArrowDownCircle, ArrowUpCircle, Settings, UserCog, LogIn, LogOut } from 'lucide-react';
 import type { NavItem } from '@/types/ui.types';
-import { appConfig, spacingConfig, breakpointsConfig, navigationConfig } from '@/config';
+import { appConfig, navigationConfig } from '@/config';
 import { useResponsive } from '@/hooks/useResponsive';
 import { useAuth } from '@/context/AuthContext';
 
@@ -59,7 +59,7 @@ export function Navigation() {
   const navItems = navigationConfig.items as ReadonlyArray<NavItem>;
 
   // Filter: Wenn eingeloggt, zeige Logout statt Login
-  const filteredItems = navItems.filter(item => {
+  const filteredItems = navItems.filter((item) => {
     if (item.key === 'login' && isAuthenticated) return false;
     if (item.key === 'logout' && !isAuthenticated) return false;
     return true;
@@ -83,17 +83,17 @@ export function Navigation() {
         bottom: 0,
         left: 0,
         right: 0,
-        height: spacingConfig.responsive.bottomNavHeight,
+        height: appConfig.theme.responsive.bottomNavHeight,
         backgroundColor: colorsConfig.ui.backgroundAlt,
         borderTop: `1px solid ${colorsConfig.ui.border}`,
         zIndex: 1000,
-        padding: `${spacingConfig.xs} 0`
+        padding: `${appConfig.theme.spacing.xs} 0`
       }
     : {
         // DESKTOP: Top-Bar
         backgroundColor: colorsConfig.ui.backgroundAlt,
         borderBottom: `1px solid ${colorsConfig.ui.border}`,
-        padding: `${spacingConfig.sm} ${spacingConfig.md}`,
+        padding: `${appConfig.theme.spacing.sm} ${appConfig.theme.spacing.md}`,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between'
@@ -121,20 +121,20 @@ export function Navigation() {
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: isMobile ? spacingConfig.xs : spacingConfig.sm,
+    padding: isMobile ? appConfig.theme.spacing.xs : appConfig.theme.spacing.sm,
     textDecoration: 'none',
     transition: 'background-color 0.15s ease, transform 0.15s ease',
     backgroundColor: isHovered ? colorsConfig.neutral[200] : 'transparent',
     color: isActive ? colorsConfig.text.primary : colorsConfig.text.secondary,
     transform: !isMobile && isHovered ? 'scale(1.05)' : 'scale(1)',
-    minHeight: isMobile ? `${breakpointsConfig.touchMinSize}px` : undefined,
-    borderRadius: isMobile ? undefined : spacingConfig.sm
+    minHeight: isMobile ? `${appConfig.theme.responsive.touchMinSize}px` : undefined,
+    borderRadius: isMobile ? undefined : appConfig.theme.spacing.sm
   });
 
   // Icon Container Style
   const getIconContainerStyle = (isActive: boolean): React.CSSProperties => ({
-    padding: isMobile ? spacingConfig.xs : spacingConfig.sm,
-    borderRadius: spacingConfig.sm,
+    padding: isMobile ? appConfig.theme.spacing.xs : appConfig.theme.spacing.sm,
+    borderRadius: appConfig.theme.spacing.sm,
     backgroundColor: isActive ? colorsConfig.primary[600] : 'transparent',
     display: 'flex',
     alignItems: 'center',

@@ -176,7 +176,10 @@ describe('KundenPostenMat API', () => {
     });
 
     expect(zahlungRes.status).toBe(200);
-    const result = (await zahlungRes.json()) as { success: boolean; data: { bezahlt: number; offen: number; status: string } };
+    const result = (await zahlungRes.json()) as {
+      success: boolean;
+      data: { bezahlt: number; offen: number; status: string };
+    };
     expect(result.success).toBe(true);
     expect(result.data.bezahlt).toBe(15);
     expect(result.data.offen).toBe(75); // Gesamtbetrag 90 (3*30) - bezahlt 15 = 75

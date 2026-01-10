@@ -1,12 +1,18 @@
 /**
  * @file        SchuldnerPage.tsx
  * @description Schuldner-Verwaltung Seite
- * @version     0.4.0
+ * @version     1.0.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-09 21:48:22 CET
+ * @updated     2026-01-10 18:30:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   1.0.0 - 2026-01-10 18:30:00 - TASK 2.5: Zahlungshistorie Dialog vollständig implementiert (Final)
+ *   0.8.1 - 2026-01-10 04:26:18 - TASK 2.4.2: Header-Update (keine inline-styles vorhanden, bereits bereinigt in 0.7.1)
+ *   0.7.1 - 2026-01-10 02:15:23 - TASK 2.4.2: Inline Monospace-Style entfernt (betrag Spalte)
+ *   0.6.1 - 2026-01-10 00:20:42 - TASK 2.3.4: Überprüfung abgeschlossen - keine Hardcodes gefunden (bereits vollständig config-driven)
+ *   0.6.0 - 2026-01-10 19:22:00 - Font-Familie Hardcode entfernt (appConfig.ui.typography.monospace)
+ *   0.5.0 - 2026-01-09 23:45:00 - Alle verbleibenden Hardcodes entfernt (Phase 2.3 Final)
  *   0.4.0 - 2026-01-09 - 19 Hardcodes durch appConfig.ui.* ersetzt (Phase 2.3)
  *   0.3.1 - 2026-01-09 - Name + Betrag-Spalten als Monospace (type: 'input')
  *   0.3.0 - 2026-01-09 - Button als actions Prop an PageLayout übergeben (horizontal zentriert)
@@ -38,7 +44,9 @@ export function SchuldnerPage() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [zahlungDialogOpen, setZahlungDialogOpen] = useState(false);
+  const [historieDialogOpen, setHistorieDialogOpen] = useState(false);
   const [selectedSchuldner, setSelectedSchuldner] = useState<Schuldner | null>(null);
+  const [zahlungsHistorie, setZahlungsHistorie] = useState<any[]>([]);
 
   // Form States
   const [formData, setFormData] = useState<CreateSchuldnerRequest>({
@@ -59,10 +67,10 @@ export function SchuldnerPage() {
       if (result.success && result.data) {
         setSchuldner(result.data);
       } else {
-        setError(result.error || 'Fehler beim Laden');
+        setError(result.error || appConfig.ui.errors.load_failed);
       }
     } catch (err) {
-      setError('Netzwerkfehler');
+      setError(appConfig.ui.errors.network_error);
     } finally {
       setLoading(false);
     }
@@ -84,10 +92,10 @@ export function SchuldnerPage() {
         resetForm();
         loadSchuldner();
       } else {
-        setError(result.error || 'Fehler beim Erstellen');
+        setError(result.error || appConfig.ui.errors.create_failed);
       }
     } catch (err) {
-      setError('Netzwerkfehler');
+      setError(appConfig.ui.errors.network_error);
     }
   };
 
@@ -109,10 +117,10 @@ export function SchuldnerPage() {
         resetForm();
         loadSchuldner();
       } else {
-        setError(result.error || 'Fehler beim Aktualisieren');
+        setError(result.error || appConfig.ui.errors.update_failed);
       }
     } catch (err) {
-      setError('Netzwerkfehler');
+      setError(appConfig.ui.errors.network_error);
     }
   };
 
@@ -128,10 +136,10 @@ export function SchuldnerPage() {
         setSelectedSchuldner(null);
         loadSchuldner();
       } else {
-        setError(result.error || 'Fehler beim Löschen');
+        setError(result.error || appConfig.ui.errors.delete_failed);
       }
     } catch (err) {
-      setError('Netzwerkfehler');
+      setError(appConfig.ui.errors.network_error);
     }
   };
 
@@ -150,10 +158,10 @@ export function SchuldnerPage() {
         setZahlungbetrag(0);
         loadSchuldner();
       } else {
-        setError(result.error || 'Fehler beim Verbuchen');
+        setError(result.error || appConfig.ui.errors.booking_failed);
       }
     } catch (err) {
-      setError('Netzwerkfehler');
+      setError(appConfig.ui.errors.network_error);
     }
   };
 
@@ -183,6 +191,29 @@ export function SchuldnerPage() {
     setZahlungDialogOpen(true);
   };
 
+  // Open Historie Dialog
+  const openHistorieDialog = (s: Schuldner) => {
+    setSelectedSchuldner(s);
+    setZahlungsHistorie([]);
+    setHistorieDialogOpen(true);
+    loadZahlungsHistorie(s.id);
+  };
+
+  // Load Zahlungshistorie
+  const loadZahlungsHistorie = async (schuldnerId: number) => {
+    try {
+      const result = await api.fetch(`/api/schuldner/${schuldnerId}/zahlungen`);
+      if (result.success && result.data) {
+        setZahlungsHistorie(result.data as any[]);
+      } else {
+        setZahlungsHistorie([]);
+      }
+    } catch (err) {
+      console.error('Fehler beim Laden der Zahlungshistorie', err);
+      setZahlungsHistorie([]);
+    }
+  };
+
   // Reset Form
   const resetForm = () => {
     setFormData({
@@ -196,45 +227,82 @@ export function SchuldnerPage() {
 
   // Table Columns
   const columns = [
-    { key: 'datum', label: 'Datum', render: (s: Schuldner) => formatDate(s.datum) },
-    { key: 'name', label: 'Name', type: 'input' as const },
-    { key: 'betrag', label: 'betrag', type: 'input' as const, render: (s: Schuldner) => <span style={{ fontFamily: 'JetBrains Mono, monospace' }}>{formatCurrency(s.betrag)}</span> },
-    { key: 'bezahlt', label: 'Bezahlt', render: (s: Schuldner) => formatCurrency(s.bezahlt) },
-    { key: 'offen', label: 'Offen', render: (s: Schuldner) => formatCurrency(s.offen) },
+    { key: 'datum', label: appConfig.ui.labels.date, render: (s: Schuldner) => formatDate(s.datum) },
+    { key: 'name', label: appConfig.ui.labels.name, type: 'input' as const },
+    {
+      key: 'betrag',
+      label: appConfig.ui.labels.amount,
+      type: 'input' as const,
+      render: (s: Schuldner) => formatCurrency(s.betrag)
+    },
+    { key: 'bezahlt', label: appConfig.ui.labels.amount_paid, render: (s: Schuldner) => formatCurrency(s.bezahlt) },
+    { key: 'offen', label: appConfig.ui.labels.open_amount, render: (s: Schuldner) => formatCurrency(s.offen) },
     {
       key: 'faelligkeit',
-      label: 'Fälligkeit',
+      label: appConfig.ui.labels.due_date,
       render: (s: Schuldner) => (s.faelligkeit ? formatDate(s.faelligkeit) : '-')
     },
     {
       key: 'status',
-      label: 'Status',
+      label: appConfig.ui.labels.status,
       render: (s: Schuldner) => (
         <Badge variant={s.status === 'bezahlt' ? 'success' : s.status === 'teilbezahlt' ? 'warning' : 'error'}>
-          {s.status === 'bezahlt' ? 'Bezahlt' : s.status === 'teilbezahlt' ? 'Teilbezahlt' : 'Offen'}
+          {s.status === 'bezahlt'
+            ? appConfig.ui.status.paid
+            : s.status === 'teilbezahlt'
+              ? appConfig.ui.status.partial
+              : appConfig.ui.status.open}
         </Badge>
       )
     },
     {
       key: 'actions',
-      label: 'Aktionen',
+      label: appConfig.ui.labels.actions,
       render: (s: Schuldner) => (
         <div className="flex gap-2">
           {s.offen > 0 && (
-            <Button icon={<DollarSign />} iconOnly size="sm" variant="success" onClick={() => openZahlungDialog(s)} title={appConfig.ui.tooltips.record} />
+            <Button
+              icon={<DollarSign />}
+              iconOnly
+              size="sm"
+              variant="success"
+              onClick={() => openZahlungDialog(s)}
+              title={appConfig.ui.tooltips.record}
+            />
           )}
-          <Button icon={<Pencil />} iconOnly size="sm" variant="secondary" onClick={() => openEditDialog(s)} title={appConfig.ui.tooltips.edit} />
-          <Button icon={<Trash2 />} iconOnly size="sm" variant="danger" onClick={() => openDeleteDialog(s)} title={appConfig.ui.tooltips.delete} />
+          <Button
+            icon={<Pencil />}
+            iconOnly
+            size="sm"
+            variant="secondary"
+            onClick={() => openEditDialog(s)}
+            title={appConfig.ui.tooltips.edit}
+          />
+          <Button
+            icon={<Trash2 />}
+            iconOnly
+            size="sm"
+            variant="danger"
+            onClick={() => openDeleteDialog(s)}
+            title={appConfig.ui.tooltips.delete}
+          />
         </div>
       )
     }
   ];
 
   return (
-    <PageLayout 
-      title={appConfig.ui.pages.debtors}
+    <PageLayout
+      title={appConfig.ui.page_titles.debtors}
       actions={
-        <Button icon={<Wallet />} iconOnly variant="transparent" size="lg" onClick={() => setCreateDialogOpen(true)} title={appConfig.ui.tooltips.create} />
+        <Button
+          icon={<Wallet />}
+          iconOnly
+          variant="transparent"
+          size="lg"
+          onClick={() => setCreateDialogOpen(true)}
+          title={appConfig.ui.tooltips.create}
+        />
       }
     >
       <div className="space-y-4">
@@ -242,7 +310,13 @@ export function SchuldnerPage() {
         {error && <div className="p-4 bg-red-500/10 border border-red-500 rounded text-red-400">{error}</div>}
 
         {/* Table */}
-        <Table data={schuldner} columns={columns} loading={loading} emptyMessage={appConfig.ui.empty_states.no_debtors} />
+        <Table
+          data={schuldner}
+          columns={columns}
+          loading={loading}
+          emptyMessage={appConfig.ui.empty_states.no_debtors}
+          onRowClick={(s) => openHistorieDialog(s)}
+        />
 
         {/* Create Dialog */}
         <Dialog
@@ -251,7 +325,7 @@ export function SchuldnerPage() {
             setCreateDialogOpen(false);
             resetForm();
           }}
-          title={appConfig.ui.dialogs.new_debtor}
+          title={appConfig.ui.dialog_titles.new_debtor}
           actions={
             <>
               <Button
@@ -308,7 +382,7 @@ export function SchuldnerPage() {
             setSelectedSchuldner(null);
             resetForm();
           }}
-          title={appConfig.ui.dialogs.edit_debtor}
+          title={appConfig.ui.dialog_titles.edit_debtor}
           actions={
             <>
               <Button
@@ -365,7 +439,7 @@ export function SchuldnerPage() {
             setDeleteDialogOpen(false);
             setSelectedSchuldner(null);
           }}
-          title={appConfig.ui.dialogs.delete_debtor}
+          title={appConfig.ui.dialog_titles.delete_debtor}
           actions={
             <>
               <Button
@@ -383,7 +457,9 @@ export function SchuldnerPage() {
             </>
           }
         >
-          <p className="text-neutral-300">{appConfig.ui.messages.confirm_delete_debtor.replace('{name}', selectedSchuldner?.name || '')}</p>
+          <p className="text-neutral-300">
+            {appConfig.ui.messages.confirm_delete_debtor.replace('{name}', selectedSchuldner?.name || '')}
+          </p>
         </Dialog>
 
         {/* Zahlung Dialog */}
@@ -394,7 +470,7 @@ export function SchuldnerPage() {
             setSelectedSchuldner(null);
             setZahlungbetrag(0);
           }}
-          title={appConfig.ui.dialogs.record_payment}
+          title={appConfig.ui.dialog_titles.record_payment}
           actions={
             <>
               <Button
@@ -424,6 +500,64 @@ export function SchuldnerPage() {
               onChange={(e) => setZahlungbetrag(parseFloat(e.target.value) || 0)}
             />
           </div>
+        </Dialog>
+
+        {/* Historie Dialog */}
+        <Dialog
+          open={historieDialogOpen}
+          onClose={() => {
+            setHistorieDialogOpen(false);
+            setSelectedSchuldner(null);
+            setZahlungsHistorie([]);
+          }}
+          title={
+            selectedSchuldner
+              ? `${appConfig.ui.dialog_titles.history}: ${selectedSchuldner.name}`
+              : appConfig.ui.dialog_titles.history
+          }
+          actions={
+            <Button
+              onClick={() => {
+                setHistorieDialogOpen(false);
+                setSelectedSchuldner(null);
+                setZahlungsHistorie([]);
+              }}
+            >
+              {appConfig.ui.buttons.close}
+            </Button>
+          }
+        >
+          {zahlungsHistorie.length > 0 ? (
+            <div className="space-y-2 max-h-[60vh] overflow-y-auto">
+              {zahlungsHistorie.map((item, idx) => (
+                <div key={idx} className="p-3 bg-neutral-800 rounded border border-neutral-700">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <p className="text-sm text-neutral-400">{formatDate(item.datum)}</p>
+                      <p className="text-lg font-semibold text-neutral-50">{formatCurrency(item.betrag)}</p>
+                    </div>
+                    <Badge
+                      variant={
+                        item.status === 'bezahlt'
+                          ? 'success'
+                          : item.status === 'teilbezahlt'
+                            ? 'warning'
+                            : 'error'
+                      }
+                    >
+                      {item.status === 'bezahlt'
+                        ? appConfig.ui.status.paid
+                        : item.status === 'teilbezahlt'
+                          ? appConfig.ui.status.partial
+                          : appConfig.ui.status.open}
+                    </Badge>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-neutral-400 text-sm text-center py-4">{appConfig.ui.empty_states.no_history}</p>
+          )}
         </Dialog>
       </div>
     </PageLayout>

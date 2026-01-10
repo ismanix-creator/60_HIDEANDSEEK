@@ -1,9 +1,9 @@
 /**
  * @file        Divider.tsx
  * @description Wiederverwendbare Divider-Komponente (SEASIDE Dark Theme)
- * @version     0.3.0
+ * @version     0.4.0
  * @created     2025-12-11 01:05:00 CET
- * @updated     2026-01-09 20:45:09 CET
+ * @updated     2026-01-09 23:18:50 CET
  * @author      Akki Scholze
  *
  * @props
@@ -11,6 +11,7 @@
  *   year - Jahr (optional)
  *
  * @changelog
+ *   0.4.0 - 2026-01-09 - Direct appConfig.theme.* access (spacingConfig eliminiert)
  *   0.3.0 - 2026-01-09 - Import auf appConfig.components.divider umgestellt (Phase 2.2.4)
  *   0.2.0 - 2025-12-11 - MonthDivider zentriert, Tailwind-Class entfernt
  *   0.1.0 - 2025-12-11 - Initial version
@@ -20,13 +21,27 @@
 // IMPORTS
 // ═══════════════════════════════════════════════════════
 import type { MonthDividerProps } from '@/types/ui.types';
-import { appConfig, spacingConfig } from '@/config';
+import { appConfig } from '@/config';
 
 const dividerConfig = appConfig.components.divider;
 
 const colorsConfig = appConfig.theme.colors;
 
-const spacingBase = (key: number | string) => spacingConfig.base[String(key) as keyof typeof spacingConfig.base];
+// Helper: Tailwind-Scale (0-32) auf theme.spacing (xxs-xxl) mappen
+const spacingBase = (key: number | string): string => {
+  const keyNum = typeof key === 'number' ? key : parseInt(String(key), 10);
+  if (isNaN(keyNum)) return appConfig.theme.spacing.md; // fallback
+
+  if (keyNum <= 0) return appConfig.theme.spacing.xxs;
+  if (keyNum === 1) return appConfig.theme.spacing.xs;
+  if (keyNum === 2) return appConfig.theme.spacing.xs;
+  if (keyNum === 3) return appConfig.theme.spacing.sm;
+  if (keyNum === 4) return appConfig.theme.spacing.md;
+  if (keyNum === 5) return appConfig.theme.spacing.md;
+  if (keyNum === 6) return appConfig.theme.spacing.lg;
+  if (keyNum === 8) return appConfig.theme.spacing.xl;
+  return appConfig.theme.spacing.xxl; // 10+
+};
 
 // ═══════════════════════════════════════════════════════
 // HELPERS

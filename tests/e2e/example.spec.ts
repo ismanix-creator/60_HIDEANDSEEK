@@ -15,10 +15,10 @@ test.describe('Material-Tracker App', () => {
   test('App startet und zeigt Startseite', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
-    
+
     // Prüfe Titel
     await expect(page).toHaveTitle(/Material-Tracker/);
-    
+
     // Prüfe, dass Root-Element existiert
     const root = page.locator('#root');
     await expect(root).toBeAttached();
@@ -50,7 +50,7 @@ test.describe('Material-Tracker App', () => {
 
   test('Navigation über Links funktioniert', async ({ page }) => {
     await page.goto('/');
-    
+
     // Klick auf Kunden-Link in der Navigation
     const kundenLink = page.locator('nav a[href="/kunden"]');
     if (await kundenLink.isVisible()) {

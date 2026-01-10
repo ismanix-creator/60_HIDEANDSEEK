@@ -1,12 +1,16 @@
 /**
  * @file        config.schema.ts
  * @description Zod Schema für config.toml Validation (STRICT)
- * @version     1.1.0
+ * @version     1.5.0
  * @created     2026-01-07 19:45:00 CET
- * @updated     2026-01-09 17:20:00 CET
+ * @updated     2026-01-10 03:51:01 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   1.5.0 - 2026-01-10 - ZERO TOLERANCE: Alle .optional()/.default() entfernt, keine Fallbacks, keine Rückwärtskompatibilität
+ *   1.4.0 - 2026-01-10 - Table schema restructured (flat keys), ColumnSchema extended (monospace, buttons), UI duplicates removed
+ *   1.3.0 - 2026-01-10 - Migrated ColumnSchema, TablePageSchema, TablePagesSchema from table.ts (schema consolidation)
+ *   1.2.0 - 2026-01-10 - Added TableConfigSchema import + integrated pages config
  *   1.1.0 - 2026-01-09 - Theme/Components/UI schemas erweitert (strict auf allen Ebenen)
  *   1.0.0 - 2026-01-07 - Initial strict schema for config.toml
  */
@@ -430,7 +434,7 @@ const ButtonVariantSchema = z
     bg: z.string(),
     text: hexColorSchema,
     hover: z.string(),
-    border: z.string().optional()
+    border: z.string()
   })
   .strict();
 
@@ -604,8 +608,8 @@ const InputStateSchema = z
   .object({
     border: hexColorSchema,
     bg: hexColorSchema,
-    outline: z.string().optional(),
-    text: hexColorSchema.optional()
+    outline: z.string(),
+    text: hexColorSchema
   })
   .strict();
 
@@ -652,6 +656,35 @@ const InputSchema = z
   .strict();
 
 /**
+ * Table Column & Pages Schemas (migrated from schemas/table.ts)
+ */
+export const ColumnSchema = z
+  .object({
+    key: z.string().min(1),
+    label: z.string().min(1),
+    width: z.string(), // CSS Wert: %, rem, px, em, auto
+    type: z.enum(['text', 'number', 'currency', 'date', 'status', 'input', 'actions']),
+    monospace: z.boolean(),
+    buttons: z.array(z.string())
+  })
+  .strict();
+
+export const TablePageSchema = z
+  .object({
+    columns: z.array(ColumnSchema)
+  })
+  .strict();
+
+export const TablePagesSchema = z
+  .object({
+    material: TablePageSchema,
+    kunden: TablePageSchema,
+    glaeubiger: TablePageSchema,
+    schuldner: TablePageSchema
+  })
+  .strict();
+
+/**
  * Table Schema
  */
 const TableCellTypeSchema = z
@@ -662,6 +695,16 @@ const TableCellTypeSchema = z
 
 const TableSchema = z
   .object({
+    // Basis-Layout (flat keys, rowHeight MUSS px sein!)
+    rowHeight: z.string().regex(/^\d+px$/),
+    cellPaddingX: z.string(),
+    cellPaddingY: z.string(),
+
+    // Wrapper (flat keys + nested for compat)
+    wrapperBg: hexColorSchema,
+    wrapperBorder: hexColorSchema,
+    wrapperBorderRadius: z.string(),
+    wrapperShadow: z.enum(['sm', 'md', 'lg', 'xl', 'none']),
     wrapper: z
       .object({
         bg: hexColorSchema,
@@ -670,6 +713,13 @@ const TableSchema = z
         shadow: z.string()
       })
       .strict(),
+
+    // Header (flat keys + nested for compat)
+    headerBg: hexColorSchema,
+    headerText: hexColorSchema,
+    headerFontSize: z.enum(['xs', 'sm', 'md', 'lg', 'xl']),
+    headerFontWeight: z.enum(['normal', 'medium', 'semibold', 'bold']),
+    headerFontFamily: z.enum(['base', 'mono']),
     header: z
       .object({
         bg: hexColorSchema,
@@ -681,6 +731,11 @@ const TableSchema = z
         fontFamily: z.string()
       })
       .strict(),
+
+    // Cell (flat keys + nested for compat)
+    cellText: hexColorSchema,
+    cellFontSize: z.enum(['xs', 'sm', 'md', 'lg', 'xl']),
+    cellFontFamily: z.enum(['base', 'mono']),
     cell: z
       .object({
         text: hexColorSchema,
@@ -690,6 +745,12 @@ const TableSchema = z
         fontFamily: z.string()
       })
       .strict(),
+
+    // Row (flat keys + nested for compat)
+    rowBgOdd: hexColorSchema,
+    rowBgEven: hexColorSchema,
+    rowBgHover: hexColorSchema,
+    rowBorderBottom: hexColorSchema,
     row: z
       .object({
         bgOdd: hexColorSchema,
@@ -698,6 +759,7 @@ const TableSchema = z
         borderBottom: hexColorSchema
       })
       .strict(),
+
     cellTypes: z
       .object({
         number: TableCellTypeSchema,
@@ -705,7 +767,10 @@ const TableSchema = z
         date: TableCellTypeSchema,
         input: TableCellTypeSchema
       })
-      .strict()
+      .strict(),
+
+    // Pages
+    pages: TablePagesSchema
   })
   .strict();
 
@@ -756,7 +821,29 @@ const UISchema = z
         designation: z.string(),
         quantity: z.string(),
         amount: z.string(),
-        payment_amount: z.string()
+        amount_paid: z.string(),
+        payment_amount: z.string(),
+        material: z.string(),
+        note: z.string(),
+        price_per_unit: z.string(),
+        purchase_price: z.string(),
+        info: z.string(),
+        due_date: z.string(),
+        open_amount: z.string(),
+        status: z.string(),
+        actions: z.string(),
+        purchase_price_total: z.string(),
+        selling_price_unit: z.string(),
+        stock: z.string(),
+        revenue: z.string(),
+        profit: z.string(),
+        available: z.string(),
+        bar_sale: z.string(),
+        kombi_booking: z.string(),
+        total_price: z.string(),
+        total: z.string(),
+        price: z.string(),
+        customer: z.string()
       })
       .strict(),
     tooltips: z
@@ -769,7 +856,9 @@ const UISchema = z
         new_customer: z.string(),
         new_creditor: z.string(),
         new_debtor: z.string(),
-        payment: z.string()
+        payment: z.string(),
+        create: z.string(),
+        record: z.string()
       })
       .strict(),
     page_titles: z
@@ -799,7 +888,30 @@ const UISchema = z
         delete_creditor: z.string(),
         new_debtor: z.string(),
         edit_debtor: z.string(),
-        delete_debtor: z.string()
+        delete_debtor: z.string(),
+        history: z.string()
+      })
+      .strict(),
+    dialogs: z
+      .object({
+        new_material: z.string(),
+        edit_material: z.string(),
+        delete_material: z.string(),
+        bar_transaction: z.string(),
+        kombi_transaction: z.string(),
+        new_customer: z.string(),
+        edit_customer: z.string(),
+        delete_customer: z.string(),
+        new_material_post: z.string(),
+        new_other_post: z.string(),
+        record_payment: z.string(),
+        new_creditor: z.string(),
+        edit_creditor: z.string(),
+        delete_creditor: z.string(),
+        new_debtor: z.string(),
+        edit_debtor: z.string(),
+        delete_debtor: z.string(),
+        history: z.string()
       })
       .strict(),
     messages: z
@@ -847,6 +959,13 @@ const UISchema = z
         price_min: z.number(),
         price_step: z.number()
       })
+      .strict(),
+    status: z
+      .object({
+        paid: z.string(),
+        partial: z.string(),
+        open: z.string()
+      })
       .strict()
   })
   .strict();
@@ -875,3 +994,6 @@ export type AppConfig = z.infer<typeof ConfigSchema>;
 export type AppConfigTheme = z.infer<typeof ThemeSchema>;
 export type AppConfigComponents = z.infer<typeof ComponentsSchema>;
 export type AppConfigUI = z.infer<typeof UISchema>;
+export type Column = z.infer<typeof ColumnSchema>;
+export type TablePage = z.infer<typeof TablePageSchema>;
+export type TablePages = z.infer<typeof TablePagesSchema>;

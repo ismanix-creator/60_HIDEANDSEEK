@@ -1,17 +1,36 @@
 /**
  * @file        schema.ts
- * @description SQLite schema definitions (with users/auth table)
- * @version     0.2.0
+ * @description SQLite schema definitions (core domain + movement tables)
+ * @version     0.4.0
  * @created     2026-01-06 19:14:38 CET
- * @updated     2026-01-08 01:05:00 CET
+ * @updated     2026-01-10 17:30:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.4.0 - 2026-01-10 - Restructured schema ordering, removed activity fields from main tables, added movement tables for kunden_posten and creditors/debtors
+ *   0.3.0 - 2026-01-10 - Added activity logging fields (action_type, action_at, action_by) to all transaction tables
  *   0.2.0 - 2026-01-08 - Added users table for auth/setup system
  *   0.1.0 - 2026-01-06 - Initial schema based on plan/db-schema-helper.md
  */
 
 export const schemaStatements = [
+  `CREATE TABLE IF NOT EXISTS users (
+    id TEXT PRIMARY KEY,
+    username TEXT NOT NULL UNIQUE,
+    display_name TEXT NOT NULL,
+    role TEXT NOT NULL CHECK(role IN ('admin','user')),
+    status TEXT NOT NULL CHECK(status IN ('bootstrap','pending','active','disabled')),
+    kunde_id INTEGER,
+    password_hash TEXT,
+    password_salt TEXT,
+    password_set_at TEXT,
+    requested_at TEXT,
+    approved_at TEXT,
+    approved_by TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    FOREIGN KEY (kunde_id) REFERENCES kunden(id)
+  );`,
   `CREATE TABLE IF NOT EXISTS material (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     datum TEXT NOT NULL,
@@ -35,10 +54,12 @@ export const schemaStatements = [
     datum TEXT NOT NULL,
     menge REAL NOT NULL,
     preis REAL NOT NULL,
-    info TEXT,
-    
     notiz TEXT,
     created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    action_type TEXT NOT NULL DEFAULT 'recorded',
+    action_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    action_by TEXT DEFAULT 'system',
     FOREIGN KEY (material_id) REFERENCES material(id)
   );`,
   `CREATE TABLE IF NOT EXISTS material_bewegungen_kombi (
@@ -50,6 +71,10 @@ export const schemaStatements = [
     preis REAL NOT NULL,
     notiz TEXT,
     created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    action_type TEXT NOT NULL DEFAULT 'recorded',
+    action_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    action_by TEXT DEFAULT 'system',
     FOREIGN KEY (material_id) REFERENCES material(id),
     FOREIGN KEY (kunde_id) REFERENCES kunden(id)
   );`,
@@ -58,29 +83,6 @@ export const schemaStatements = [
     name TEXT NOT NULL UNIQUE,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
-  );`,
-  `CREATE TABLE IF NOT EXISTS users (
-    id TEXT PRIMARY KEY,
-    username TEXT NOT NULL UNIQUE,
-    display_name TEXT NOT NULL,
-
-    role TEXT NOT NULL CHECK(role IN ('admin','user')),
-    status TEXT NOT NULL CHECK(status IN ('bootstrap','pending','active','disabled')),
-
-    kunde_id INTEGER,
-
-    password_hash TEXT,
-    password_salt TEXT,
-    password_set_at TEXT,
-
-    requested_at TEXT,
-    approved_at TEXT,
-    approved_by TEXT,
-
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL,
-
-    FOREIGN KEY (kunde_id) REFERENCES kunden(id)
   );`,
   `CREATE TABLE IF NOT EXISTS kunden_posten_mat (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -112,6 +114,34 @@ export const schemaStatements = [
     updated_at TEXT NOT NULL,
     FOREIGN KEY (kunde_id) REFERENCES kunden(id)
   );`,
+  `CREATE TABLE IF NOT EXISTS kunden_posten_mat_bewegungen (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    kunden_posten_mat_id INTEGER NOT NULL,
+    datum TEXT NOT NULL,
+    betrag REAL NOT NULL,
+    status TEXT NOT NULL DEFAULT 'recorded',
+    notiz TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    action_type TEXT NOT NULL DEFAULT 'recorded',
+    action_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    action_by TEXT DEFAULT 'system',
+    FOREIGN KEY (kunden_posten_mat_id) REFERENCES kunden_posten_mat(id)
+  );`,
+  `CREATE TABLE IF NOT EXISTS kunden_posten_nomat_bewegungen (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    kunden_posten_nomat_id INTEGER NOT NULL,
+    datum TEXT NOT NULL,
+    betrag REAL NOT NULL,
+    status TEXT NOT NULL DEFAULT 'recorded',
+    notiz TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    action_type TEXT NOT NULL DEFAULT 'recorded',
+    action_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    action_by TEXT DEFAULT 'system',
+    FOREIGN KEY (kunden_posten_nomat_id) REFERENCES kunden_posten_nomat(id)
+  );`,
   `CREATE TABLE IF NOT EXISTS glaeubiger (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     datum TEXT NOT NULL,
@@ -125,6 +155,20 @@ export const schemaStatements = [
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
   );`,
+  `CREATE TABLE IF NOT EXISTS glaeubiger_bewegungen (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    glaeubiger_id INTEGER NOT NULL,
+    datum TEXT NOT NULL,
+    betrag REAL NOT NULL,
+    status TEXT NOT NULL DEFAULT 'recorded',
+    notiz TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    action_type TEXT NOT NULL DEFAULT 'recorded',
+    action_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    action_by TEXT DEFAULT 'system',
+    FOREIGN KEY (glaeubiger_id) REFERENCES glaeubiger(id)
+  );`,
   `CREATE TABLE IF NOT EXISTS schuldner (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     datum TEXT NOT NULL,
@@ -137,5 +181,19 @@ export const schemaStatements = [
     notiz TEXT,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
+  );`,
+  `CREATE TABLE IF NOT EXISTS schuldner_bewegungen (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    schuldner_id INTEGER NOT NULL,
+    datum TEXT NOT NULL,
+    betrag REAL NOT NULL,
+    status TEXT NOT NULL DEFAULT 'recorded',
+    notiz TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    action_type TEXT NOT NULL DEFAULT 'recorded',
+    action_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    action_by TEXT DEFAULT 'system',
+    FOREIGN KEY (schuldner_id) REFERENCES schuldner(id)
   );`
 ];

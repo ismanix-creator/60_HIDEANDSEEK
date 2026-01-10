@@ -1,12 +1,13 @@
 /**
  * @file        KundenPage.tsx
  * @description Kunden-Verwaltung mit Übersicht und Detail-Ansicht
- * @version     0.5.0
+ * @version     0.6.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-09 21:51:40 CET
+ * @updated     2026-01-10 12:45:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.6.0 - 2026-01-10 12:45:00 - Alle verbleibenden Hardcodes durch appConfig.ui.* ersetzt (Phase 2.3.2 Final)
  *   0.5.0 - 2026-01-09 21:51:40 - 3 verbleibende Hardcodes durch appConfig.ui.labels.* ersetzt (Phase 2.3.B)
  *   0.4.0 - 2026-01-09 21:00:20 - 38 UI-Text-Hardcodes entfernt (Phase 2.3.2)
  *   0.3.1 - 2026-01-09 - Name-Spalte als Monospace (type: 'input')
@@ -357,15 +358,19 @@ export function KundenPage() {
   // Overview Columns
   const overviewColumns = [
     { key: 'name', label: appConfig.ui.labels.name, type: 'input' as const },
-    { key: 'gesamt', label: 'Gesamt', render: (k: KundeWithSummary) => formatCurrency(k.gesamt) },
+    { key: 'gesamt', label: appConfig.ui.labels.amount, render: (k: KundeWithSummary) => formatCurrency(k.gesamt) },
     { key: 'bezahlt', label: 'Bezahlt', render: (k: KundeWithSummary) => formatCurrency(k.bezahlt) },
-    { key: 'offen', label: 'Offen', render: (k: KundeWithSummary) => formatCurrency(k.offen) },
+    { key: 'offen', label: appConfig.ui.labels.open_amount, render: (k: KundeWithSummary) => formatCurrency(k.offen) },
     {
       key: 'status',
       label: 'Status',
       render: (k: KundeWithSummary) => (
         <Badge variant={k.status === 'bezahlt' ? 'success' : k.status === 'teilbezahlt' ? 'warning' : 'error'}>
-          {k.status === 'bezahlt' ? 'Bezahlt' : k.status === 'teilbezahlt' ? 'Teilbezahlt' : 'Offen'}
+          {k.status === 'bezahlt'
+            ? 'Bezahlt'
+            : k.status === 'teilbezahlt'
+              ? 'Teilbezahlt'
+              : appConfig.ui.labels.open_amount}
         </Badge>
       )
     },
@@ -374,30 +379,30 @@ export function KundenPage() {
       label: 'Aktionen',
       render: (k: KundeWithSummary) => (
         <div className="flex gap-2">
-          <Button 
-            icon={<Pencil />} 
-            iconOnly 
-            size="sm" 
-            variant="secondary" 
+          <Button
+            icon={<Pencil />}
+            iconOnly
+            size="sm"
+            variant="secondary"
             onClick={() => {
               setView('detail');
               setSelectedKunde(k);
               setKundeFormData({ name: k.name });
               setEditKundeDialogOpen(true);
-            }} 
-            title={appConfig.ui.tooltips.edit} 
+            }}
+            title={appConfig.ui.tooltips.edit}
           />
-          <Button 
-            icon={<Trash2 />} 
-            iconOnly 
-            size="sm" 
-            variant="danger" 
+          <Button
+            icon={<Trash2 />}
+            iconOnly
+            size="sm"
+            variant="danger"
             onClick={() => {
               setView('detail');
               setSelectedKunde(k);
               setDeleteKundeDialogOpen(true);
-            }} 
-            title={appConfig.ui.tooltips.delete} 
+            }}
+            title={appConfig.ui.tooltips.delete}
           />
         </div>
       )
@@ -409,7 +414,7 @@ export function KundenPage() {
     { key: 'datum', label: appConfig.ui.labels.date, render: (p: KundenPostenMat) => formatDate(p.datum) },
     {
       key: 'material',
-      label: 'Material',
+      label: appConfig.ui.labels.material,
       render: (p: KundenPostenMat) => {
         const mat = materialien.find((m) => m.id === p.material_id);
         return mat?.bezeichnung || `Material #${p.material_id}`;
@@ -418,13 +423,17 @@ export function KundenPage() {
     { key: 'menge', label: appConfig.ui.labels.quantity, render: (p: KundenPostenMat) => p.menge.toFixed(2) },
     { key: 'preis', label: 'Preis', render: (p: KundenPostenMat) => formatCurrency(p.preis) },
     { key: 'bezahlt', label: 'Bezahlt', render: (p: KundenPostenMat) => formatCurrency(p.bezahlt) },
-    { key: 'offen', label: 'Offen', render: (p: KundenPostenMat) => formatCurrency(p.offen) },
+    { key: 'offen', label: appConfig.ui.labels.open_amount, render: (p: KundenPostenMat) => formatCurrency(p.offen) },
     {
       key: 'status',
       label: 'Status',
       render: (p: KundenPostenMat) => (
         <Badge variant={p.status === 'bezahlt' ? 'success' : p.status === 'teilbezahlt' ? 'warning' : 'error'}>
-          {p.status === 'bezahlt' ? 'Bezahlt' : p.status === 'teilbezahlt' ? 'Teilbezahlt' : 'Offen'}
+          {p.status === 'bezahlt'
+            ? 'Bezahlt'
+            : p.status === 'teilbezahlt'
+              ? 'Teilbezahlt'
+              : appConfig.ui.labels.open_amount}
         </Badge>
       )
     },
@@ -434,7 +443,14 @@ export function KundenPage() {
       render: (p: KundenPostenMat) => (
         <div className="flex gap-2">
           {p.offen > 0 && (
-            <Button icon={<DollarSign />} iconOnly size="sm" variant="success" onClick={() => openZahlungDialog(p, 'mat')} title={appConfig.ui.tooltips.payment} />
+            <Button
+              icon={<DollarSign />}
+              iconOnly
+              size="sm"
+              variant="success"
+              onClick={() => openZahlungDialog(p, 'mat')}
+              title={appConfig.ui.tooltips.payment}
+            />
           )}
         </div>
       )
@@ -446,13 +462,17 @@ export function KundenPage() {
     { key: 'bezeichnung', label: appConfig.ui.labels.designation },
     { key: 'betrag', label: appConfig.ui.labels.amount, render: (p: KundenPostenNoMat) => formatCurrency(p.betrag) },
     { key: 'bezahlt', label: 'Bezahlt', render: (p: KundenPostenNoMat) => formatCurrency(p.bezahlt) },
-    { key: 'offen', label: 'Offen', render: (p: KundenPostenNoMat) => formatCurrency(p.offen) },
+    { key: 'offen', label: appConfig.ui.labels.open_amount, render: (p: KundenPostenNoMat) => formatCurrency(p.offen) },
     {
       key: 'status',
       label: 'Status',
       render: (p: KundenPostenNoMat) => (
         <Badge variant={p.status === 'bezahlt' ? 'success' : p.status === 'teilbezahlt' ? 'warning' : 'error'}>
-          {p.status === 'bezahlt' ? 'Bezahlt' : p.status === 'teilbezahlt' ? 'Teilbezahlt' : 'Offen'}
+          {p.status === 'bezahlt'
+            ? 'Bezahlt'
+            : p.status === 'teilbezahlt'
+              ? 'Teilbezahlt'
+              : appConfig.ui.labels.open_amount}
         </Badge>
       )
     },
@@ -462,7 +482,14 @@ export function KundenPage() {
       render: (p: KundenPostenNoMat) => (
         <div className="flex gap-2">
           {p.offen > 0 && (
-            <Button icon={<DollarSign />} iconOnly size="sm" variant="success" onClick={() => openZahlungDialog(p, 'nomat')} title={appConfig.ui.tooltips.payment} />
+            <Button
+              icon={<DollarSign />}
+              iconOnly
+              size="sm"
+              variant="success"
+              onClick={() => openZahlungDialog(p, 'nomat')}
+              title={appConfig.ui.tooltips.payment}
+            />
           )}
         </div>
       )
@@ -472,10 +499,17 @@ export function KundenPage() {
   // Render Overview
   if (view === 'overview') {
     return (
-      <PageLayout 
+      <PageLayout
         title={appConfig.ui.page_titles.customers}
         actions={
-          <Button icon={<UserPlus />} iconOnly variant="transparent" size="lg" onClick={() => setCreateKundeDialogOpen(true)} title={appConfig.ui.dialog_titles.new_customer} />
+          <Button
+            icon={<UserPlus />}
+            iconOnly
+            variant="transparent"
+            size="lg"
+            onClick={() => setCreateKundeDialogOpen(true)}
+            title={appConfig.ui.dialog_titles.new_customer}
+          />
         }
       >
         <div className="space-y-4">
@@ -562,7 +596,9 @@ export function KundenPage() {
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-semibold text-neutral-50">Material-Posten</h3>
-            <Button onClick={() => setCreatePostenMatDialogOpen(true)}>{appConfig.ui.dialog_titles.new_material_post}</Button>
+            <Button onClick={() => setCreatePostenMatDialogOpen(true)}>
+              {appConfig.ui.dialog_titles.new_material_post}
+            </Button>
           </div>
           <Table
             data={postenMat}
@@ -577,7 +613,9 @@ export function KundenPage() {
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <h3 className="text-xl font-semibold text-neutral-50">Sonstige Posten</h3>
-              <Button onClick={() => setCreatePostenNoMatDialogOpen(true)}>{appConfig.ui.dialog_titles.new_other_post}</Button>
+              <Button onClick={() => setCreatePostenNoMatDialogOpen(true)}>
+                {appConfig.ui.dialog_titles.new_other_post}
+              </Button>
             </div>
             <Table
               data={postenNoMat}
@@ -612,7 +650,11 @@ export function KundenPage() {
             </>
           }
         >
-          <Input label={appConfig.ui.labels.name} value={kundeFormData.name} onChange={(e) => setKundeFormData({ name: e.target.value })} />
+          <Input
+            label={appConfig.ui.labels.name}
+            value={kundeFormData.name}
+            onChange={(e) => setKundeFormData({ name: e.target.value })}
+          />
         </Dialog>
 
         {/* Delete Kunde Dialog */}
@@ -773,7 +815,7 @@ export function KundenPage() {
         >
           <div className="space-y-4">
             <div className="p-4 bg-neutral-800 rounded">
-              <p className="text-neutral-400 text-sm">Offener {appConfig.ui.labels.amount}</p>
+              <p className="text-neutral-400 text-sm">{appConfig.ui.labels.open_amount}</p>
               <p className="text-2xl font-semibold text-neutral-50">{formatCurrency(selectedPosten?.offen || 0)}</p>
             </div>
             <Input

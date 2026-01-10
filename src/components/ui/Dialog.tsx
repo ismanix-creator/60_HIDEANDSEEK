@@ -1,9 +1,9 @@
 /**
  * @file        Dialog.tsx
  * @description Wiederverwendbare Dialog/Modal-Komponente (SEASIDE Dark Theme) - Responsive
- * @version     0.5.0
+ * @version     0.6.0
  * @created     2025-12-11 01:05:00 CET
- * @updated     2026-01-09 20:45:09 CET
+ * @updated     2026-01-09 23:18:50 CET
  * @author      Akki Scholze
  *
  * @props
@@ -15,6 +15,7 @@
  *   footer - Optionaler Footer-Bereich (deprecated, use actions)
  *
  * @changelog
+ *   0.6.0 - 2026-01-09 - Direct appConfig.theme.* access (spacingConfig/breakpointsConfig eliminiert)
  *   0.5.0 - 2026-01-09 - Import auf appConfig.components.dialog umgestellt (Phase 2.2.3)
  *   0.4.1 - 2026-01-07 - Fix: actions Prop korrekt implementiert (war nur in Types definiert)
  *   0.4.0 - 2025-12-14 - Responsive: Fullscreen auf Mobile, Touch-freundlicher Close-Button
@@ -28,7 +29,7 @@
 // ═══════════════════════════════════════════════════════
 import { useEffect, useCallback } from 'react';
 import type { DialogProps } from '@/types/ui.types';
-import { appConfig, spacingConfig, breakpointsConfig } from '@/config';
+import { appConfig } from '@/config';
 
 const dialogConfig = appConfig.components.dialog;
 
@@ -36,7 +37,23 @@ const colorsConfig = appConfig.theme.colors;
 import { X } from 'lucide-react';
 import { useResponsive } from '@/hooks/useResponsive';
 
-const spacingBase = (key: number | string) => spacingConfig.base[String(key) as keyof typeof spacingConfig.base];
+// Helper: Tailwind-Scale (0-32) auf theme.spacing (xxs-xxl) mappen
+const spacingBase = (key: number | string): string => {
+  const keyNum = typeof key === 'number' ? key : parseInt(String(key), 10);
+  if (isNaN(keyNum)) return appConfig.theme.spacing.md; // fallback
+
+  // Tailwind-Scale Mapping:
+  // 0 -> xxs, 1 -> xs, 2 -> xs, 3 -> sm, 4 -> md, 5 -> md, 6 -> lg, 8 -> xl, 10+ -> xxl
+  if (keyNum <= 0) return appConfig.theme.spacing.xxs;
+  if (keyNum === 1) return appConfig.theme.spacing.xs;
+  if (keyNum === 2) return appConfig.theme.spacing.xs;
+  if (keyNum === 3) return appConfig.theme.spacing.sm;
+  if (keyNum === 4) return appConfig.theme.spacing.md;
+  if (keyNum === 5) return appConfig.theme.spacing.md;
+  if (keyNum === 6) return appConfig.theme.spacing.lg;
+  if (keyNum === 8) return appConfig.theme.spacing.xl;
+  return appConfig.theme.spacing.xxl; // 10+
+};
 
 // ═══════════════════════════════════════════════════════
 // COMPONENT
@@ -71,7 +88,7 @@ export function Dialog({ open = true, onClose, title, children, actions, footer,
   }
 
   // Touch-Target Minimum
-  const minTouchTarget = `${breakpointsConfig.touchMinSize}px`;
+  const minTouchTarget = `${appConfig.theme.responsive.touchMinSize}px`;
 
   // ═══════════════════════════════════════════════════════
   // RESPONSIVE STYLES
@@ -89,7 +106,7 @@ export function Dialog({ open = true, onClose, title, children, actions, footer,
         zIndex: 10,
         backgroundColor: colorsConfig.ui.backgroundCard,
         borderRadius: 0,
-        padding: spacingConfig.mobile.lg,
+        padding: appConfig.theme.spacing.mobile.lg,
         overflow: 'auto',
         display: 'flex',
         flexDirection: 'column'
@@ -126,16 +143,16 @@ export function Dialog({ open = true, onClose, title, children, actions, footer,
   };
 
   // Footer Style
-const footerStyle: React.CSSProperties = {
-  display: 'flex',
-  justifyContent: isMobile ? 'stretch' : 'center',
-  flexDirection: isMobile ? 'column' : 'row',
-  marginTop: isMobile ? 'auto' : dialogConfig.footer.marginTop,
-  paddingTop: isMobile ? spacingConfig.mobile.lg : undefined,
-  paddingLeft: isMobile ? spacingConfig.mobile.lg : dialogConfig.container.padding,
-  paddingRight: isMobile ? spacingConfig.mobile.lg : dialogConfig.container.padding,
-  gap: isMobile ? spacingConfig.mobile.sm : dialogConfig.footer.gap
-};
+  const footerStyle: React.CSSProperties = {
+    display: 'flex',
+    justifyContent: isMobile ? 'stretch' : 'center',
+    flexDirection: isMobile ? 'column' : 'row',
+    marginTop: isMobile ? 'auto' : dialogConfig.footer.marginTop,
+    paddingTop: isMobile ? appConfig.theme.spacing.mobile.lg : undefined,
+    paddingLeft: isMobile ? appConfig.theme.spacing.mobile.lg : dialogConfig.container.padding,
+    paddingRight: isMobile ? appConfig.theme.spacing.mobile.lg : dialogConfig.container.padding,
+    gap: isMobile ? appConfig.theme.spacing.mobile.sm : dialogConfig.footer.gap
+  };
 
   return (
     <div
@@ -169,7 +186,7 @@ const footerStyle: React.CSSProperties = {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            marginBottom: isMobile ? spacingConfig.mobile.lg : spacingBase(4)
+            marginBottom: isMobile ? appConfig.theme.spacing.mobile.lg : spacingBase(4)
           }}
         >
           <h2
@@ -212,7 +229,7 @@ const footerStyle: React.CSSProperties = {
           style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: isMobile ? spacingConfig.mobile.lg : spacingBase(dialogConfig.body.gap),
+            gap: isMobile ? appConfig.theme.spacing.mobile.lg : spacingBase(dialogConfig.body.gap),
             flex: isMobile ? 1 : undefined
           }}
         >

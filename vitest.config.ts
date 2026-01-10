@@ -27,8 +27,8 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
     include: [
-      'tests/unit/**/*.test.ts',
-      'tests/integration/**/*.test.ts',
+      'tests/unit/**/*.test.{ts,tsx}',
+      'tests/integration/**/*.test.{ts,tsx}',
       'tests/db/**/*.test.ts',
       'tests/api/**/*.test.ts',
       'tests/property/**/*.test.ts',

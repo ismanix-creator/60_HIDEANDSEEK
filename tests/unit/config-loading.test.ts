@@ -1,11 +1,16 @@
 /**
  * Config Loading Tests - Phase 1.3.4
- * 
+ *
  * Tests für neue Config-Sektionen (theme.shadows, components.*, ui.*)
  * und Zod-Validation mit strict() Enforcement.
- * 
- * @version 1.0.0
+ *
+ * @version 1.0.1
  * @created 2026-01-09
+ * @updated 2026-01-09 23:11 CET
+ *
+ * @changelog
+ *   1.0.1 - 2026-01-09 - Version assertion korrigiert (0.0.0 → 1.2.0)
+ *   1.0.0 - 2026-01-09 - Initial test suite
  */
 
 import { describe, it, expect } from 'vitest';
@@ -78,7 +83,8 @@ describe('Config Loading - Phase 1 Extensions', () => {
 
     it('should load components.table', () => {
       expect(appConfig.components.table).toBeDefined();
-      expect(appConfig.components.table.cellTypes.currency.fontFamily).toBe('mono');
+      expect(appConfig.components.table.rowHeight).toBe('40px');
+      expect(appConfig.components.table.cellFontFamily).toBe('base');
     });
   });
 
@@ -132,7 +138,7 @@ describe('Config Loading - Phase 1 Extensions', () => {
 
     it('should have correct app metadata', () => {
       expect(appConfig.app.name).toBe('Material-Tracker');
-      expect(appConfig.app.version).toBe('0.0.0');
+      expect(appConfig.app.version).toBe('1.2.0');
     });
 
     it('should have all component sections', () => {

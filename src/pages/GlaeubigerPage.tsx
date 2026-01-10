@@ -1,12 +1,16 @@
 /**
  * @file        GlaeubigerPage.tsx
  * @description Gläubiger-Verwaltung Seite
- * @version     0.5.0
+ * @version     1.0.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-09 21:51:40 CET
+ * @updated     2026-01-10 18:30:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   1.0.0 - 2026-01-10 18:30:00 - TASK 2.5: Zahlungshistorie Dialog vollständig implementiert (Final)
+ *   0.8.0 - 2026-01-10 15:42:37 - Inline-Style für Monospace-Font im Betrag entfernt (Task 2.4.1)
+ *   0.7.0 - 2026-01-10 00:30:15 - Hardcodes für Fälligkeit, Notiz und Monospace-Font entfernt (Phase 2.3.3)
+ *   0.6.0 - 2026-01-09 23:45:00 - Alle verbleibenden Hardcodes entfernt (Phase 2.3 Final)
  *   0.5.0 - 2026-01-09 21:51:40 - 4 verbleibende Hardcodes durch appConfig.ui.labels.* ersetzt (Phase 2.3.B)
  *   0.4.0 - 2026-01-09 21:03:15 - 30 UI-Text-Hardcodes entfernt (Phase 2.3.3)
  *   0.3.1 - 2026-01-09 - Name + Betrag-Spalten als Monospace (type: 'input')
@@ -39,7 +43,9 @@ export function GlaeubigerPage() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [zahlungDialogOpen, setZahlungDialogOpen] = useState(false);
+  const [historieDialogOpen, setHistorieDialogOpen] = useState(false);
   const [selectedGlaeubiger, setSelectedGlaeubiger] = useState<Glaeubiger | null>(null);
+  const [zahlungsHistorie, setZahlungsHistorie] = useState<any[]>([]);
 
   // Form States
   const [formData, setFormData] = useState<CreateGlaeubigerRequest>({
@@ -184,6 +190,29 @@ export function GlaeubigerPage() {
     setZahlungDialogOpen(true);
   };
 
+  // Open Historie Dialog
+  const openHistorieDialog = (g: Glaeubiger) => {
+    setSelectedGlaeubiger(g);
+    setZahlungsHistorie([]);
+    setHistorieDialogOpen(true);
+    loadZahlungsHistorie(g.id);
+  };
+
+  // Load Zahlungshistorie
+  const loadZahlungsHistorie = async (glaeubigerId: number) => {
+    try {
+      const result = await api.fetch(`/api/glaeubiger/${glaeubigerId}/zahlungen`);
+      if (result.success && result.data) {
+        setZahlungsHistorie(result.data as any[]);
+      } else {
+        setZahlungsHistorie([]);
+      }
+    } catch (err) {
+      console.error('Fehler beim Laden der Zahlungshistorie', err);
+      setZahlungsHistorie([]);
+    }
+  };
+
   // Reset Form
   const resetForm = () => {
     setFormData({
@@ -199,43 +228,80 @@ export function GlaeubigerPage() {
   const columns = [
     { key: 'datum', label: appConfig.ui.labels.date, render: (g: Glaeubiger) => formatDate(g.datum) },
     { key: 'name', label: appConfig.ui.labels.name, type: 'input' as const },
-    { key: 'betrag', label: appConfig.ui.labels.amount, type: 'input' as const, render: (g: Glaeubiger) => <span style={{ fontFamily: 'JetBrains Mono, monospace' }}>{formatCurrency(g.betrag)}</span> },
-    { key: 'bezahlt', label: 'Bezahlt', render: (g: Glaeubiger) => formatCurrency(g.bezahlt) },
-    { key: 'offen', label: 'Offen', render: (g: Glaeubiger) => formatCurrency(g.offen) },
+    {
+      key: 'betrag',
+      label: appConfig.ui.labels.amount,
+      type: 'input' as const,
+      render: (g: Glaeubiger) => formatCurrency(g.betrag)
+    },
+    { key: 'bezahlt', label: appConfig.ui.labels.amount_paid, render: (g: Glaeubiger) => formatCurrency(g.bezahlt) },
+    { key: 'offen', label: appConfig.ui.labels.open_amount, render: (g: Glaeubiger) => formatCurrency(g.offen) },
     {
       key: 'faelligkeit',
-      label: 'Fälligkeit',
+      label: appConfig.ui.labels.due_date,
       render: (g: Glaeubiger) => (g.faelligkeit ? formatDate(g.faelligkeit) : '-')
     },
     {
       key: 'status',
-      label: 'Status',
+      label: appConfig.ui.labels.status,
       render: (g: Glaeubiger) => (
         <Badge variant={g.status === 'bezahlt' ? 'success' : g.status === 'teilbezahlt' ? 'warning' : 'error'}>
-          {g.status === 'bezahlt' ? 'Bezahlt' : g.status === 'teilbezahlt' ? 'Teilbezahlt' : 'Offen'}
+          {g.status === 'bezahlt'
+            ? appConfig.ui.status.paid
+            : g.status === 'teilbezahlt'
+              ? appConfig.ui.status.partial
+              : appConfig.ui.status.open}
         </Badge>
       )
     },
     {
       key: 'actions',
-      label: 'Aktionen',
+      label: appConfig.ui.labels.actions,
       render: (g: Glaeubiger) => (
         <div className="flex gap-2">
           {g.offen > 0 && (
-            <Button icon={<DollarSign />} iconOnly size="sm" variant="success" onClick={() => openZahlungDialog(g)} title={appConfig.ui.tooltips.payment} />
+            <Button
+              icon={<DollarSign />}
+              iconOnly
+              size="sm"
+              variant="success"
+              onClick={() => openZahlungDialog(g)}
+              title={appConfig.ui.tooltips.payment}
+            />
           )}
-          <Button icon={<Pencil />} iconOnly size="sm" variant="secondary" onClick={() => openEditDialog(g)} title={appConfig.ui.tooltips.edit} />
-          <Button icon={<Trash2 />} iconOnly size="sm" variant="danger" onClick={() => openDeleteDialog(g)} title={appConfig.ui.tooltips.delete} />
+          <Button
+            icon={<Pencil />}
+            iconOnly
+            size="sm"
+            variant="secondary"
+            onClick={() => openEditDialog(g)}
+            title={appConfig.ui.tooltips.edit}
+          />
+          <Button
+            icon={<Trash2 />}
+            iconOnly
+            size="sm"
+            variant="danger"
+            onClick={() => openDeleteDialog(g)}
+            title={appConfig.ui.tooltips.delete}
+          />
         </div>
       )
     }
   ];
 
   return (
-    <PageLayout 
+    <PageLayout
       title={appConfig.ui.page_titles.creditors}
       actions={
-        <Button icon={<HandCoins />} iconOnly variant="transparent" size="lg" onClick={() => setCreateDialogOpen(true)} title={appConfig.ui.dialog_titles.new_creditor} />
+        <Button
+          icon={<HandCoins />}
+          iconOnly
+          variant="transparent"
+          size="lg"
+          onClick={() => setCreateDialogOpen(true)}
+          title={appConfig.ui.dialog_titles.new_creditor}
+        />
       }
     >
       <div className="space-y-4">
@@ -243,7 +309,13 @@ export function GlaeubigerPage() {
         {error && <div className="p-4 bg-red-500/10 border border-red-500 rounded text-red-400">{error}</div>}
 
         {/* Table */}
-        <Table data={glaeubiger} columns={columns} loading={loading} emptyMessage={appConfig.ui.empty_states.no_creditors} />
+        <Table
+          data={glaeubiger}
+          columns={columns}
+          loading={loading}
+          emptyMessage={appConfig.ui.empty_states.no_creditors}
+          onRowClick={(g) => openHistorieDialog(g)}
+        />
 
         {/* Create Dialog */}
         <Dialog
@@ -288,13 +360,13 @@ export function GlaeubigerPage() {
               onChange={(e) => setFormData({ ...formData, betrag: parseFloat(e.target.value) || 0 })}
             />
             <Input
-              label="Fälligkeit (optional)"
+              label={appConfig.ui.labels.due_date}
               type="date"
               value={formData.faelligkeit}
               onChange={(e) => setFormData({ ...formData, faelligkeit: e.target.value })}
             />
             <Input
-              label="Notiz (optional)"
+              label={appConfig.ui.labels.note}
               value={formData.notiz}
               onChange={(e) => setFormData({ ...formData, notiz: e.target.value })}
             />
@@ -346,13 +418,13 @@ export function GlaeubigerPage() {
               onChange={(e) => setFormData({ ...formData, betrag: parseFloat(e.target.value) || 0 })}
             />
             <Input
-              label="Fälligkeit (optional)"
+              label={appConfig.ui.labels.due_date}
               type="date"
               value={formData.faelligkeit}
               onChange={(e) => setFormData({ ...formData, faelligkeit: e.target.value })}
             />
             <Input
-              label="Notiz (optional)"
+              label={appConfig.ui.labels.note}
               value={formData.notiz}
               onChange={(e) => setFormData({ ...formData, notiz: e.target.value })}
             />
@@ -384,7 +456,9 @@ export function GlaeubigerPage() {
             </>
           }
         >
-          <p className="text-neutral-300">{appConfig.ui.messages.confirm_delete_creditor.replace('{name}', selectedGlaeubiger?.name || '')}</p>
+          <p className="text-neutral-300">
+            {appConfig.ui.messages.confirm_delete_creditor.replace('{name}', selectedGlaeubiger?.name || '')}
+          </p>
         </Dialog>
 
         {/* Zahlung Dialog */}
@@ -414,7 +488,7 @@ export function GlaeubigerPage() {
         >
           <div className="space-y-4">
             <div className="p-4 bg-neutral-800 rounded">
-              <p className="text-neutral-400 text-sm">Offener {appConfig.ui.labels.amount}</p>
+              <p className="text-neutral-400 text-sm">{appConfig.ui.labels.open_amount}</p>
               <p className="text-2xl font-semibold text-neutral-50">{formatCurrency(selectedGlaeubiger?.offen || 0)}</p>
             </div>
             <Input
@@ -425,6 +499,64 @@ export function GlaeubigerPage() {
               onChange={(e) => setZahlungbetrag(parseFloat(e.target.value) || 0)}
             />
           </div>
+        </Dialog>
+
+        {/* Historie Dialog */}
+        <Dialog
+          open={historieDialogOpen}
+          onClose={() => {
+            setHistorieDialogOpen(false);
+            setSelectedGlaeubiger(null);
+            setZahlungsHistorie([]);
+          }}
+          title={
+            selectedGlaeubiger
+              ? `${appConfig.ui.dialog_titles.history}: ${selectedGlaeubiger.name}`
+              : appConfig.ui.dialog_titles.history
+          }
+          actions={
+            <Button
+              onClick={() => {
+                setHistorieDialogOpen(false);
+                setSelectedGlaeubiger(null);
+                setZahlungsHistorie([]);
+              }}
+            >
+              {appConfig.ui.buttons.close}
+            </Button>
+          }
+        >
+          {zahlungsHistorie.length > 0 ? (
+            <div className="space-y-2 max-h-[60vh] overflow-y-auto">
+              {zahlungsHistorie.map((item, idx) => (
+                <div key={idx} className="p-3 bg-neutral-800 rounded border border-neutral-700">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <p className="text-sm text-neutral-400">{formatDate(item.datum)}</p>
+                      <p className="text-lg font-semibold text-neutral-50">{formatCurrency(item.betrag)}</p>
+                    </div>
+                    <Badge
+                      variant={
+                        item.status === 'bezahlt'
+                          ? 'success'
+                          : item.status === 'teilbezahlt'
+                            ? 'warning'
+                            : 'error'
+                      }
+                    >
+                      {item.status === 'bezahlt'
+                        ? appConfig.ui.status.paid
+                        : item.status === 'teilbezahlt'
+                          ? appConfig.ui.status.partial
+                          : appConfig.ui.status.open}
+                    </Badge>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-neutral-400 text-sm text-center py-4">{appConfig.ui.empty_states.no_history}</p>
+          )}
         </Dialog>
       </div>
     </PageLayout>

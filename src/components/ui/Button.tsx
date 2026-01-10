@@ -1,9 +1,9 @@
 /**
  * @file        Button.tsx
  * @description Wiederverwendbare Button-Komponente mit Icon-Support (Dark Theme, Responsive)
- * @version     0.10.0
+ * @version     0.11.0
  * @created     2025-12-11 01:05:00 CET
- * @updated     2026-01-09 20:45:09 CET
+ * @updated     2026-01-09 23:18:50 CET
  * @author      Akki Scholze
  *
  * @props
@@ -18,6 +18,7 @@
  *   iconOnly - Wenn true: nur Icon ohne Text, transparent BG, colored icon
  *
  * @changelog
+ *   0.11.0 - 2026-01-09 - Direct appConfig.theme.* access (breakpointsConfig eliminiert)
  *   0.10.0 - 2026-01-09 - Import auf appConfig.components.button umgestellt (Phase 2.2.2)
  *   0.9.0 - 2026-01-09 - Icon-Only: Padding entfernt (Button = Icon-Größe), keine Layout-Abstandssummierung
  *   0.8.0 - 2026-01-09 - Icon-Only: Transparent bg, colored icon (variant.text), hover 10% opacity
@@ -35,7 +36,7 @@
 // ═══════════════════════════════════════════════════════
 import { useState } from 'react';
 import type { ButtonProps } from '@/types/ui.types';
-import { appConfig, breakpointsConfig } from '@/config';
+import { appConfig } from '@/config';
 import { useResponsive } from '@/hooks/useResponsive';
 
 const buttonConfig = appConfig.components.button;
@@ -112,7 +113,7 @@ export function Button({
   const iconSize = iconSizeMap[size];
 
   // Touch-Target Minimum (44px) auf Mobile
-  const minTouchTarget = `${breakpointsConfig.touchMinSize}px`;
+  const minTouchTarget = `${appConfig.theme.responsive.touchMinSize}px`;
 
   // ═══════════════════════════════════════════════════════
   // ICON-ONLY MODE (transparent bg, colored icon)
@@ -124,9 +125,10 @@ export function Button({
     // Icon-Only: Immer transparenter Hintergrund, nur Icon farbig
     // Hover: leichte Hintergrundfarbe (10% opacity)
     const iconColor = getColorValue(variantStyles.text);
-    const hoverBg = isHovered && !isDisabled && !isMobile 
-      ? `${getColorValue(variantStyles.text)}1a` // 10% opacity (#rrggbb + 1a)
-      : 'transparent';
+    const hoverBg =
+      isHovered && !isDisabled && !isMobile
+        ? `${getColorValue(variantStyles.text)}1a` // 10% opacity (#rrggbb + 1a)
+        : 'transparent';
 
     return (
       <button
@@ -214,7 +216,8 @@ export function Button({
         paddingLeft: paddingX,
         paddingRight: paddingX,
         fontSize: fontSize,
-        border: 'border' in variantStyles ? `1px solid ${getColorValue(variantStyles.border || 'transparent')}` : 'none',
+        border:
+          'border' in variantStyles ? `1px solid ${getColorValue(variantStyles.border || 'transparent')}` : 'none',
         // fullWidth oder Mobile: 100% Breite
         width: fullWidth ? '100%' : undefined,
         // Touch-freundlich: Kein user-select auf Mobile

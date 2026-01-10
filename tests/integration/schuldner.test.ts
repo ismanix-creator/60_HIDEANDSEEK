@@ -92,7 +92,10 @@ describe('Schuldner API', () => {
     });
 
     expect(zahlungRes.status).toBe(200);
-    const result = (await zahlungRes.json()) as { success: boolean; data: { bezahlt: number; offen: number; status: string } };
+    const result = (await zahlungRes.json()) as {
+      success: boolean;
+      data: { bezahlt: number; offen: number; status: string };
+    };
     expect(result.success).toBe(true);
     expect(result.data.bezahlt).toBe(750);
     expect(result.data.offen).toBe(750);
@@ -120,7 +123,10 @@ describe('Schuldner API', () => {
     });
 
     expect(zahlungRes.status).toBe(200);
-    const result = (await zahlungRes.json()) as { success: boolean; data: { bezahlt: number; offen: number; status: string } };
+    const result = (await zahlungRes.json()) as {
+      success: boolean;
+      data: { bezahlt: number; offen: number; status: string };
+    };
     expect(result.success).toBe(true);
     expect(result.data.bezahlt).toBe(600);
     expect(result.data.offen).toBe(0);

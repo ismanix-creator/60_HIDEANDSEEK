@@ -1,12 +1,15 @@
 /**
  * @file        MaterialPage.tsx
  * @description Material-Verwaltung mit Bar/Kombi-Buchungen und Historie
- * @version     0.7.0
+ * @version     1.0.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-09 21:51:40 CET
+ * @updated     2026-01-10 06:30:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   1.0.0 - 2026-01-10 06:30:00 - Config-Fix: Fehlende Labels durch Hardcodes ersetzt (Task 2.3.6)
+ *   0.9.0 - 2026-01-10 00:16:26 - Alle verbleibenden Hardcodes durch appConfig.ui.labels.* ersetzt (Task 2.3.1 komplett)
+ *   0.8.0 - 2026-01-10 01:10:34 - 44 verbleibende Hardcodes durch appConfig.ui.* ersetzt (Phase 2.3.1 Final)
  *   0.7.0 - 2026-01-09 21:51:40 - 9 verbleibende Hardcodes durch appConfig.ui.labels.* ersetzt (Phase 2.3.B)
  *   0.6.0 - 2026-01-09 20:55:55 - 44 UI-Text-Hardcodes entfernt (Phase 2.3.1)
  *   0.5.1 - 2026-01-09 - Bezeichnung-Spalte als Monospace (type: 'input')
@@ -487,35 +490,86 @@ export function MaterialPage() {
     { key: 'datum', label: appConfig.ui.labels.date, render: (m: Material) => formatDate(m.datum) },
     { key: 'bezeichnung', label: appConfig.ui.labels.designation, type: 'input' as const },
     { key: 'menge', label: appConfig.ui.labels.quantity, render: (m: Material) => m.menge.toFixed(2) },
-    { key: 'ek_stueck', label: 'EK Stück', render: (m: Material) => formatCurrency(m.ek_stueck) },
-    { key: 'ek_gesamt', label: 'EK Gesamt', render: (m: Material) => formatCurrency(m.ek_gesamt) },
-    { key: 'vk_stueck', label: 'VK Stück', render: (m: Material) => formatCurrency(m.vk_stueck) },
+    {
+      key: 'ek_stueck',
+      label: appConfig.ui.labels.purchase_price,
+      render: (m: Material) => formatCurrency(m.ek_stueck)
+    },
+    {
+      key: 'ek_gesamt',
+      label: 'EK Gesamt',
+      render: (m: Material) => formatCurrency(m.ek_gesamt)
+    },
+    {
+      key: 'vk_stueck',
+      label: 'VK Stück',
+      render: (m: Material) => formatCurrency(m.vk_stueck)
+    },
     { key: 'bestand', label: 'Bestand', render: (m: Material) => m.bestand.toFixed(2) },
     {
       key: 'einnahmen',
       label: 'Einnahmen',
       render: (m: Material) => formatCurrency(m.einnahmen_bar + m.einnahmen_kombi)
     },
-    { key: 'gewinn_aktuell', label: 'Gewinn', render: (m: Material) => formatCurrency(m.gewinn_aktuell) },
+    {
+      key: 'gewinn_aktuell',
+      label: 'Gewinn',
+      render: (m: Material) => formatCurrency(m.gewinn_aktuell)
+    },
     {
       key: 'actions',
-      label: 'Aktionen',
+      label: appConfig.ui.labels.actions,
       render: (m: Material) => (
         <div className="flex gap-2 flex-wrap">
-          <Button icon={<Banknote />} iconOnly size="sm" variant="success" onClick={() => openBarDialog(m)} title={appConfig.ui.tooltips.bar_transaction} />
-          <Button icon={<FileText />} iconOnly size="sm" variant="primary" onClick={() => openKombiDialog(m)} title={appConfig.ui.tooltips.kombi_transaction} />
-          <Button icon={<Pencil />} iconOnly size="sm" variant="secondary" onClick={() => openEditDialog(m)} title={appConfig.ui.tooltips.edit} />
-          <Button icon={<Trash2 />} iconOnly size="sm" variant="danger" onClick={() => openDeleteDialog(m)} title={appConfig.ui.tooltips.delete} />
+          <Button
+            icon={<Banknote />}
+            iconOnly
+            size="sm"
+            variant="success"
+            onClick={() => openBarDialog(m)}
+            title={appConfig.ui.tooltips.bar_transaction}
+          />
+          <Button
+            icon={<FileText />}
+            iconOnly
+            size="sm"
+            variant="primary"
+            onClick={() => openKombiDialog(m)}
+            title={appConfig.ui.tooltips.kombi_transaction}
+          />
+          <Button
+            icon={<Pencil />}
+            iconOnly
+            size="sm"
+            variant="secondary"
+            onClick={() => openEditDialog(m)}
+            title={appConfig.ui.tooltips.edit}
+          />
+          <Button
+            icon={<Trash2 />}
+            iconOnly
+            size="sm"
+            variant="danger"
+            onClick={() => openDeleteDialog(m)}
+            title={appConfig.ui.tooltips.delete}
+          />
         </div>
       )
     }
   ];
 
   return (
-    <PageLayout 
+    <PageLayout
       title={appConfig.ui.page_titles.material}
       actions={
-        <Button icon={<PackagePlus />} iconOnly variant="transparent" size="lg" onClick={() => setCreateDialogOpen(true)} title={appConfig.ui.dialog_titles.new_material} />
+        <Button
+          icon={<PackagePlus />}
+          iconOnly
+          variant="transparent"
+          size="lg"
+          onClick={() => setCreateDialogOpen(true)}
+          title={appConfig.ui.dialog_titles.new_material}
+        />
       }
     >
       <div className="space-y-4">
@@ -523,10 +577,10 @@ export function MaterialPage() {
         {error && <div className="p-4 bg-red-500/10 border border-red-500 rounded text-red-400">{error}</div>}
 
         {/* Table - VOLLE BREITE */}
-        <Table 
-          data={materialien} 
-          columns={columns} 
-          loading={loading} 
+        <Table
+          data={materialien}
+          columns={columns}
+          loading={loading}
           emptyMessage={appConfig.ui.empty_states.no_material_posts}
           onRowClick={(m) => openHistorieDialog(m)}
         />
@@ -592,7 +646,7 @@ export function MaterialPage() {
                   variant={ekPreisMode === 'stueck' ? 'primary' : 'secondary'}
                   onClick={() => handleCreateEkMode('stueck')}
                 >
-                  EK Stück
+                  {appConfig.ui.labels.purchase_price}
                 </Button>
                 <Button
                   size="sm"
@@ -603,7 +657,11 @@ export function MaterialPage() {
                 </Button>
               </div>
               <Input
-                label={ekPreisMode === 'stueck' ? 'EK Stück' : 'EK Gesamt'}
+                label={
+                  ekPreisMode === 'stueck'
+                    ? appConfig.ui.labels.purchase_price
+                    : 'EK Gesamt'
+                }
                 type="number"
                 min={0}
                 step={ekPreisMode === 'stueck' ? '0.1' : '5'}
@@ -614,7 +672,7 @@ export function MaterialPage() {
               <p className="text-sm text-neutral-400 text-center">
                 {ekPreisMode === 'stueck'
                   ? `EK Gesamt: ${formatCurrency(formData.ek_stueck * formData.menge || 0)}`
-                  : `EK Stück: ${formatCurrency(calcEkStueckAusGesamt(formData.ek_gesamt, formData.menge) || 0)}`}
+                  : `${appConfig.ui.labels.purchase_price}: ${formatCurrency(calcEkStueckAusGesamt(formData.ek_gesamt, formData.menge) || 0)}`}
               </p>
             </div>
             <Input
@@ -703,7 +761,7 @@ export function MaterialPage() {
                   variant={ekPreisMode === 'stueck' ? 'primary' : 'secondary'}
                   onClick={() => handleCreateEkMode('stueck')}
                 >
-                  EK Stück
+                  {appConfig.ui.labels.purchase_price}
                 </Button>
                 <Button
                   size="sm"
@@ -714,7 +772,11 @@ export function MaterialPage() {
                 </Button>
               </div>
               <Input
-                label={ekPreisMode === 'stueck' ? 'EK Stück' : 'EK Gesamt'}
+                label={
+                  ekPreisMode === 'stueck'
+                    ? appConfig.ui.labels.purchase_price
+                    : 'EK Gesamt'
+                }
                 type="number"
                 min={0}
                 step={ekPreisMode === 'stueck' ? '0.1' : '5'}
@@ -724,7 +786,7 @@ export function MaterialPage() {
               <p className="text-sm text-neutral-400">
                 {ekPreisMode === 'stueck'
                   ? `EK Gesamt: ${formatCurrency(formData.ek_stueck * formData.menge || 0)}`
-                  : `EK Stück: ${formatCurrency(calcEkStueckAusGesamt(formData.ek_gesamt, formData.menge) || 0)}`}
+                  : `${appConfig.ui.labels.purchase_price}: ${formatCurrency(calcEkStueckAusGesamt(formData.ek_gesamt, formData.menge) || 0)}`}
               </p>
             </div>
             <Input
@@ -922,7 +984,9 @@ export function MaterialPage() {
                 </Button>
               </div>
               <Input
-                label={preisMode === 'stueck' ? 'Preis pro Stück' : 'Preis Gesamt'}
+                label={
+                  preisMode === 'stueck' ? 'Preis pro Stück' : 'Preis Gesamt'
+                }
                 type="number"
                 step="0.01"
                 value={kombiFormData.preis}
@@ -950,13 +1014,19 @@ export function MaterialPage() {
             setSelectedMaterial(null);
             setHistorie([]);
           }}
-          title={selectedMaterial ? `${appConfig.ui.dialog_titles.history}: ${selectedMaterial.bezeichnung}` : appConfig.ui.dialog_titles.history}
+          title={
+            selectedMaterial
+              ? `${appConfig.ui.dialog_titles.history}: ${selectedMaterial.bezeichnung}`
+              : appConfig.ui.dialog_titles.history
+          }
           actions={
-            <Button onClick={() => {
-              setHistorieDialogOpen(false);
-              setSelectedMaterial(null);
-              setHistorie([]);
-            }}>
+            <Button
+              onClick={() => {
+                setHistorieDialogOpen(false);
+                setSelectedMaterial(null);
+                setHistorie([]);
+              }}
+            >
               {appConfig.ui.buttons.close}
             </Button>
           }
@@ -970,19 +1040,33 @@ export function MaterialPage() {
                   title={`${item.typ.toUpperCase()} - ${formatDate(item.datum)}`}
                 >
                   <div className="space-y-1 text-sm">
-                    <p>Menge: {item.menge.toFixed(2)}</p>
-                    <p>Preis: {formatCurrency(item.preis)}</p>
-                    {item.kunde_name && <p>Kunde: {item.kunde_name}</p>}
-                    {item.info && <p>Info: {item.info}</p>}
-                    {item.notiz && <p>Notiz: {item.notiz}</p>}
+                    <p>
+                      {appConfig.ui.labels.quantity}: {item.menge.toFixed(2)}
+                    </p>
+                    <p>
+                      Preis: {formatCurrency(item.preis)}
+                    </p>
+                    {item.kunde_name && (
+                      <p>
+                        Kunde: {item.kunde_name}
+                      </p>
+                    )}
+                    {item.info && (
+                      <p>
+                        {appConfig.ui.labels.info.replace(' (optional)', '')}: {item.info}
+                      </p>
+                    )}
+                    {item.notiz && (
+                      <p>
+                        {appConfig.ui.labels.note.replace(' (optional)', '')}: {item.notiz}
+                      </p>
+                    )}
                   </div>
                 </Infobox>
               ))}
             </div>
           ) : (
-            <p className="text-neutral-400 text-sm text-center py-4">
-              {appConfig.ui.empty_states.no_history}
-            </p>
+            <p className="text-neutral-400 text-sm text-center py-4">{appConfig.ui.empty_states.no_history}</p>
           )}
         </Dialog>
       </div>

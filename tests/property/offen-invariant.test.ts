@@ -16,16 +16,12 @@ import fc from 'fast-check';
 describe('Offen Invariant (TODO)', () => {
   it.skip('offen und bezahlt sind >= 0 und summe entspricht betrag', () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: 0, max: 10000 }),
-        fc.integer({ min: 0, max: 10000 }),
-        (betrag, bezahlt) => {
-          const offen = betrag - bezahlt;
-          expect(offen).toBeGreaterThanOrEqual(0);
-          expect(bezahlt).toBeGreaterThanOrEqual(0);
-          expect(offen + bezahlt).toBe(betrag);
-        }
-      )
+      fc.property(fc.integer({ min: 0, max: 10000 }), fc.integer({ min: 0, max: 10000 }), (betrag, bezahlt) => {
+        const offen = betrag - bezahlt;
+        expect(offen).toBeGreaterThanOrEqual(0);
+        expect(bezahlt).toBeGreaterThanOrEqual(0);
+        expect(offen + bezahlt).toBe(betrag);
+      })
     );
   });
 });

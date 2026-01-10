@@ -1,12 +1,13 @@
 /**
  * @file        vite.config.ts
  * @description Vite-Konfiguration (Ports/Hosts via ENV; config.toml bleibt SoT für App-Config)
- * @version     0.4.1
+ * @version     0.4.2
  * @created     2026-01-06 19:14:38 CET
- * @updated     2026-01-08 18:15:00 CET
+ * @updated     2026-01-10 08:00:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.4.2 - 2026-01-10 - dotenv.config() hinzugefuegt (Build-Zeit ENV loading)
  *   0.4.1 - 2026-01-08 - ENV ist Pflicht (keine Hardcoded Ports/Hosts)
  *   0.4.0 - 2026-01-08 - Global ENV loading via src/config/env.ts (HIDEANDSEEK_* mapping)
  *   0.3.0 - 2026-01-08 - Robustere ENV-Port/Host Auswertung + optional sourcemap toggle
@@ -17,6 +18,9 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'node:path';
+import { config as dotenvConfig } from 'dotenv';
+
+dotenvConfig(); // Load .env for build-time config
 
 function requireNumber(name: string): number {
   const n = Number(process.env[name]);

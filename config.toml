@@ -1,11 +1,17 @@
 # @file        config.toml
 # @description Single Source of Truth für App-Konfiguration
-# @version     1.2.0
+# @version     1.6.0
 # @created     2026-01-06 15:35:00 CET
-# @updated     2026-01-09 17:11:43 CET
+# @updated     2026-01-10 03:51:01 CET
 # @author      Akki Scholze
 #
 # @changelog
+#   1.6.0 - 2026-01-10 03:51 CET - ZERO TOLERANCE: Alle fehlenden Schema-Felder ergänzt (border, text, outline, buttons), keine Fallbacks
+#   1.5.0 - 2026-01-10 03:34 CET - Config restrukturiert: logische Block-Sortierung mit Kommentaren
+#   1.4.0 - 2026-01-10 - Table config restructured, duplicates removed (ui.dialogs, ui.pages), naming cleaned (price_per_*), columns extended (monospace, buttons)
+#   1.3.0 - 2026-01-10 - Added components.table.pages.* (Material, Kunden, Glaeubiger, Schuldner)
+#   1.2.2 - 2026-01-10 - Added missing MaterialPage labels (EK Gesamt, Bestand, Einnahmen, Gewinn, Verfügbar, Bar-Verkauf, Kombi-Buchung, Preis/Stück, Preis Gesamt, Preis pro Stück, Gesamt, Preis, Kunde)
+#   1.2.1 - 2026-01-09 - Removed invalid ui.labels/ui.status keys (schema compliance)
 #   1.2.0 - 2026-01-09 - Theme-Extensions + Component-Configs + UI-Texte (~471 Zeilen)
 #   1.1.0 - 2026-01-08 - Auth config added (disabled by default)
 #   1.0.0 - 2026-01-07 - Complete config with theme values (SoT)
@@ -13,9 +19,13 @@
 #   0.1.0 - 2026-01-06 - Datenbankpfad auf data/material-tracker.db vereinheitlicht
 #   0.0.0 - 2026-01-06 - Initial scaffold
 
+# ========================================
+# CORE APP CONFIGURATION
+# ========================================
+
 [app]
 name = "Material-Tracker"
-version = "0.0.0"
+version = "1.2.0"
 description = "Material-Verwaltung mit Kundeninteraktionen und Schuldentracking"
 
 [server]
@@ -36,7 +46,10 @@ enabled = false
 mode = "password_required"
 admin_bootstrap_user_id = "admin"
 
-# Navigation Items
+# ========================================
+# NAVIGATION
+# ========================================
+
 [[navigation.items]]
 key = "material"
 label = "Material"
@@ -78,6 +91,10 @@ key = "login"
 label = "Login"
 path = "/login"
 icon = "log-in"
+
+# ========================================
+# THEME: COLOR PALETTE
+# ========================================
 
 [theme.colors.primary]
 50 = "#e3f2fd"
@@ -154,6 +171,10 @@ stripe1 = "#1a1a1a"
 stripe2 = "#2a2a2a"
 selection = "#353535"
 
+# ========================================
+# THEME: TYPOGRAPHY
+# ========================================
+
 [theme.typography.fontFamily]
 base = "Segoe UI, system-ui, sans-serif"
 mono = "JetBrains Mono, monospace"
@@ -171,6 +192,10 @@ medium = 500
 semibold = 600
 bold = 700
 
+# ========================================
+# THEME: SPACING & LAYOUT
+# ========================================
+
 [theme.spacing]
 xxs = "0.125rem"
 xs = "0.25rem"
@@ -187,6 +212,19 @@ contentMaxWidthRem = "100rem"
 paddingX = { sm = "0.5rem", md = "1rem", lg = "1.5rem" }
 paddingY = { sm = "0.25rem", md = "0.5rem", lg = "0.75rem" }
 
+[theme.spacing.mobile]
+xxs = "0.0625rem"
+xs = "0.125rem"
+sm = "0.25rem"
+md = "0.5rem"
+lg = "0.75rem"
+xl = "1rem"
+xxl = "1.5rem"
+
+# ========================================
+# THEME: ICONS
+# ========================================
+
 [theme.icons.sizes]
 sm = "16px"
 md = "24px"
@@ -198,6 +236,10 @@ xs = "14px"
 sm = "16px"
 md = "18px"
 lg = "20px"
+
+# ========================================
+# THEME: VISUAL EFFECTS (Shadows & Borders)
+# ========================================
 
 [theme.shadows]
 sm = "0 1px 2px 0 rgba(0, 0, 0, 0.05)"
@@ -213,6 +255,10 @@ md = "0.25rem"
 lg = "0.5rem"
 xl = "1rem"
 full = "9999px"
+
+# ========================================
+# THEME: RESPONSIVE DESIGN (Breakpoints & Devices)
+# ========================================
 
 [theme.breakpoints]
 xs = "320px"
@@ -242,17 +288,8 @@ bottomNavPadding = "80px"
 sidebarWidth = "200px"
 touchMinSize = 44
 
-[theme.spacing.mobile]
-xxs = "0.0625rem"
-xs = "0.125rem"
-sm = "0.25rem"
-md = "0.5rem"
-lg = "0.75rem"
-xl = "1rem"
-xxl = "1.5rem"
-
 # ========================================
-# COMPONENT CONFIGURATIONS
+# COMPONENTS: BADGE
 # ========================================
 
 [components.badge.base]
@@ -290,6 +327,10 @@ text = "#ffffff"
 bg = "#424242"
 text = "#ffffff"
 
+# ========================================
+# COMPONENTS: BUTTON
+# ========================================
+
 [components.button]
 borderRadius = "0.25rem"
 
@@ -297,16 +338,19 @@ borderRadius = "0.25rem"
 bg = "#2196f3"
 text = "#ffffff"
 hover = "#1976d2"
+border = "transparent"
 
 [components.button.variants.secondary]
 bg = "#3d3d3d"
 text = "#ffffff"
 hover = "#454545"
+border = "transparent"
 
 [components.button.variants.danger]
 bg = "#e74c3c"
 text = "#ffffff"
 hover = "#c0392b"
+border = "transparent"
 
 [components.button.variants.outline]
 bg = "transparent"
@@ -318,21 +362,25 @@ border = "#2196f3"
 bg = "transparent"
 text = "#2196f3"
 hover = "#1e1e1e"
+border = "transparent"
 
 [components.button.variants.success]
 bg = "#27ae60"
 text = "#ffffff"
 hover = "#229954"
+border = "transparent"
 
 [components.button.variants.warning]
 bg = "#f39c12"
 text = "#1e1e1e"
 hover = "#e67e22"
+border = "transparent"
 
 [components.button.variants.transparent]
 bg = "transparent"
 text = "#ffffff"
 hover = "#2d2d2d"
+border = "transparent"
 
 [components.button.sizes.xs]
 padding = "0.25rem 0.5rem"
@@ -374,6 +422,10 @@ fontSize = "xl"
 icon = "24px"
 height = "3.5rem"
 
+# ========================================
+# COMPONENTS: DIALOG
+# ========================================
+
 [components.dialog.overlay]
 bg = "rgba(0, 0, 0, 0.75)"
 
@@ -402,6 +454,10 @@ padding = "1rem 1.5rem"
 marginTop = "0"
 gap = "0.5rem"
 
+# ========================================
+# COMPONENTS: DIVIDER
+# ========================================
+
 [components.divider.month]
 bg = "#252525"
 text = "#ffffff"
@@ -420,6 +476,10 @@ marginY = 4
 height = "1px"
 thickness = "1px"
 color = "#3d3d3d"
+
+# ========================================
+# COMPONENTS: INFOBOX
+# ========================================
 
 [components.infobox.base]
 padding = "1rem"
@@ -462,6 +522,10 @@ containerWidth = "300px"
 inputWidth = "100px"
 buttonSize = "md"
 
+# ========================================
+# COMPONENTS: INPUT
+# ========================================
+
 [components.input.base]
 bg = "#1e1e1e"
 border = "#3d3d3d"
@@ -478,20 +542,25 @@ borderWidth = "1px"
 border = "#2196f3"
 bg = "#1e1e1e"
 outline = "2px solid rgba(33, 150, 243, 0.2)"
+text = "#ffffff"
 
 [components.input.states.error]
 border = "#e74c3c"
 bg = "#1e1e1e"
 outline = "2px solid rgba(231, 76, 60, 0.2)"
+text = "#ffffff"
 
 [components.input.states.disabled]
 border = "#3d3d3d"
 bg = "#2d2d2d"
 text = "#666666"
+outline = "none"
 
 [components.input.states.default]
 border = "#3d3d3d"
 bg = "#1e1e1e"
+text = "#ffffff"
+outline = "none"
 
 [components.input.types.text]
 type = "text"
@@ -508,9 +577,48 @@ type = "email"
 [components.input.types.currency]
 type = "text"
 
+# ========================================
+# COMPONENTS: PAGE HEADER
+# ========================================
+
 [components.pageHeader.button]
 className = "page-header-button"
 
+# ========================================
+# COMPONENTS: TABLE (Core Styling)
+# ========================================
+
+[components.table]
+# Basis-Layout (rowHeight MUSS in px sein!)
+rowHeight = "40px"
+cellPaddingX = "1rem"
+cellPaddingY = "0.75rem"
+
+# Wrapper-Styling (flat keys)
+wrapperBg = "#1e1e1e"
+wrapperBorder = "#3d3d3d"
+wrapperBorderRadius = "0.5rem"
+wrapperShadow = "md"
+
+# Header-Styling (flat keys)
+headerBg = "#252525"
+headerText = "#ffffff"
+headerFontSize = "sm"
+headerFontWeight = "semibold"
+headerFontFamily = "base"
+
+# Cell-Styling (flat keys)
+cellText = "#ffffff"
+cellFontSize = "sm"
+cellFontFamily = "base"
+
+# Row-Styling (flat keys)
+rowBgOdd = "#1a1a1a"
+rowBgEven = "#2a2a2a"
+rowBgHover = "#353535"
+rowBorderBottom = "#3d3d3d"
+
+# Nested structure for backward compatibility
 [components.table.wrapper]
 bg = "#1e1e1e"
 border = "#3d3d3d"
@@ -552,7 +660,275 @@ fontFamily = "base"
 fontFamily = "mono"
 
 # ========================================
-# UI TEXT CONFIGURATION (i18n-ready)
+# COMPONENTS: TABLE COLUMNS - MATERIAL PAGE
+# ========================================
+
+[[components.table.pages.material.columns]]
+key = "datum"
+label = "Datum"
+width = "12%"
+type = "date"
+monospace = false
+buttons = []
+
+[[components.table.pages.material.columns]]
+key = "bezeichnung"
+label = "Bezeichnung"
+width = "20%"
+type = "text"
+monospace = false
+buttons = []
+
+[[components.table.pages.material.columns]]
+key = "menge"
+label = "Menge"
+width = "10%"
+type = "number"
+monospace = false
+buttons = []
+
+[[components.table.pages.material.columns]]
+key = "ek_stueck"
+label = "EK Stück"
+width = "12%"
+type = "currency"
+monospace = false
+buttons = []
+
+[[components.table.pages.material.columns]]
+key = "ek_gesamt"
+label = "EK Gesamt"
+width = "12%"
+type = "currency"
+monospace = false
+buttons = []
+
+[[components.table.pages.material.columns]]
+key = "vk_stueck"
+label = "VK Stück"
+width = "12%"
+type = "currency"
+monospace = false
+buttons = []
+
+[[components.table.pages.material.columns]]
+key = "bestand"
+label = "Bestand"
+width = "10%"
+type = "number"
+monospace = false
+buttons = []
+
+[[components.table.pages.material.columns]]
+key = "einnahmen"
+label = "Einnahmen"
+width = "12%"
+type = "currency"
+monospace = false
+buttons = []
+
+[[components.table.pages.material.columns]]
+key = "gewinn_aktuell"
+label = "Gewinn"
+width = "12%"
+type = "currency"
+monospace = false
+buttons = []
+
+[[components.table.pages.material.columns]]
+key = "actions"
+label = "Aktionen"
+width = "8%"
+type = "actions"
+buttons = ["bar", "kombi", "edit", "delete"]
+
+# ========================================
+# COMPONENTS: TABLE COLUMNS - KUNDEN PAGE
+# ========================================
+
+[[components.table.pages.kunden.columns]]
+key = "name"
+label = "Kunde"
+width = "20%"
+type = "text"
+monospace = false
+buttons = []
+
+[[components.table.pages.kunden.columns]]
+key = "gesamt"
+label = "Gesamt"
+width = "15%"
+type = "currency"
+monospace = false
+buttons = []
+
+[[components.table.pages.kunden.columns]]
+key = "bezahlt"
+label = "Bezahlt"
+width = "15%"
+type = "currency"
+monospace = false
+buttons = []
+
+[[components.table.pages.kunden.columns]]
+key = "offen"
+label = "Offener Betrag"
+width = "15%"
+type = "currency"
+monospace = false
+buttons = []
+
+[[components.table.pages.kunden.columns]]
+key = "status"
+label = "Status"
+width = "15%"
+type = "status"
+monospace = false
+buttons = []
+
+[[components.table.pages.kunden.columns]]
+key = "actions"
+label = "Aktionen"
+width = "20%"
+type = "actions"
+buttons = ["edit", "delete"]
+
+# ========================================
+# COMPONENTS: TABLE COLUMNS - GLÄUBIGER PAGE
+# ========================================
+
+[[components.table.pages.glaeubiger.columns]]
+key = "datum"
+label = "Datum"
+width = "12%"
+type = "date"
+monospace = false
+buttons = []
+
+[[components.table.pages.glaeubiger.columns]]
+key = "name"
+label = "Name"
+width = "20%"
+type = "text"
+monospace = false
+buttons = []
+
+[[components.table.pages.glaeubiger.columns]]
+key = "betrag"
+label = "Betrag"
+width = "13%"
+type = "currency"
+monospace = false
+buttons = []
+
+[[components.table.pages.glaeubiger.columns]]
+key = "bezahlt"
+label = "Bezahlt"
+width = "13%"
+type = "currency"
+monospace = false
+buttons = []
+
+[[components.table.pages.glaeubiger.columns]]
+key = "offen"
+label = "Offen"
+width = "13%"
+type = "currency"
+monospace = false
+buttons = []
+
+[[components.table.pages.glaeubiger.columns]]
+key = "faelligkeit"
+label = "Fälligkeit"
+width = "12%"
+type = "date"
+monospace = false
+buttons = []
+
+[[components.table.pages.glaeubiger.columns]]
+key = "status"
+label = "Status"
+width = "10%"
+type = "status"
+monospace = false
+buttons = []
+
+[[components.table.pages.glaeubiger.columns]]
+key = "actions"
+label = "Aktionen"
+width = "7%"
+type = "actions"
+buttons = ["edit", "delete"]
+
+# ========================================
+# COMPONENTS: TABLE COLUMNS - SCHULDNER PAGE
+# ========================================
+
+[[components.table.pages.schuldner.columns]]
+key = "datum"
+label = "Datum"
+width = "12%"
+type = "date"
+monospace = false
+buttons = []
+
+[[components.table.pages.schuldner.columns]]
+key = "name"
+label = "Name"
+width = "20%"
+type = "text"
+monospace = false
+buttons = []
+
+[[components.table.pages.schuldner.columns]]
+key = "betrag"
+label = "Betrag"
+width = "13%"
+type = "currency"
+monospace = false
+buttons = []
+
+[[components.table.pages.schuldner.columns]]
+key = "bezahlt"
+label = "Bezahlt"
+width = "13%"
+type = "currency"
+monospace = false
+buttons = []
+
+[[components.table.pages.schuldner.columns]]
+key = "offen"
+label = "Offen"
+width = "13%"
+type = "currency"
+monospace = false
+buttons = []
+
+[[components.table.pages.schuldner.columns]]
+key = "faelligkeit"
+label = "Fälligkeit"
+width = "12%"
+type = "date"
+monospace = false
+buttons = []
+
+[[components.table.pages.schuldner.columns]]
+key = "status"
+label = "Status"
+width = "10%"
+type = "status"
+monospace = false
+buttons = []
+
+[[components.table.pages.schuldner.columns]]
+key = "actions"
+label = "Aktionen"
+width = "7%"
+type = "actions"
+buttons = ["edit", "delete"]
+
+# ========================================
+# UI: BUTTON LABELS
 # ========================================
 
 [ui.buttons]
@@ -564,20 +940,43 @@ edit = "Bearbeiten"
 close = "Schließen"
 record = "Verbuchen"
 
+# ========================================
+# UI: FIELD LABELS
+# ========================================
+
 [ui.labels]
 date = "Datum"
 name = "Name"
 designation = "Bezeichnung"
 quantity = "Menge"
 amount = "Betrag"
+amount_paid = "Bezahlt"
 payment_amount = "Zahlungsbetrag"
 material = "Material"
 note = "Notiz (optional)"
 price_per_unit = "VK Stück (Mindest-VK)"
 purchase_price = "EK Stück"
+purchase_price_total = "EK Gesamt"
+selling_price_unit = "VK Stück"
 info = "Info (optional)"
 due_date = "Fälligkeit (optional)"
 open_amount = "Offener Betrag"
+status = "Status"
+actions = "Aktionen"
+stock = "Bestand"
+revenue = "Einnahmen"
+profit = "Gewinn"
+available = "Verfügbar"
+bar_sale = "Bar-Verkauf"
+kombi_booking = "Kombi-Buchung"
+total_price = "Preis Gesamt"
+total = "Gesamt"
+price = "Preis"
+customer = "Kunde"
+
+# ========================================
+# UI: TOOLTIPS
+# ========================================
 
 [ui.tooltips]
 bar_transaction = "BAR"
@@ -592,20 +991,27 @@ payment = "Zahlung"
 create = "Erstellen"
 record = "Verbuchen"
 
-[ui.pages]
+# ========================================
+# UI: PAGE TITLES
+# ========================================
+
+[ui.page_titles]
 material = "Material"
 customers = "Kunden"
 creditors = "Gläubiger"
 debtors = "Schuldner"
 settings = "Einstellungen"
 
-[ui.dialogs]
+# ========================================
+# UI: DIALOG TITLES
+# ========================================
+
+[ui.dialog_titles]
 new_material = "Neues Material"
 edit_material = "Material bearbeiten"
 delete_material = "Material löschen"
 bar_transaction = "BAR-Bewegung"
 kombi_transaction = "KOMBI-Bewegung"
-history = "Historie"
 new_customer = "Neuer Kunde"
 edit_customer = "Kunde bearbeiten"
 delete_customer = "Kunde löschen"
@@ -618,12 +1024,21 @@ delete_creditor = "Gläubiger löschen"
 new_debtor = "Neuer Schuldner"
 edit_debtor = "Schuldner bearbeiten"
 delete_debtor = "Schuldner löschen"
+history = "Historie"
+
+# ========================================
+# UI: MESSAGES & CONFIRMATIONS
+# ========================================
 
 [ui.messages]
 confirm_delete_material = "Möchten Sie das Material \"{name}\" wirklich löschen?"
 confirm_delete_customer = "Möchten Sie den Kunden \"{name}\" wirklich löschen?"
 confirm_delete_creditor = "Möchten Sie den Gläubiger \"{name}\" wirklich löschen?"
 confirm_delete_debtor = "Möchten Sie den Schuldner \"{name}\" wirklich löschen?"
+
+# ========================================
+# UI: VALIDATION MESSAGES
+# ========================================
 
 [ui.validation]
 date_required = "Datum erforderlich"
@@ -633,6 +1048,10 @@ ek_stueck_must_be_positive = "EK Stück muss größer 0 sein"
 ek_gesamt_must_be_positive = "EK Gesamt muss größer 0 sein"
 vk_stueck_must_be_positive = "VK Stück muss größer 0 sein"
 
+# ========================================
+# UI: ERROR MESSAGES
+# ========================================
+
 [ui.errors]
 create_failed = "Fehler beim Erstellen"
 update_failed = "Fehler beim Aktualisieren"
@@ -641,6 +1060,10 @@ load_failed = "Fehler beim Laden"
 booking_failed = "Fehler beim Buchen"
 network_error = "Netzwerkfehler"
 
+# ========================================
+# UI: EMPTY STATE MESSAGES
+# ========================================
+
 [ui.empty_states]
 no_history = "Keine Historie vorhanden"
 no_customers = "Keine Kunden vorhanden"
@@ -648,6 +1071,19 @@ no_material_posts = "Keine Material-Posten vorhanden"
 no_other_posts = "Keine sonstigen Posten vorhanden"
 no_creditors = "Keine Gläubiger vorhanden"
 no_debtors = "Keine Schuldner vorhanden"
+
+# ========================================
+# UI: STATUS LABELS
+# ========================================
+
+[ui.status]
+paid = "Bezahlt"
+partial = "Teilweise"
+open = "Offen"
+
+# ========================================
+# UI: INPUT CONSTRAINTS
+# ========================================
 
 [ui.input_limits]
 quantity_min = 0
