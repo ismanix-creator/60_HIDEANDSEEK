@@ -524,7 +524,7 @@ export function MaterialPage() {
           <Button
             icon={<Banknote />}
             iconOnly
-            size="sm"
+            size="icon"
             variant="success"
             onClick={() => openBarDialog(m)}
             title={appConfig.ui.tooltips.bar_transaction}
@@ -532,7 +532,7 @@ export function MaterialPage() {
           <Button
             icon={<FileText />}
             iconOnly
-            size="sm"
+            size="icon"
             variant="primary"
             onClick={() => openKombiDialog(m)}
             title={appConfig.ui.tooltips.kombi_transaction}
@@ -540,7 +540,7 @@ export function MaterialPage() {
           <Button
             icon={<Pencil />}
             iconOnly
-            size="sm"
+            size="icon"
             variant="secondary"
             onClick={() => openEditDialog(m)}
             title={appConfig.ui.tooltips.edit}
@@ -548,7 +548,7 @@ export function MaterialPage() {
           <Button
             icon={<Trash2 />}
             iconOnly
-            size="sm"
+            size="icon"
             variant="danger"
             onClick={() => openDeleteDialog(m)}
             title={appConfig.ui.tooltips.delete}
@@ -566,7 +566,7 @@ export function MaterialPage() {
           icon={<PackagePlus />}
           iconOnly
           variant="transparent"
-          size="lg"
+          size="btn"
           onClick={() => setCreateDialogOpen(true)}
           title={appConfig.ui.dialog_titles.new_material}
         />
@@ -642,14 +642,14 @@ export function MaterialPage() {
             <div className="space-y-2 w-full max-w-sm">
               <div className="flex gap-2 justify-center">
                 <Button
-                  size="sm"
+                  size="btn"
                   variant={ekPreisMode === 'stueck' ? 'primary' : 'secondary'}
                   onClick={() => handleCreateEkMode('stueck')}
                 >
                   {appConfig.ui.labels.purchase_price}
                 </Button>
                 <Button
-                  size="sm"
+                  size="btn"
                   variant={ekPreisMode === 'gesamt' ? 'primary' : 'secondary'}
                   onClick={() => handleCreateEkMode('gesamt')}
                 >
@@ -757,14 +757,14 @@ export function MaterialPage() {
             <div className="space-y-2">
               <div className="flex gap-2">
                 <Button
-                  size="sm"
+                  size="btn"
                   variant={ekPreisMode === 'stueck' ? 'primary' : 'secondary'}
                   onClick={() => handleCreateEkMode('stueck')}
                 >
                   {appConfig.ui.labels.purchase_price}
                 </Button>
                 <Button
-                  size="sm"
+                  size="btn"
                   variant={ekPreisMode === 'gesamt' ? 'primary' : 'secondary'}
                   onClick={() => handleCreateEkMode('gesamt')}
                 >
@@ -875,14 +875,14 @@ export function MaterialPage() {
             <div className="space-y-2">
               <div className="flex gap-2">
                 <Button
-                  size="sm"
+                  size="btn"
                   variant={preisMode === 'stueck' ? 'primary' : 'secondary'}
                   onClick={() => setPreisMode('stueck')}
                 >
                   Preis/Stück
                 </Button>
                 <Button
-                  size="sm"
+                  size="btn"
                   variant={preisMode === 'gesamt' ? 'primary' : 'secondary'}
                   onClick={() => setPreisMode('gesamt')}
                 >
@@ -969,14 +969,14 @@ export function MaterialPage() {
             <div className="space-y-2">
               <div className="flex gap-2">
                 <Button
-                  size="sm"
+                  size="btn"
                   variant={preisMode === 'stueck' ? 'primary' : 'secondary'}
                   onClick={() => setPreisMode('stueck')}
                 >
                   Preis/Stück
                 </Button>
                 <Button
-                  size="sm"
+                  size="btn"
                   variant={preisMode === 'gesamt' ? 'primary' : 'secondary'}
                   onClick={() => setPreisMode('gesamt')}
                 >

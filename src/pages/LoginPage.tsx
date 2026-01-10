@@ -100,7 +100,7 @@ export function LoginPage() {
           disabled={loading}
           fullWidth
           variant="primary"
-          size="lg"
+          size="btn"
         >
           {loading ? 'Logging in...' : 'Login'}
         </Button>

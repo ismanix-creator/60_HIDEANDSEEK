@@ -54,7 +54,7 @@ export type ButtonVariant =
   | 'warning'
   | 'transparent';
 
-export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+export type ButtonSize = 'btn' | 'icon';
 
 export interface ButtonProps {
   variant?: ButtonVariant;

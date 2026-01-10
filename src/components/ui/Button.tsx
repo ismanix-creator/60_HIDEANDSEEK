@@ -8,7 +8,7 @@
  *
  * @props
  *   variant - Button-Variante (primary, secondary, outline, ghost, danger, success, warning, transparent)
- *   size - Button-Größe (xs, sm, md, lg, xl)
+ *   size - Button-Größe (btn = Standard für Dialoge/Settings/Setup, icon = Icon-Only für Navigation/Actions/Header)
  *   disabled - Deaktiviert den Button
  *   loading - Zeigt Ladeindikator
  *   onClick - Click-Handler
@@ -69,7 +69,7 @@ function getColorValue(colorPath: string): string {
 // ═══════════════════════════════════════════════════════
 export function Button({
   variant = 'primary',
-  size = 'md',
+  size = 'btn',
   disabled = false,
   loading = false,
   onClick,
@@ -100,17 +100,9 @@ export function Button({
   const bgColor =
     isHovered && !isDisabled && !isMobile ? getColorValue(variantStyles.hover) : getColorValue(variantStyles.bg);
 
-  const spinnerSize = iconsConfig.button[size as keyof typeof iconsConfig.button];
-
-  // Icon Size Mapping (für icon-only und icon+text)
-  const iconSizeMap = {
-    xs: iconsConfig.sizes.sm,
-    sm: iconsConfig.sizes.sm,
-    md: iconsConfig.sizes.md,
-    lg: iconsConfig.sizes.lg,
-    xl: iconsConfig.sizes.lg
-  };
-  const iconSize = iconSizeMap[size];
+  // Spinner/Icon Size für btn (Standard)
+  const spinnerSize = size === 'btn' ? iconsConfig.sizes.md : iconsConfig.sizes.sm;
+  const iconSize = size === 'btn' ? iconsConfig.sizes.md : iconsConfig.sizes.sm;
 
   // Touch-Target Minimum (44px) auf Mobile
   const minTouchTarget = `${appConfig.theme.responsive.touchMinSize}px`;
@@ -185,11 +177,11 @@ export function Button({
     ? `${sizeStyles.paddingX * 0.25 * mobilePaddingMultiplier}rem`
     : `${sizeStyles.paddingX * 0.25}rem`;
 
-  // Mobile: Größere Schrift für bessere Lesbarkeit
+  // fontSize nur für btn (icon hat keine fontSize in Config)
   type FontSizeKey = keyof typeof typographyConfig.fontSize;
-  const fontSizeKey = sizeStyles.fontSize as FontSizeKey;
+  const fontSizeKey = (size === 'btn' && sizeStyles.fontSize ? sizeStyles.fontSize : 'md') as FontSizeKey;
   const baseFontSize = typographyConfig.fontSize[fontSizeKey] || '0.875rem';
-  const fontSize = isMobile && size === 'xs' ? '0.875rem' : baseFontSize;
+  const fontSize = baseFontSize;
 
   return (
     <button

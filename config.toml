@@ -1,11 +1,16 @@
 # @file        config.toml
 # @description Single Source of Truth für App-Konfiguration
-# @version     1.7.1
+# @version     2.1.0
 # @created     2026-01-06 15:35:00 CET
-# @updated     2026-01-10 11:24:00 CET
+# @updated     2026-01-10 16:20:00 CET
 # @author      Akki Scholze
 #
 # @changelog
+#   2.1.0 - 2026-01-10 16:20:00 CET - Simplified button sizes: removed xs/sm/md/lg/xl, added btn (standard for all regular buttons) + icon (dynamic from theme.icons.sizes)
+#   2.0.0 - 2026-01-10 05:02:01 CET - Component colors refactored: Badge & Button variants use tokens (no hardcoded hex)
+#   1.9.0 - 2026-01-10 15:00:00 CET - Unified icon sizes: removed theme.icons.button, all icons use theme.icons.sizes (xs/sm/md/lg/xl)
+#   1.8.1 - 2026-01-10 14:30:00 CET - Added missing theme.colors.table block (tokens)
+#   1.8.0 - 2026-01-10 13:17:00 CET - Semantic colors refactored: Hex → Tokens (text/ui/button/status/error/warning/success/info/table)
 #   1.7.1 - 2026-01-10 04:05:02 CET - Added yellow color palette to theme.colors
 #   1.7.0 - 2026-01-10 12:00 CET - Extended color palette: black, red, gold, green, purple, orange, brown, teal, gray, white + opacity block
 #   1.6.0 - 2026-01-10 03:51 CET - ZERO TOLERANCE: Alle fehlenden Schema-Felder ergänzt (border, text, outline, buttons), keine Fallbacks
@@ -303,64 +308,57 @@ icon = "log-in"
 100 = "rgba(0, 0, 0, 1)"
 
 [theme.colors.text]
-primary = "#ffffff"
-secondary = "#cccccc"
-tertiary = "#999999"
+primary = "{white.50}"
+secondary = "{gray.400}"
+tertiary = "{gray.500}"
 
 [theme.colors.ui]
-background = "#1e1e1e"
-backgroundAlt = "#2d2d2d"
-backgroundCard = "#252525"
-border = "#3d3d3d"
+background = "{black.800}"
+backgroundAlt = "{gray.800}"
+backgroundCard = "{gray.900}"
+border = "{gray.700}"
 
 [theme.colors.button]
-gray = "#3d3d3d"
-active = "#454545"
-customer = "#1f1f1f"
-offer = "#252525"
-order = "#303030"
-invoice = "#383838"
+gray = "{gray.700}"
+active = "{gray.600}"
+customer = "{black.800}"
+offer = "{gray.900}"
+order = "{gray.800}"
+invoice = "{gray.700}"
 
 [theme.colors.status]
-error = "#e74c3c"
-warning = "#f39c12"
-success = "#27ae60"
-info = "#3498db"
+error = "{red.500}"
+warning = "{gold.700}"
+success = "{green.600}"
+info = "{blue.500}"
 
 [theme.colors.error]
-light = "#e74c3c"
-main = "#e74c3c"
-dark = "#c0392b"
-500 = "#e74c3c"
+light = "{red.400}"
+main = "{red.500}"
+dark = "{red.700}"
+500 = "{red.500}"
 
 [theme.colors.warning]
-light = "#f39c12"
-main = "#f39c12"
-dark = "#e67e22"
+light = "{gold.600}"
+main = "{gold.700}"
+dark = "{orange.700}"
 
 [theme.colors.success]
-light = "#27ae60"
-main = "#27ae60"
-dark = "#229954"
+light = "{green.500}"
+main = "{green.600}"
+dark = "{green.800}"
 
 [theme.colors.info]
-light = "#3498db"
-main = "#3498db"
-dark = "#2980b9"
+light = "{blue.400}"
+main = "{blue.500}"
+dark = "{blue.700}"
 
-[theme.colors.neutral]
-50 = "#fafafa"
-100 = "#f5f5f5"
-200 = "#eeeeee"
-300 = "#e0e0e0"
-400 = "#bdbdbd"
-500 = "#9e9e9e"
-600 = "#757575"
-700 = "#616161"
-800 = "#424242"
-900 = "#212121"
+[theme.colors.table]
+stripe1 = "{black.900}"
+stripe2 = "{gray.900}"
+selection = "{gray.800}"
 
-
+# REMOVED: [theme.colors.neutral] - identical to gray, use gray palette instead
 
 # ========================================
 # THEME: TYPOGRAPHY
@@ -417,16 +415,11 @@ xxl = "1.5rem"
 # ========================================
 
 [theme.icons.sizes]
+xs = "12px"
 sm = "16px"
-md = "24px"
+md = "20px"
 lg = "32px"
 xl = "48px"
-
-[theme.icons.button]
-xs = "14px"
-sm = "16px"
-md = "18px"
-lg = "20px"
 
 # ========================================
 # THEME: VISUAL EFFECTS (Shadows & Borders)
@@ -495,28 +488,28 @@ alignItems = "center"
 gap = "0.25rem"
 
 [components.badge.variants.success]
-bg = "#27ae60"
-text = "#ffffff"
+bg = "{green.600}"
+text = "{white.50}"
 
 [components.badge.variants.error]
-bg = "#e74c3c"
-text = "#ffffff"
+bg = "{red.500}"
+text = "{white.50}"
 
 [components.badge.variants.warning]
-bg = "#f39c12"
-text = "#1e1e1e"
+bg = "{gold.700}"
+text = "{black.800}"
 
 [components.badge.variants.info]
-bg = "#3498db"
-text = "#ffffff"
+bg = "{blue.500}"
+text = "{white.50}"
 
 [components.badge.variants.pending]
-bg = "#9e9e9e"
-text = "#ffffff"
+bg = "{gray.500}"
+text = "{white.50}"
 
 [components.badge.variants.neutral]
-bg = "#424242"
-text = "#ffffff"
+bg = "{gray.800}"
+text = "{white.50}"
 
 # ========================================
 # COMPONENTS: BUTTON
@@ -526,92 +519,72 @@ text = "#ffffff"
 borderRadius = "0.25rem"
 
 [components.button.variants.primary]
-bg = "#2196f3"
-text = "#ffffff"
-hover = "#1976d2"
+bg = "{blue.500}"
+text = "{white.50}"
+hover = "{blue.700}"
 border = "transparent"
 
 [components.button.variants.secondary]
-bg = "#3d3d3d"
-text = "#ffffff"
-hover = "#454545"
+bg = "{black.700}"
+text = "{white.50}"
+hover = "{gray.800}"
 border = "transparent"
 
 [components.button.variants.danger]
-bg = "#e74c3c"
-text = "#ffffff"
-hover = "#c0392b"
+bg = "{red.500}"
+text = "{white.50}"
+hover = "{red.700}"
 border = "transparent"
 
 [components.button.variants.outline]
 bg = "transparent"
-text = "#2196f3"
-hover = "#1e1e1e"
-border = "#2196f3"
+text = "{blue.500}"
+hover = "{black.800}"
+border = "{blue.500}"
 
 [components.button.variants.ghost]
 bg = "transparent"
-text = "#2196f3"
-hover = "#1e1e1e"
+text = "{blue.500}"
+hover = "{black.800}"
 border = "transparent"
 
 [components.button.variants.success]
-bg = "#27ae60"
-text = "#ffffff"
-hover = "#229954"
+bg = "{green.600}"
+text = "{white.50}"
+hover = "{green.700}"
 border = "transparent"
 
 [components.button.variants.warning]
-bg = "#f39c12"
-text = "#1e1e1e"
-hover = "#e67e22"
+bg = "{gold.700}"
+text = "{black.800}"
+hover = "{orange.700}"
 border = "transparent"
 
 [components.button.variants.transparent]
 bg = "transparent"
-text = "#ffffff"
-hover = "#2d2d2d"
+text = "{white.50}"
+hover = "{gray.800}"
 border = "transparent"
 
-[components.button.sizes.xs]
-padding = "0.25rem 0.5rem"
-paddingX = 2
-paddingY = 1
-fontSize = "xs"
-icon = "14px"
-height = "1.75rem"
+# ========================================
+# COMPONENTS: BUTTON SIZES
+# ========================================
 
-[components.button.sizes.sm]
-padding = "0.5rem 1rem"
-paddingX = 4
-paddingY = 2
-fontSize = "sm"
-icon = "16px"
-height = "2rem"
-
-[components.button.sizes.md]
+# Button Size: Standard (für alle regulären Buttons: Dialog, Settings, Setup)
+[components.button.sizes.btn]
 padding = "0.75rem 1.5rem"
 paddingX = 6
 paddingY = 3
 fontSize = "md"
-icon = "18px"
 height = "2.5rem"
+iconSize = "{icons.sizes.md}"  # Falls Button ein Icon enthält
 
-[components.button.sizes.lg]
-padding = "1rem 2rem"
-paddingX = 8
-paddingY = 4
-fontSize = "lg"
-icon = "20px"
-height = "3rem"
-
-[components.button.sizes.xl]
-padding = "1.25rem 2.5rem"
-paddingX = 10
-paddingY = 5
-fontSize = "xl"
-icon = "24px"
-height = "3.5rem"
+# Button Size: Icon-Only (lädt Größen aus theme.icons.sizes)
+# Icon-Buttons verwenden direkt theme.icons.sizes (xs/sm/md/lg/xl)
+# Navigation: xl, Action-Column: sm/md, Header: lg
+[components.button.sizes.icon]
+padding = "0.5rem"  # Einheitliches Padding für Icon-Buttons
+iconSize = "dynamic"  # Wird aus theme.icons.sizes geladen je nach Kontext
 
 # ========================================
 # COMPONENTS: DIALOG
@@ -786,39 +759,39 @@ cellPaddingX = "1rem"
 cellPaddingY = "0.75rem"
 
 # Wrapper-Styling (flat keys)
-wrapperBg = "#1e1e1e"
-wrapperBorder = "#3d3d3d"
+wrapperBg = "{black.800}"
+wrapperBorder = "{gray.700}"
 wrapperBorderRadius = "0.5rem"
 wrapperShadow = "md"
 
 # Header-Styling (flat keys)
-headerBg = "#252525"
-headerText = "#ffffff"
+headerBg = "{gray.900}"
+headerText = "{white.50}"
 headerFontSize = "sm"
 headerFontWeight = "semibold"
 headerFontFamily = "base"
 
 # Cell-Styling (flat keys)
-cellText = "#ffffff"
+cellText = "{white.50}"
 cellFontSize = "sm"
 cellFontFamily = "base"
 
 # Row-Styling (flat keys)
-rowBgOdd = "#1a1a1a"
-rowBgEven = "#2a2a2a"
-rowBgHover = "#353535"
-rowBorderBottom = "#3d3d3d"
+rowBgOdd = "{black.900}"
+rowBgEven = "{gray.800}"
+rowBgHover = "{gray.700}"
+rowBorderBottom = "{gray.700}"
 
 # Nested structure for backward compatibility
 [components.table.wrapper]
-bg = "#1e1e1e"
-border = "#3d3d3d"
+bg = "{black.800}"
+border = "{gray.700}"
 borderRadius = "0.5rem"
 shadow = "md"
 
 [components.table.header]
-bg = "#252525"
-text = "#ffffff"
+bg = "{gray.900}"
+text = "{white.50}"
 paddingX = "1rem"
 paddingY = "0.75rem"
 fontSize = "sm"
@@ -826,17 +799,17 @@ fontWeight = "semibold"
 fontFamily = "base"
 
 [components.table.cell]
-text = "#ffffff"
+text = "{white.50}"
 paddingX = "1rem"
 paddingY = "0.75rem"
 fontSize = "sm"
 fontFamily = "base"
 
 [components.table.row]
-bgOdd = "#1a1a1a"
-bgEven = "#2a2a2a"
-bgHover = "#353535"
-borderBottom = "#3d3d3d"
+bgOdd = "{black.900}"
+bgEven = "{gray.800}"
+bgHover = "{gray.700}"
+borderBottom = "{gray.700}"
 
 [components.table.cellTypes.number]
 fontFamily = "mono"

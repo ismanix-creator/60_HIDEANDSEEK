@@ -13,19 +13,6 @@ export const configFromToml = {
     "version": "1.2.0",
     "description": "Material-Verwaltung mit Kundeninteraktionen und Schuldentracking"
   },
-  "server": {
-    "port": 3001,
-    "host": "localhost"
-  },
-  "client": {
-    "port": 5173,
-    "apiUrl": "http://localhost:3001",
-    "ngrokUrl": "https://liana-unrowdy-silva.ngrok-free.dev"
-  },
-  "database": {
-    "type": "sqlite",
-    "path": "data/material-tracker.db"
-  },
   "auth": {
     "enabled": false,
     "mode": "password_required",
@@ -79,125 +66,17 @@ export const configFromToml = {
   },
   "theme": {
     "colors": {
-      "primary": {
-        "50": "#e3f2fd",
-        "100": "#bbdefb",
-        "200": "#90caf9",
-        "300": "#64b5f6",
-        "400": "#42a5f5",
-        "500": "#2196f3",
-        "600": "#1e88e5",
-        "700": "#1976d2",
-        "800": "#1565c0",
-        "900": "#0d47a1"
-      },
-      "black": {
-        "50": "#f8f8f8",
-        "100": "#f0f0f0",
-        "200": "#e0e0e0",
-        "300": "#c0c0c0",
-        "400": "#a0a0a0",
-        "500": "#808080",
-        "600": "#606060",
-        "700": "#404040",
-        "800": "#202020",
-        "900": "#000000"
-      },
-      "red": {
-        "50": "#ffebee",
-        "100": "#ffcdd2",
-        "200": "#ef9a9a",
-        "300": "#e57373",
-        "400": "#ef5350",
-        "500": "#f44336",
-        "600": "#e53935",
-        "700": "#d32f2f",
-        "800": "#c62828",
-        "900": "#b71c1c"
-      },
-      "gold": {
-        "50": "#fffef0",
-        "100": "#fffde7",
-        "200": "#fffdcf",
-        "300": "#fffacd",
-        "400": "#fff59d",
-        "500": "#ffd54f",
-        "600": "#ffca28",
-        "700": "#ffc107",
-        "800": "#ffb300",
-        "900": "#ff8f00"
-      },
-      "yellow": {
-        "50": "#fffef0",
-        "100": "#fffde7",
-        "200": "#fffdcf",
-        "300": "#fffacd",
-        "400": "#ffeb3b",
-        "500": "#ffeb3b",
-        "600": "#fdd835",
-        "700": "#fbc02d",
-        "800": "#f9a825",
-        "900": "#f57f17"
-      },
-      "green": {
-        "50": "#f1f8e9",
-        "100": "#dcedc8",
-        "200": "#c5e1a5",
-        "300": "#aed581",
-        "400": "#9ccc65",
-        "500": "#8bc34a",
-        "600": "#7cb342",
-        "700": "#689f38",
-        "800": "#558b2f",
-        "900": "#33691e"
-      },
-      "purple": {
-        "50": "#f3e5f5",
-        "100": "#e1bee7",
-        "200": "#ce93d8",
-        "300": "#ba68c8",
-        "400": "#ab47bc",
-        "500": "#9c27b0",
-        "600": "#8e24aa",
-        "700": "#7b1fa2",
-        "800": "#6a1b9a",
-        "900": "#4a148c"
-      },
-      "orange": {
-        "50": "#fff3e0",
-        "100": "#ffe0b2",
-        "200": "#ffcc80",
-        "300": "#ffb74d",
-        "400": "#ffa726",
-        "500": "#ff9800",
-        "600": "#fb8c00",
-        "700": "#f57c00",
-        "800": "#e65100",
-        "900": "#d84315"
-      },
-      "brown": {
-        "50": "#fbe9e7",
-        "100": "#d7ccc8",
-        "200": "#bcaaa4",
-        "300": "#a1887f",
-        "400": "#8d6e63",
-        "500": "#795548",
-        "600": "#6d4c41",
-        "700": "#5d4037",
-        "800": "#4e342e",
-        "900": "#3e2723"
-      },
-      "teal": {
-        "50": "#e0f2f1",
-        "100": "#b2dfdb",
-        "200": "#80cbc4",
-        "300": "#4db6ac",
-        "400": "#26a69a",
-        "500": "#009688",
-        "600": "#00897b",
-        "700": "#00796b",
-        "800": "#00695c",
-        "900": "#004d40"
+      "white": {
+        "50": "#ffffff",
+        "100": "#fafafa",
+        "200": "#f5f5f5",
+        "300": "#f0f0f0",
+        "400": "#eeeeee",
+        "500": "#f5f5f5",
+        "600": "#f0f0f0",
+        "700": "#eeeeee",
+        "800": "#e8e8e8",
+        "900": "#e0e0e0"
       },
       "gray": {
         "50": "#fafafa",
@@ -211,17 +90,185 @@ export const configFromToml = {
         "800": "#424242",
         "900": "#212121"
       },
-      "white": {
-        "50": "#ffffff",
-        "100": "#fafafa",
-        "200": "#f5f5f5",
-        "300": "#f0f0f0",
-        "400": "#eeeeee",
-        "500": "#f5f5f5",
-        "600": "#f0f0f0",
-        "700": "#eeeeee",
-        "800": "#e8e8e8",
-        "900": "#e0e0e0"
+      "black": {
+        "50": "#f8f8f8",
+        "100": "#f0f0f0",
+        "200": "#e0e0e0",
+        "300": "#c0c0c0",
+        "400": "#a0a0a0",
+        "500": "#808080",
+        "600": "#606060",
+        "700": "#404040",
+        "800": "#202020",
+        "900": "#000000"
+      },
+      "yellow": {
+        "50": "#fffef0",
+        "100": "#fffde7",
+        "200": "#fffdcf",
+        "300": "#fffacd",
+        "400": "#ffeb3b",
+        "500": "#ffeb3b",
+        "600": "#fdd835",
+        "700": "#fbc02d",
+        "800": "#f9a825",
+        "900": "#f57f17"
+      },
+      "orange": {
+        "50": "#fff3e0",
+        "100": "#ffe0b2",
+        "200": "#ffcc80",
+        "300": "#ffb74d",
+        "400": "#ffa726",
+        "500": "#ff9800",
+        "600": "#fb8c00",
+        "700": "#f57c00",
+        "800": "#e65100",
+        "900": "#d84315"
+      },
+      "red": {
+        "50": "#ffebee",
+        "100": "#ffcdd2",
+        "200": "#ef9a9a",
+        "300": "#e57373",
+        "400": "#ef5350",
+        "500": "#f44336",
+        "600": "#e53935",
+        "700": "#d32f2f",
+        "800": "#c62828",
+        "900": "#b71c1c"
+      },
+      "green": {
+        "50": "#f1f8e9",
+        "100": "#dcedc8",
+        "200": "#c5e1a5",
+        "300": "#aed581",
+        "400": "#9ccc65",
+        "500": "#8bc34a",
+        "600": "#7cb342",
+        "700": "#689f38",
+        "800": "#558b2f",
+        "900": "#33691e"
+      },
+      "lime": {
+        "50": "#f9fbe7",
+        "100": "#f0f4c3",
+        "200": "#e6ee9c",
+        "300": "#dce775",
+        "400": "#d4e157",
+        "500": "#cddc39",
+        "600": "#c0ca33",
+        "700": "#afb42b",
+        "800": "#9e9d24",
+        "900": "#827717"
+      },
+      "teal": {
+        "50": "#e0f2f1",
+        "100": "#b2dfdb",
+        "200": "#80cbc4",
+        "300": "#4db6ac",
+        "400": "#26a69a",
+        "500": "#009688",
+        "600": "#00897b",
+        "700": "#00796b",
+        "800": "#00695c",
+        "900": "#004d40"
+      },
+      "cyan": {
+        "50": "#e0f7fa",
+        "100": "#b2ebf2",
+        "200": "#80deea",
+        "300": "#4dd0e1",
+        "400": "#26c6da",
+        "500": "#00bcd4",
+        "600": "#00acc1",
+        "700": "#0097a7",
+        "800": "#00838f",
+        "900": "#006064"
+      },
+      "blue": {
+        "50": "#e3f2fd",
+        "100": "#bbdefb",
+        "200": "#90caf9",
+        "300": "#64b5f6",
+        "400": "#42a5f5",
+        "500": "#2196f3",
+        "600": "#1e88e5",
+        "700": "#1976d2",
+        "800": "#1565c0",
+        "900": "#0d47a1"
+      },
+      "bluegray": {
+        "50": "#f8fafc",
+        "100": "#f1f5f9",
+        "200": "#e2e8f0",
+        "300": "#cbd5e1",
+        "400": "#94a3b8",
+        "500": "#64748b",
+        "600": "#475569",
+        "700": "#334155",
+        "800": "#1e293b",
+        "900": "#0f172a"
+      },
+      "brown": {
+        "50": "#fbe9e7",
+        "100": "#d7ccc8",
+        "200": "#bcaaa4",
+        "300": "#a1887f",
+        "400": "#8d6e63",
+        "500": "#795548",
+        "600": "#6d4c41",
+        "700": "#5d4037",
+        "800": "#4e342e",
+        "900": "#3e2723"
+      },
+      "indigo": {
+        "50": "#e8eaf6",
+        "100": "#c5cae9",
+        "200": "#9fa8da",
+        "300": "#7986cb",
+        "400": "#5c6bc0",
+        "500": "#3f51b5",
+        "600": "#3949ab",
+        "700": "#303f9f",
+        "800": "#283593",
+        "900": "#1a237e"
+      },
+      "purple": {
+        "50": "#f3e5f5",
+        "100": "#e1bee7",
+        "200": "#ce93d8",
+        "300": "#ba68c8",
+        "400": "#ab47bc",
+        "500": "#9c27b0",
+        "600": "#8e24aa",
+        "700": "#7b1fa2",
+        "800": "#6a1b9a",
+        "900": "#4a148c"
+      },
+      "silver": {
+        "50": "#fbfcfd",
+        "100": "#f5f7fa",
+        "200": "#eef1f5",
+        "300": "#e0e5ec",
+        "400": "#c7cfd9",
+        "500": "#aab3bf",
+        "600": "#8c96a4",
+        "700": "#6f7887",
+        "800": "#525a67",
+        "900": "#343a45"
+      },
+      "gold": {
+        "50": "#fffef0",
+        "100": "#fffde7",
+        "200": "#fffdcf",
+        "300": "#fffacd",
+        "400": "#fff59d",
+        "500": "#ffd54f",
+        "600": "#ffca28",
+        "700": "#ffc107",
+        "800": "#ffb300",
+        "900": "#ff8f00"
       },
       "opacity": {
         "0": "rgba(0, 0, 0, 0)",
@@ -237,67 +284,55 @@ export const configFromToml = {
         "100": "rgba(0, 0, 0, 1)"
       },
       "text": {
-        "primary": "#ffffff",
-        "secondary": "#cccccc",
-        "tertiary": "#999999"
+        "primary": "{white.50}",
+        "secondary": "{gray.400}",
+        "tertiary": "{gray.500}"
       },
       "ui": {
-        "background": "#1e1e1e",
-        "backgroundAlt": "#2d2d2d",
-        "backgroundCard": "#252525",
-        "border": "#3d3d3d"
+        "background": "{black.800}",
+        "backgroundAlt": "{gray.800}",
+        "backgroundCard": "{gray.900}",
+        "border": "{gray.700}"
       },
       "button": {
-        "gray": "#3d3d3d",
-        "active": "#454545",
-        "customer": "#1f1f1f",
-        "offer": "#252525",
-        "order": "#303030",
-        "invoice": "#383838"
+        "gray": "{gray.700}",
+        "active": "{gray.600}",
+        "customer": "{black.800}",
+        "offer": "{gray.900}",
+        "order": "{gray.800}",
+        "invoice": "{gray.700}"
       },
       "status": {
-        "error": "#e74c3c",
-        "warning": "#f39c12",
-        "success": "#27ae60",
-        "info": "#3498db"
+        "error": "{red.500}",
+        "warning": "{gold.700}",
+        "success": "{green.600}",
+        "info": "{blue.500}"
       },
       "error": {
-        "500": "#e74c3c",
-        "light": "#e74c3c",
-        "main": "#e74c3c",
-        "dark": "#c0392b"
+        "500": "{red.500}",
+        "light": "{red.400}",
+        "main": "{red.500}",
+        "dark": "{red.700}"
       },
       "warning": {
-        "light": "#f39c12",
-        "main": "#f39c12",
-        "dark": "#e67e22"
+        "light": "{gold.600}",
+        "main": "{gold.700}",
+        "dark": "{orange.700}"
       },
       "success": {
-        "light": "#27ae60",
-        "main": "#27ae60",
-        "dark": "#229954"
+        "light": "{green.500}",
+        "main": "{green.600}",
+        "dark": "{green.800}"
       },
       "info": {
-        "light": "#3498db",
-        "main": "#3498db",
-        "dark": "#2980b9"
-      },
-      "neutral": {
-        "50": "#fafafa",
-        "100": "#f5f5f5",
-        "200": "#eeeeee",
-        "300": "#e0e0e0",
-        "400": "#bdbdbd",
-        "500": "#9e9e9e",
-        "600": "#757575",
-        "700": "#616161",
-        "800": "#424242",
-        "900": "#212121"
+        "light": "{blue.400}",
+        "main": "{blue.500}",
+        "dark": "{blue.700}"
       },
       "table": {
-        "stripe1": "#1a1a1a",
-        "stripe2": "#2a2a2a",
-        "selection": "#353535"
+        "stripe1": "{black.900}",
+        "stripe2": "{gray.900}",
+        "selection": "{gray.800}"
       }
     },
     "typography": {
@@ -356,16 +391,11 @@ export const configFromToml = {
     },
     "icons": {
       "sizes": {
+        "xs": "12px",
         "sm": "16px",
-        "md": "24px",
+        "md": "20px",
         "lg": "32px",
         "xl": "48px"
-      },
-      "button": {
-        "xs": "14px",
-        "sm": "16px",
-        "md": "18px",
-        "lg": "20px"
       }
     },
     "shadows": {
@@ -429,28 +459,28 @@ export const configFromToml = {
       },
       "variants": {
         "success": {
-          "bg": "#27ae60",
-          "text": "#ffffff"
+          "bg": "{green.600}",
+          "text": "{white.50}"
         },
         "error": {
-          "bg": "#e74c3c",
-          "text": "#ffffff"
+          "bg": "{red.500}",
+          "text": "{white.50}"
         },
         "warning": {
-          "bg": "#f39c12",
-          "text": "#1e1e1e"
+          "bg": "{gold.700}",
+          "text": "{black.800}"
         },
         "info": {
-          "bg": "#3498db",
-          "text": "#ffffff"
+          "bg": "{blue.500}",
+          "text": "{white.50}"
         },
         "pending": {
-          "bg": "#9e9e9e",
-          "text": "#ffffff"
+          "bg": "{gray.500}",
+          "text": "{white.50}"
         },
         "neutral": {
-          "bg": "#424242",
-          "text": "#ffffff"
+          "bg": "{gray.800}",
+          "text": "{white.50}"
         }
       }
     },
@@ -458,94 +488,66 @@ export const configFromToml = {
       "borderRadius": "0.25rem",
       "variants": {
         "primary": {
-          "bg": "#2196f3",
-          "text": "#ffffff",
-          "hover": "#1976d2",
+          "bg": "{blue.500}",
+          "text": "{white.50}",
+          "hover": "{blue.700}",
           "border": "transparent"
         },
         "secondary": {
-          "bg": "#3d3d3d",
-          "text": "#ffffff",
-          "hover": "#454545",
+          "bg": "{black.700}",
+          "text": "{white.50}",
+          "hover": "{gray.800}",
           "border": "transparent"
         },
         "danger": {
-          "bg": "#e74c3c",
-          "text": "#ffffff",
-          "hover": "#c0392b",
+          "bg": "{red.500}",
+          "text": "{white.50}",
+          "hover": "{red.700}",
           "border": "transparent"
         },
         "outline": {
           "bg": "transparent",
-          "text": "#2196f3",
-          "hover": "#1e1e1e",
-          "border": "#2196f3"
+          "text": "{blue.500}",
+          "hover": "{black.800}",
+          "border": "{blue.500}"
         },
         "ghost": {
           "bg": "transparent",
-          "text": "#2196f3",
-          "hover": "#1e1e1e",
+          "text": "{blue.500}",
+          "hover": "{black.800}",
           "border": "transparent"
         },
         "success": {
-          "bg": "#27ae60",
-          "text": "#ffffff",
-          "hover": "#229954",
+          "bg": "{green.600}",
+          "text": "{white.50}",
+          "hover": "{green.700}",
           "border": "transparent"
         },
         "warning": {
-          "bg": "#f39c12",
-          "text": "#1e1e1e",
-          "hover": "#e67e22",
+          "bg": "{gold.700}",
+          "text": "{black.800}",
+          "hover": "{orange.700}",
           "border": "transparent"
         },
         "transparent": {
           "bg": "transparent",
-          "text": "#ffffff",
-          "hover": "#2d2d2d",
+          "text": "{white.50}",
+          "hover": "{gray.800}",
           "border": "transparent"
         }
       },
       "sizes": {
-        "xs": {
-          "padding": "0.25rem 0.5rem",
-          "paddingX": 2,
-          "paddingY": 1,
-          "fontSize": "xs",
-          "icon": "14px",
-          "height": "1.75rem"
-        },
-        "sm": {
-          "padding": "0.5rem 1rem",
-          "paddingX": 4,
-          "paddingY": 2,
-          "fontSize": "sm",
-          "icon": "16px",
-          "height": "2rem"
-        },
-        "md": {
+        "btn": {
           "padding": "0.75rem 1.5rem",
           "paddingX": 6,
           "paddingY": 3,
           "fontSize": "md",
-          "icon": "18px",
-          "height": "2.5rem"
+          "height": "2.5rem",
+          "iconSize": "{icons.sizes.md}"
         },
-        "lg": {
-          "padding": "1rem 2rem",
-          "paddingX": 8,
-          "paddingY": 4,
-          "fontSize": "lg",
-          "icon": "20px",
-          "height": "3rem"
-        },
-        "xl": {
-          "padding": "1.25rem 2.5rem",
-          "paddingX": 10,
-          "paddingY": 5,
-          "fontSize": "xl",
-          "icon": "24px",
-          "height": "3.5rem"
+        "icon": {
+          "padding": "0.5rem",
+          "iconSize": "dynamic"
         }
       }
     },
@@ -711,31 +713,31 @@ export const configFromToml = {
       "rowHeight": "40px",
       "cellPaddingX": "1rem",
       "cellPaddingY": "0.75rem",
-      "wrapperBg": "#1e1e1e",
-      "wrapperBorder": "#3d3d3d",
+      "wrapperBg": "{black.800}",
+      "wrapperBorder": "{gray.700}",
       "wrapperBorderRadius": "0.5rem",
       "wrapperShadow": "md",
-      "headerBg": "#252525",
-      "headerText": "#ffffff",
+      "headerBg": "{gray.900}",
+      "headerText": "{white.50}",
       "headerFontSize": "sm",
       "headerFontWeight": "semibold",
       "headerFontFamily": "base",
-      "cellText": "#ffffff",
+      "cellText": "{white.50}",
       "cellFontSize": "sm",
       "cellFontFamily": "base",
-      "rowBgOdd": "#1a1a1a",
-      "rowBgEven": "#2a2a2a",
-      "rowBgHover": "#353535",
-      "rowBorderBottom": "#3d3d3d",
+      "rowBgOdd": "{black.900}",
+      "rowBgEven": "{gray.800}",
+      "rowBgHover": "{gray.700}",
+      "rowBorderBottom": "{gray.700}",
       "wrapper": {
-        "bg": "#1e1e1e",
-        "border": "#3d3d3d",
+        "bg": "{black.800}",
+        "border": "{gray.700}",
         "borderRadius": "0.5rem",
         "shadow": "md"
       },
       "header": {
-        "bg": "#252525",
-        "text": "#ffffff",
+        "bg": "{gray.900}",
+        "text": "{white.50}",
         "paddingX": "1rem",
         "paddingY": "0.75rem",
         "fontSize": "sm",
@@ -743,17 +745,17 @@ export const configFromToml = {
         "fontFamily": "base"
       },
       "cell": {
-        "text": "#ffffff",
+        "text": "{white.50}",
         "paddingX": "1rem",
         "paddingY": "0.75rem",
         "fontSize": "sm",
         "fontFamily": "base"
       },
       "row": {
-        "bgOdd": "#1a1a1a",
-        "bgEven": "#2a2a2a",
-        "bgHover": "#353535",
-        "borderBottom": "#3d3d3d"
+        "bgOdd": "{black.900}",
+        "bgEven": "{gray.800}",
+        "bgHover": "{gray.700}",
+        "borderBottom": "{gray.700}"
       },
       "cellTypes": {
         "number": {

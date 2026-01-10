@@ -263,7 +263,7 @@ export function GlaeubigerPage() {
             <Button
               icon={<DollarSign />}
               iconOnly
-              size="sm"
+              size="icon"
               variant="success"
               onClick={() => openZahlungDialog(g)}
               title={appConfig.ui.tooltips.payment}
@@ -272,7 +272,7 @@ export function GlaeubigerPage() {
           <Button
             icon={<Pencil />}
             iconOnly
-            size="sm"
+            size="icon"
             variant="secondary"
             onClick={() => openEditDialog(g)}
             title={appConfig.ui.tooltips.edit}
@@ -280,7 +280,7 @@ export function GlaeubigerPage() {
           <Button
             icon={<Trash2 />}
             iconOnly
-            size="sm"
+            size="icon"
             variant="danger"
             onClick={() => openDeleteDialog(g)}
             title={appConfig.ui.tooltips.delete}
@@ -298,7 +298,7 @@ export function GlaeubigerPage() {
           icon={<HandCoins />}
           iconOnly
           variant="transparent"
-          size="lg"
+          size="btn"
           onClick={() => setCreateDialogOpen(true)}
           title={appConfig.ui.dialog_titles.new_creditor}
         />

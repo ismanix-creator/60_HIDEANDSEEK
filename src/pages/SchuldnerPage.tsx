@@ -264,7 +264,7 @@ export function SchuldnerPage() {
             <Button
               icon={<DollarSign />}
               iconOnly
-              size="sm"
+              size="icon"
               variant="success"
               onClick={() => openZahlungDialog(s)}
               title={appConfig.ui.tooltips.record}
@@ -273,7 +273,7 @@ export function SchuldnerPage() {
           <Button
             icon={<Pencil />}
             iconOnly
-            size="sm"
+            size="icon"
             variant="secondary"
             onClick={() => openEditDialog(s)}
             title={appConfig.ui.tooltips.edit}
@@ -281,7 +281,7 @@ export function SchuldnerPage() {
           <Button
             icon={<Trash2 />}
             iconOnly
-            size="sm"
+            size="icon"
             variant="danger"
             onClick={() => openDeleteDialog(s)}
             title={appConfig.ui.tooltips.delete}
@@ -299,7 +299,7 @@ export function SchuldnerPage() {
           icon={<Wallet />}
           iconOnly
           variant="transparent"
-          size="lg"
+          size="btn"
           onClick={() => setCreateDialogOpen(true)}
           title={appConfig.ui.tooltips.create}
         />

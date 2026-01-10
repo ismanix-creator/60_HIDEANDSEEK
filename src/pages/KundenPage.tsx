@@ -382,7 +382,7 @@ export function KundenPage() {
           <Button
             icon={<Pencil />}
             iconOnly
-            size="sm"
+            size="icon"
             variant="secondary"
             onClick={() => {
               setView('detail');
@@ -395,7 +395,7 @@ export function KundenPage() {
           <Button
             icon={<Trash2 />}
             iconOnly
-            size="sm"
+            size="icon"
             variant="danger"
             onClick={() => {
               setView('detail');
@@ -446,7 +446,7 @@ export function KundenPage() {
             <Button
               icon={<DollarSign />}
               iconOnly
-              size="sm"
+              size="icon"
               variant="success"
               onClick={() => openZahlungDialog(p, 'mat')}
               title={appConfig.ui.tooltips.payment}
@@ -485,7 +485,7 @@ export function KundenPage() {
             <Button
               icon={<DollarSign />}
               iconOnly
-              size="sm"
+              size="icon"
               variant="success"
               onClick={() => openZahlungDialog(p, 'nomat')}
               title={appConfig.ui.tooltips.payment}
@@ -506,7 +506,7 @@ export function KundenPage() {
             icon={<UserPlus />}
             iconOnly
             variant="transparent"
-            size="lg"
+            size="btn"
             onClick={() => setCreateKundeDialogOpen(true)}
             title={appConfig.ui.dialog_titles.new_customer}
           />

@@ -1,12 +1,14 @@
 /**
  * @file        config.schema.ts
  * @description Zod Schema für config.toml Validation (STRICT)
- * @version     1.7.1
+ * @version     1.9.0
  * @created     2026-01-07 19:45:00 CET
- * @updated     2026-01-10 11:24:00 CET
+ * @updated     2026-01-10 16:22:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   1.9.0 - 2026-01-10 16:22:00 CET - ButtonSchema: replaced 5 sizes (xs/sm/md/lg/xl) with 2 (btn + icon), icon references theme.icons.sizes dynamically
+ *   1.8.0 - 2026-01-10 15:00:00 CET - ThemeIconsSchema: removed button sub-object, unified to sizes only (xs/sm/md/lg/xl)
  *   1.7.0 - 2026-01-10 12:00 CET - Added color schemas: black, red, gold, green, purple, orange, brown, teal, gray, white + OpacitySchema
  *   1.4.0 - 2026-01-10 - Table schema restructured (flat keys), ColumnSchema extended (monospace, buttons), UI duplicates removed
  *   1.3.0 - 2026-01-10 - Migrated ColumnSchema, TablePageSchema, TablePagesSchema from table.ts (schema consolidation)
@@ -287,18 +289,11 @@ const ThemeIconsSchema = z
   .object({
     sizes: z
       .object({
+        xs: z.string(),
         sm: z.string(),
         md: z.string(),
         lg: z.string(),
         xl: z.string()
-      })
-      .strict(),
-    button: z
-      .object({
-        xs: z.string(),
-        sm: z.string(),
-        md: z.string(),
-        lg: z.string()
       })
       .strict()
   })
@@ -439,14 +434,23 @@ const ButtonVariantSchema = z
   })
   .strict();
 
-const ButtonSizeSchema = z
+// Button Size: btn (Standard für alle regulären Buttons)
+const ButtonSizeBtnSchema = z
   .object({
     padding: z.string(),
     paddingX: z.number(),
     paddingY: z.number(),
     fontSize: z.string(),
-    icon: z.string(),
-    height: z.string()
+    height: z.string(),
+    iconSize: z.string() // Token-Referenz: {icons.sizes.md}
+  })
+  .strict();
+
+// Button Size: icon (Icon-Only, lädt Größen aus theme.icons.sizes)
+const ButtonSizeIconSchema = z
+  .object({
+    padding: z.string(), // Einheitliches Padding
+    iconSize: z.string() // "dynamic" oder leer
   })
   .strict();
 
@@ -467,11 +471,8 @@ const ButtonSchema = z
       .strict(),
     sizes: z
       .object({
-        xs: ButtonSizeSchema,
-        sm: ButtonSizeSchema,
-        md: ButtonSizeSchema,
-        lg: ButtonSizeSchema,
-        xl: ButtonSizeSchema
+        btn: ButtonSizeBtnSchema,
+        icon: ButtonSizeIconSchema
       })
       .strict()
   })
