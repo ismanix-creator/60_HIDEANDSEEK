@@ -46,7 +46,7 @@ Alle Consumers (UI Components, Server, Tests)
 
 ### Kernprinzipien
 - **100% config.toml-driven:** Keine *.config.ts mehr außerhalb von Config-System
-- **Theme:** Alle Werte aus `appConfig.theme.*` (colors, spacing, breakpoints, fonts, shadows, etc.)
+- **Theme:** Alle Werte aus `appConfig.*` (colors, spacing, breakpoints, fonts, shadows, etc.)
 - **Components:** Alle Werte aus `appConfig.components.*`
 - **UI-Texte:** Alle aus `appConfig.ui.*` (labels, titles, descriptions, buttons, etc.)
 - **Keine Hardcodes:** Keine Inline-Styles, keine festen Texte, keine Magic Numbers
@@ -76,13 +76,13 @@ Alle Consumers (UI Components, Server, Tests)
 ## Migrationserfolg (Phase 2 Abgeschlossen ✅)
 
 ### Option B Implementation
-- ✅ **spacingConfig eliminiert:** Alle Spacing-Werte direkt in `appConfig.theme.spacing`
-- ✅ **breakpointsConfig eliminiert:** Alle Breakpoint-Werte direkt in `appConfig.theme.breakpoints`
+- ✅ **spacingConfig eliminiert:** Alle Spacing-Werte direkt in `appConfig.spacing`
+- ✅ **breakpointsConfig eliminiert:** Alle Breakpoint-Werte direkt in `appConfig.breakpoints`
 - ✅ **Keine *.config.ts imports:** Theme/Component-Configs nur über appConfig
 
 ### Hardcode & Inline-Style Eliminierung
 - ✅ **142 UI-Text-Hardcodes entfernt:** Alle Texte aus `appConfig.ui.labels/titles/descriptions/buttons`
-- ✅ **26 Inline-Styles entfernt:** Alle Styles aus `appConfig.theme.colors/spacing/shadows`
+- ✅ **26 Inline-Styles entfernt:** Alle Styles aus `appConfig.colors/spacing/shadows`
 
 ### Komponenten-Migration
 - ✅ **Alle** 21+ Komponenten nutzen ausschließlich `appConfig`

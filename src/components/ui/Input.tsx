@@ -1,9 +1,9 @@
 /**
  * @file        Input.tsx
  * @description Wiederverwendbare Input-Komponente (SEASIDE Dark Theme) - Responsive
- * @version     0.7.0
+ * @version     0.8.0
  * @created     2025-12-11 01:05:00 CET
- * @updated     2026-01-11 00:35:00 CET
+ * @updated     2026-01-11 18:35:00 CET
  * @author      Akki Scholze
  *
  * @props
@@ -15,9 +15,9 @@
  *   disabled - Deaktiviert das Input
  *
  * @changelog
+ *   0.8.0 - 2026-01-11 18:35:00 CET - Fixed: Config-Zugriff auf appConfig.input statt appConfig.components.input (Config-Struktur-Migration)
  *   0.7.0 - 2026-01-11 - Fixed for new config structure: token resolver for color references
- *   0.6.0 - 2026-01-09 - Direct appConfig.theme.* access (breakpointsConfig eliminiert)
- *   0.5.0 - 2026-01-09 - Import auf appConfig.components.input umgestellt (Phase 2.2.6)
+ *   0.6.0 - 2026-01-09 - Direct appConfig.* access (breakpointsConfig eliminiert)
  *   0.4.0 - 2025-12-14 - Responsive: Touch-Targets 44px, fontSize 16px für iOS Zoom
  *   0.3.0 - 2025-12-11 - Text-Zentrierung für alle Input-Typen (wie Infobox)
  *   0.2.0 - 2025-12-11 - SEASIDE Dark Theme, Config-Driven Colors
@@ -31,9 +31,9 @@ import type { InputProps } from '@/types/ui.types';
 import { appConfig } from '@/config';
 import { useResponsive } from '@/hooks/useResponsive';
 
-const inputConfig = appConfig.components.input;
+const inputConfig = appConfig.input;
 
-const colorsConfig = appConfig.theme.colors;
+const colorsConfig = appConfig.colors;
 
 // ═══════════════════════════════════════════════════════
 // HELPERS
@@ -116,7 +116,7 @@ export function Input({
   const inputType = type === 'currency' ? 'number' : type === 'password' ? 'password' : type;
 
   // Touch-Target Minimum (44px) auf Mobile
-  const minTouchTarget = `${appConfig.theme.responsive.touchMinSize}px`;
+  const minTouchTarget = `${appConfig.responsive.touchMinSize}px`;
 
   // Mobile: fontSize 16px verhindert iOS Auto-Zoom bei Focus
   const fontSize = isMobile ? '16px' : '0.875rem';

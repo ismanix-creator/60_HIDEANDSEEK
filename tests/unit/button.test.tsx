@@ -1,14 +1,14 @@
 /**
  * @file        tests/unit/button.test.tsx
  * @description Unit-Tests für Button-Komponente (Config-Loading + Rendering)
- * @version     1.1.0
+ * @version     1.2.0
  * @created     2026-01-10 01:15:00 CET
- * @updated     2026-01-11 03:20:00 CET
+ * @updated     2026-01-11 18:00:00 CET
  * @author      Akki Scholze (QA-Test-Entwickler)
  *
  * @changelog
+ *   1.2.0 - 2026-01-11 18:00:00 CET - Updated for new Button types (nav/new/act/tab/rect)
  *   1.1.0 - 2026-01-11 03:20:00 CET - Updated for new Button API (kind | intent, no variant/size)
- *   1.0.1 - 2026-01-11 01:58:38 CET - Updated for 'sizes.btn' → 'sizes.rect' rename
  *   1.0.0 - 2026-01-10 - Initial test suite (Phase 4.1)
  */
 
@@ -20,39 +20,40 @@ import { appConfig } from '@/config';
 describe('Button Component', () => {
   describe('Config Loading', () => {
     it('should load button config from appConfig', () => {
-      expect(appConfig.components.button).toBeDefined();
-      expect(appConfig.components.button.variant).toBeDefined();
-      expect(appConfig.components.button.sizes).toBeDefined();
+      expect(appConfig.button).toBeDefined();
+      expect(appConfig.button.nav).toBeDefined();
+      expect(appConfig.button.new).toBeDefined();
+      expect(appConfig.button.act).toBeDefined();
+      expect(appConfig.button.tab).toBeDefined();
+      expect(appConfig.button.rect).toBeDefined();
     });
 
-    it('should have all required variant kinds in config', () => {
-      const kinds = ['rect', 'icon'];
-      kinds.forEach((kind) => {
-        expect(appConfig.components.button.variant).toHaveProperty(kind);
+    it('should have all required button types in config', () => {
+      const types = ['nav', 'new', 'act', 'tab', 'rect'];
+      types.forEach((type) => {
+        expect(appConfig.button).toHaveProperty(type);
       });
     });
 
-    it('should have all required sizes in config', () => {
-      const sizes = ['rect', 'icon'];
-      sizes.forEach((size) => {
-        expect(appConfig.components.button.sizes).toHaveProperty(size);
-      });
+    it('should have icon button styles in config', () => {
+      const navButton = appConfig.button.nav;
+      expect(navButton.bg).toBeDefined();
+      expect(navButton.icon).toBeDefined();
+      expect(navButton.hoverBg).toBeDefined();
+      expect(navButton.iconSize).toBeDefined();
     });
 
-    it('should have variant-specific styles in config', () => {
-      const rectVariant = appConfig.components.button.variant.rect;
-      expect(rectVariant.bg).toBeDefined();
-      expect(rectVariant.text).toBeDefined();
-      expect(rectVariant.hoverBg).toBeDefined();
-      expect(rectVariant.saveBg).toBeDefined();
-      expect(rectVariant.saveHoverBg).toBeDefined();
-    });
-
-    it('should have size-specific styles in config', () => {
-      const rectSize = appConfig.components.button.sizes.rect;
-      expect(rectSize.height).toBeDefined();
-      expect(rectSize.padding).toBeDefined();
-      expect(rectSize.fontSize).toBeDefined();
+    it('should have rect button styles in config', () => {
+      const rectButton = appConfig.button.rect;
+      expect(rectButton.bg).toBeDefined();
+      expect(rectButton.text).toBeDefined();
+      expect(rectButton.hoverBg).toBeDefined();
+      expect(rectButton.saveBg).toBeDefined();
+      expect(rectButton.saveHoverBg).toBeDefined();
+      expect(rectButton.height).toBeDefined();
+      expect(rectButton.padding).toBeDefined();
+      expect(rectButton.fontSize).toBeDefined();
+      expect(rectButton.iconSize).toBeDefined();
     });
   });
 
@@ -72,8 +73,8 @@ describe('Button Component', () => {
       expect(button).toBeInTheDocument();
     });
 
-    it('should render with kind="icon"', () => {
-      render(<Button kind="icon">📦</Button>);
+    it('should render with kind="act"', () => {
+      render(<Button kind="act">📦</Button>);
       const button = screen.getByRole('button', { name: '📦' });
       expect(button).toBeInTheDocument();
     });
@@ -122,7 +123,8 @@ describe('Button Component', () => {
 
     it('should be disabled when loading', () => {
       render(<Button loading>Loading</Button>);
-      const button = screen.getByRole('button', { name: 'Loading' });
+      // Loading text is replaced with '...', so we can't query by 'Loading'
+      const button = screen.getByRole('button');
       expect(button).toBeDisabled();
     });
 
@@ -136,9 +138,9 @@ describe('Button Component', () => {
   describe('States', () => {
     it('should show loading state with spinner', () => {
       const { container } = render(<Button loading>Loading</Button>);
-      // Loading indicator (SVG spinner) should be present
-      const loadingIcon = container.querySelector('svg');
-      expect(loadingIcon).not.toBeNull();
+      // Loading indicator (...) should be present instead of children text
+      const button = container.querySelector('button');
+      expect(button?.textContent).toBe('...');
     });
   });
 
@@ -146,7 +148,7 @@ describe('Button Component', () => {
     it('should apply config-driven height for rect kind', () => {
       const { container } = render(<Button kind="rect">Test</Button>);
       const button = container.firstChild as HTMLElement;
-      const expectedHeight = appConfig.components.button.sizes.rect.height;
+      const expectedHeight = appConfig.button.rect.height;
       expect(button.style.height).toBe(expectedHeight);
     });
 
@@ -160,19 +162,20 @@ describe('Button Component', () => {
     it('should apply fullWidth style', () => {
       const { container } = render(<Button fullWidth>Full Width</Button>);
       const button = container.firstChild as HTMLElement;
-      expect(button.style.width).toBe('100%');
+      // fullWidth is applied via className 'w-full'
+      expect(button.className).toContain('w-full');
     });
   });
 
-  describe('Icon Kind', () => {
-    it('should render icon-only button without text padding', () => {
-      render(<Button kind="icon">📦</Button>);
+  describe('Icon Button Types', () => {
+    it('should render act button (action in tables)', () => {
+      render(<Button kind="act">📦</Button>);
       const button = screen.getByRole('button', { name: '📦' });
       expect(button).toBeInTheDocument();
     });
 
     it('should have appropriate icon size from config', () => {
-      const { container } = render(<Button kind="icon">📦</Button>);
+      const { container } = render(<Button kind="act">📦</Button>);
       const button = container.firstChild as HTMLElement;
       // Icon buttons should have width/height set from config
       expect(button.style.width).toBeTruthy();

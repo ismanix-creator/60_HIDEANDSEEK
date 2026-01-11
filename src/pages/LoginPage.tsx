@@ -64,7 +64,7 @@ export function LoginPage() {
         localStorage.setItem('kundeId', String(kundeId));
       }
 
-      navigate('/material');
+      void navigate('/material');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Login failed';
       setError(message);
@@ -76,23 +76,23 @@ export function LoginPage() {
   return (
     <div
       style={{
-        padding: appConfig.theme.spacing.xl,
+        padding: appConfig.spacing.xl,
         maxWidth: '400px',
-        margin: `${appConfig.theme.spacing.xxl} auto`
+        margin: `${appConfig.spacing.xxl} auto`
       }}
     >
       <h1>Login</h1>
       <p
         style={{
-          color: appConfig.theme.colors.gray['500'],
-          marginBottom: appConfig.theme.spacing.xl
+          color: appConfig.colors.gray['500'],
+          marginBottom: appConfig.spacing.xl
         }}
       >
         {appConfig.auth.enabled ? 'Login erforderlich' : 'Auth deaktiviert (dev mode)'}
       </p>
 
-      <form onSubmit={handleLogin}>
-        <div style={{ marginBottom: appConfig.theme.spacing.md }}>
+      <form onSubmit={(e) => void handleLogin(e)}>
+        <div style={{ marginBottom: appConfig.spacing.md }}>
           <Input
             type="text"
             label="Username"
@@ -101,7 +101,7 @@ export function LoginPage() {
             required
           />
         </div>
-        <div style={{ marginBottom: appConfig.theme.spacing.lg }}>
+        <div style={{ marginBottom: appConfig.spacing.lg }}>
           <Input
             type="password"
             label="Password"
@@ -118,11 +118,11 @@ export function LoginPage() {
       {error && (
         <div
           style={{
-            marginTop: appConfig.theme.spacing.lg,
-            padding: appConfig.theme.spacing.md,
-            background: appConfig.theme.colors.red['500'],
-            color: appConfig.theme.colors.white['50'],
-            borderRadius: appConfig.theme.borderRadius.md
+            marginTop: appConfig.spacing.lg,
+            padding: appConfig.spacing.md,
+            background: appConfig.colors.red['500'],
+            color: appConfig.colors.white['50'],
+            borderRadius: appConfig.borderRadius.md
           }}
         >
           {error}
@@ -131,14 +131,14 @@ export function LoginPage() {
 
       <div
         style={{
-          marginTop: appConfig.theme.spacing.xl,
+          marginTop: appConfig.spacing.xl,
           textAlign: 'center'
         }}
       >
         <a
           href="/setup"
           style={{
-            color: appConfig.theme.colors.blue['500'],
+            color: appConfig.colors.blue['500'],
             textDecoration: 'none'
           }}
         >

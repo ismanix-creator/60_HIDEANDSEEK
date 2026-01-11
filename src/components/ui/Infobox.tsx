@@ -1,9 +1,9 @@
 /**
  * @file        Infobox.tsx
  * @description Wiederverwendbare Infobox-Komponente (SEASIDE Dark Theme) - Responsive
- * @version     0.5.0
+ * @version     0.6.0
  * @created     2025-12-11 01:05:00 CET
- * @updated     2026-01-09 23:18:50 CET
+ * @updated     2026-01-11 18:35:00 CET
  * @author      Akki Scholze
  *
  * @props
@@ -12,8 +12,8 @@
  *   children - Infobox-Inhalt
  *
  * @changelog
- *   0.5.0 - 2026-01-09 - Direct appConfig.theme.* access (spacingConfig eliminiert)
- *   0.4.0 - 2026-01-09 - Import auf appConfig.components.infobox umgestellt (Phase 2.2.5)
+ *   0.6.0 - 2026-01-11 18:35:00 CET - Fixed: Config-Zugriff auf appConfig.infobox statt appConfig.components.infobox (Config-Struktur-Migration)
+ *   0.5.0 - 2026-01-09 - Direct appConfig.* access (spacingConfig eliminiert)
  *   0.3.0 - 2025-12-14 - Responsive: Kompaktere Mobile-Abstände, volle Breite
  *   0.2.0 - 2025-12-11 - 100% Config-Driven, Tailwind-Hardcodes entfernt
  *   0.1.0 - 2025-12-11 - Initial version
@@ -27,25 +27,25 @@ import { appConfig } from '@/config';
 import { Info, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
 import { useResponsive } from '@/hooks/useResponsive';
 
-const infoboxConfig = appConfig.components.infobox;
+const infoboxConfig = appConfig.infobox;
 
-const colorsConfig = appConfig.theme.colors;
-const typographyConfig = appConfig.theme.typography;
+const colorsConfig = appConfig.colors;
+const typographyConfig = appConfig.typography;
 
-// Helper: Tailwind-Scale (0-32) auf theme.spacing (xxs-xxl) mappen
+// Helper: Tailwind-Scale (0-32) auf spacing (xxs-xxl) mappen
 const spacingBase = (key: number | string): string => {
   const keyNum = typeof key === 'number' ? key : parseInt(String(key), 10);
-  if (isNaN(keyNum)) return appConfig.theme.spacing.md; // fallback
+  if (isNaN(keyNum)) return appConfig.spacing.md; // fallback
 
-  if (keyNum <= 0) return appConfig.theme.spacing.xxs;
-  if (keyNum === 1) return appConfig.theme.spacing.xs;
-  if (keyNum === 2) return appConfig.theme.spacing.xs;
-  if (keyNum === 3) return appConfig.theme.spacing.sm;
-  if (keyNum === 4) return appConfig.theme.spacing.md;
-  if (keyNum === 5) return appConfig.theme.spacing.md;
-  if (keyNum === 6) return appConfig.theme.spacing.lg;
-  if (keyNum === 8) return appConfig.theme.spacing.xl;
-  return appConfig.theme.spacing.xxl; // 10+
+  if (keyNum <= 0) return appConfig.spacing.xxs;
+  if (keyNum === 1) return appConfig.spacing.xs;
+  if (keyNum === 2) return appConfig.spacing.xs;
+  if (keyNum === 3) return appConfig.spacing.sm;
+  if (keyNum === 4) return appConfig.spacing.md;
+  if (keyNum === 5) return appConfig.spacing.md;
+  if (keyNum === 6) return appConfig.spacing.lg;
+  if (keyNum === 8) return appConfig.spacing.xl;
+  return appConfig.spacing.xxl; // 10+
 };
 
 // ═══════════════════════════════════════════════════════
@@ -86,13 +86,13 @@ export function Infobox({ variant = 'info', title, children, className = '' }: I
 
   const containerStyle: React.CSSProperties = {
     display: 'flex',
-    gap: isMobile ? appConfig.theme.spacing.mobile.sm : spacingBase(3),
+    gap: isMobile ? appConfig.spacing.mobile.sm : spacingBase(3),
     backgroundColor: getColorValue(variantStyles.bg),
     borderWidth: `${baseConfig.borderWidth}px`,
     borderStyle: 'solid',
     borderColor: getColorValue(variantStyles.border),
     borderRadius: baseConfig.borderRadius,
-    padding: isMobile ? appConfig.theme.spacing.mobile.md : spacingBase(baseConfig.padding),
+    padding: isMobile ? appConfig.spacing.mobile.md : spacingBase(baseConfig.padding),
     // Mobile: Volle Breite
     width: isMobile ? '100%' : undefined
   };

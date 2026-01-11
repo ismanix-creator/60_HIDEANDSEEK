@@ -1,9 +1,9 @@
 /**
  * @file        Badge.tsx
  * @description Wiederverwendbare Badge-Komponente
- * @version     0.2.0
+ * @version     0.3.0
  * @created     2025-12-11 01:05:00 CET
- * @updated     2026-01-09 20:44:36 CET
+ * @updated     2026-01-11 18:35:00 CET
  * @author      Akki Scholze
  *
  * @props
@@ -12,7 +12,7 @@
  *   children - Badge-Inhalt
  *
  * @changelog
- *   0.2.0 - 2026-01-09 - Import auf appConfig.components.badge umgestellt (Phase 2.2.1)
+ *   0.3.0 - 2026-01-11 18:35:00 CET - Fixed: Config-Zugriff auf appConfig.badge statt appConfig.components.badge (Config-Struktur-Migration)
  *   0.1.0 - 2025-12-11 - Initial version
  */
 
@@ -23,14 +23,33 @@ import type { BadgeProps } from '@/types/ui.types';
 import { appConfig } from '@/config';
 import { Check, X, AlertTriangle, Clock } from 'lucide-react';
 
-const badgeConfig = appConfig.components.badge;
+const badgeConfig = appConfig.badge;
 
-const colorsConfig = appConfig.theme.colors;
+const colorsConfig = appConfig.colors;
 
 // ═══════════════════════════════════════════════════════
 // HELPERS
 // ═══════════════════════════════════════════════════════
 function getColorValue(colorPath: string): string {
+  if (!colorPath || colorPath === 'transparent' || colorPath === 'none') {
+    return 'transparent';
+  }
+
+  // Token-Refs: {blue.500}, {white.50} etc. sind STRINGS
+  if (colorPath.startsWith('{') && colorPath.endsWith('}')) {
+    const tokenPath = colorPath.slice(1, -1); // Remove { }
+    const parts = tokenPath.split('.');
+    if (parts.length === 2) {
+      const [category, shade] = parts;
+      const colorCategory = colorsConfig[category as keyof typeof colorsConfig];
+      if (colorCategory && typeof colorCategory === 'object') {
+        return (colorCategory as Record<string, string>)[shade] || colorPath;
+      }
+    }
+    return colorPath;
+  }
+
+  // Direct path (e.g., "gray.500")
   const parts = colorPath.split('.');
   if (parts.length === 2) {
     const [category, shade] = parts;
@@ -39,6 +58,7 @@ function getColorValue(colorPath: string): string {
       return (colorCategory as Record<string, string>)[shade] || colorPath;
     }
   }
+
   return colorPath;
 }
 

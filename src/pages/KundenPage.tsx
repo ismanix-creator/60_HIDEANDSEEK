@@ -1,15 +1,16 @@
 /**
  * @file        KundenPage.tsx
  * @description Kunden-Verwaltung mit Übersicht und Detail-Ansicht
- * @version     0.7.0
+ * @version     0.8.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-11 03:06:28 CET
+ * @updated     2026-01-11 22:35:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.8.0 - 2026-01-11 22:35:00 - Feature: Action Buttons mit disabled-State für Empty Rows (alle 3 Tabellen)
  *   0.7.0 - 2026-01-11 - Fixed: floating promises + unsafe-any errors
- *   0.6.0 - 2026-01-10 12:45:00 - Alle verbleibenden Hardcodes durch appConfig.ui.* ersetzt (Phase 2.3.2 Final)
- *   0.5.0 - 2026-01-09 21:51:40 - 3 verbleibende Hardcodes durch appConfig.ui.labels.* ersetzt (Phase 2.3.B)
+ *   0.6.0 - 2026-01-10 12:45:00 - Alle verbleibenden Hardcodes durch appConfig.* ersetzt (Phase 2.3.2 Final)
+ *   0.5.0 - 2026-01-09 21:51:40 - 3 verbleibende Hardcodes durch appConfig.labels.* ersetzt (Phase 2.3.B)
  *   0.4.0 - 2026-01-09 21:00:20 - 38 UI-Text-Hardcodes entfernt (Phase 2.3.2)
  *   0.3.1 - 2026-01-09 - Name-Spalte als Monospace (type: 'input')
  *   0.3.0 - 2026-01-09 - Button als actions Prop an PageLayout übergeben (horizontal zentriert)
@@ -19,7 +20,7 @@
 
 import { useState, useEffect } from 'react';
 import { PageLayout } from '@/components/layout/PageLayout';
-import { Table } from '@/components/ui/Table';
+import { Table, isEmptyRow } from '@/components/ui/Table';
 import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
 import { Input } from '@/components/ui/Input';
@@ -127,10 +128,10 @@ export function KundenPage() {
 
         setKunden(kundenWithSummary);
       } else {
-        setError(result.error || appConfig.ui.errors.load_failed);
+        setError(result.error || appConfig.errors.load_failed);
       }
     } catch (err) {
-      setError(appConfig.ui.errors.network_error);
+      setError(appConfig.errors.network_error);
     } finally {
       setLoading(false);
     }
@@ -157,7 +158,7 @@ export function KundenPage() {
         setMaterialien(materialResult.data);
       }
     } catch (err) {
-      setError(appConfig.ui.errors.network_error);
+      setError(appConfig.errors.network_error);
     } finally {
       setDetailLoading(false);
     }
@@ -197,12 +198,12 @@ export function KundenPage() {
       if (result.success) {
         setCreateKundeDialogOpen(false);
         setKundeFormData({ name: '' });
-        loadKunden();
+        void loadKunden();
       } else {
-        setError(result.error || appConfig.ui.errors.create_failed);
+        setError(result.error || appConfig.errors.create_failed);
       }
     } catch (err) {
-      setError(appConfig.ui.errors.network_error);
+      setError(appConfig.errors.network_error);
     }
   };
 
@@ -221,15 +222,15 @@ export function KundenPage() {
       if (result.success) {
         setEditKundeDialogOpen(false);
         setKundeFormData({ name: '' });
-        loadKunden();
+        void loadKunden();
         if (view === 'detail') {
           setSelectedKunde({ ...selectedKunde, name: kundeFormData.name });
         }
       } else {
-        setError(result.error || appConfig.ui.errors.update_failed);
+        setError(result.error || appConfig.errors.update_failed);
       }
     } catch (err) {
-      setError(appConfig.ui.errors.network_error);
+      setError(appConfig.errors.network_error);
     }
   };
 
@@ -243,15 +244,15 @@ export function KundenPage() {
       if (result.success) {
         setDeleteKundeDialogOpen(false);
         setSelectedKunde(null);
-        loadKunden();
+        void loadKunden();
         if (view === 'detail') {
           handleBackToOverview();
         }
       } else {
-        setError(result.error || appConfig.ui.errors.delete_failed);
+        setError(result.error || appConfig.errors.delete_failed);
       }
     } catch (err) {
-      setError(appConfig.ui.errors.network_error);
+      setError(appConfig.errors.network_error);
     }
   };
 
@@ -267,12 +268,12 @@ export function KundenPage() {
       if (result.success) {
         setCreatePostenMatDialogOpen(false);
         resetPostenMatForm();
-        loadKundeDetail(selectedKunde.id);
+        void loadKundeDetail(selectedKunde.id);
       } else {
-        setError(result.error || appConfig.ui.errors.create_failed);
+        setError(result.error || appConfig.errors.create_failed);
       }
     } catch (err) {
-      setError(appConfig.ui.errors.network_error);
+      setError(appConfig.errors.network_error);
     }
   };
 
@@ -288,12 +289,12 @@ export function KundenPage() {
       if (result.success) {
         setCreatePostenNoMatDialogOpen(false);
         resetPostenNoMatForm();
-        loadKundeDetail(selectedKunde.id);
+        void loadKundeDetail(selectedKunde.id);
       } else {
-        setError(result.error || appConfig.ui.errors.create_failed);
+        setError(result.error || appConfig.errors.create_failed);
       }
     } catch (err) {
-      setError(appConfig.ui.errors.network_error);
+      setError(appConfig.errors.network_error);
     }
   };
 
@@ -316,13 +317,13 @@ export function KundenPage() {
         setSelectedPosten(null);
         setZahlungbetrag(0);
         if (selectedKunde) {
-          loadKundeDetail(selectedKunde.id);
+          void loadKundeDetail(selectedKunde.id);
         }
       } else {
-        setError(result.error || appConfig.ui.errors.booking_failed);
+        setError(result.error || appConfig.errors.booking_failed);
       }
     } catch (err) {
-      setError(appConfig.ui.errors.network_error);
+      setError(appConfig.errors.network_error);
     }
   };
 
@@ -357,139 +358,164 @@ export function KundenPage() {
   };
 
   // Overview Columns
-  const overviewColumns = [
-    { key: 'name', label: appConfig.ui.labels.name, type: 'input' as const },
-    { key: 'gesamt', label: appConfig.ui.labels.amount, render: (k: KundeWithSummary) => formatCurrency(k.gesamt) },
-    { key: 'bezahlt', label: 'Bezahlt', render: (k: KundeWithSummary) => formatCurrency(k.bezahlt) },
-    { key: 'offen', label: appConfig.ui.labels.open_amount, render: (k: KundeWithSummary) => formatCurrency(k.offen) },
-    {
-      key: 'status',
-      label: 'Status',
-      render: (k: KundeWithSummary) => (
-        <Badge variant={k.status === 'bezahlt' ? 'success' : k.status === 'teilbezahlt' ? 'warning' : 'error'}>
-          {k.status === 'bezahlt'
-            ? 'Bezahlt'
-            : k.status === 'teilbezahlt'
-              ? 'Teilbezahlt'
-              : appConfig.ui.labels.open_amount}
-        </Badge>
-      )
-    },
-    {
-      key: 'actions',
-      label: 'Aktionen',
-      render: (k: KundeWithSummary) => (
-        <div className="flex gap-2">
-          <Button
-            kind="icon"
-            onClick={() => {
-              setView('detail');
-              setSelectedKunde(k);
-              setKundeFormData({ name: k.name });
-              setEditKundeDialogOpen(true);
-            }}
-          >
-            <Pencil />
-          </Button>
-          <Button
-            kind="icon"
-            onClick={() => {
-              setView('detail');
-              setSelectedKunde(k);
-              setDeleteKundeDialogOpen(true);
-            }}
-          >
-            <Trash2 />
-          </Button>
-        </div>
-      )
+  // Render functions per column
+  const getOverviewColumnRender = (key: string) => {
+    switch (key) {
+      case 'gesamt':
+        return (k: KundeWithSummary) => formatCurrency(k.gesamt);
+      case 'bezahlt':
+        return (k: KundeWithSummary) => formatCurrency(k.bezahlt);
+      case 'offen':
+        return (k: KundeWithSummary) => formatCurrency(k.offen);
+      case 'status':
+        return (k: KundeWithSummary) => (
+          <Badge variant={k.status === 'bezahlt' ? 'success' : k.status === 'teilbezahlt' ? 'warning' : 'error'}>
+            {k.status === 'bezahlt'
+              ? 'Bezahlt'
+              : k.status === 'teilbezahlt'
+                ? 'Teilbezahlt'
+                : appConfig.labels.open_amount}
+          </Badge>
+        );
+      case 'actions':
+        return (k: KundeWithSummary) => (
+          <div className="flex gap-2">
+            <Button
+              kind="act"
+              disabled={isEmptyRow(k)}
+              onClick={() => {
+                setView('detail');
+                setSelectedKunde(k);
+                setKundeFormData({ name: k.name });
+                setEditKundeDialogOpen(true);
+              }}
+            >
+              <Pencil />
+            </Button>
+            <Button
+              kind="act"
+              disabled={isEmptyRow(k)}
+              onClick={() => {
+                setView('detail');
+                setSelectedKunde(k);
+                setDeleteKundeDialogOpen(true);
+              }}
+            >
+              <Trash2 />
+            </Button>
+          </div>
+        );
+      default:
+        return undefined;
     }
-  ];
+  };
+
+  const overviewColumns = appConfig.table.kunden.columns.map((col) => ({
+    key: col.key,
+    label: col.label,
+    type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
+    render: getOverviewColumnRender(col.key)
+  }));
 
   // Detail Columns
-  const postenMatColumns = [
-    { key: 'datum', label: appConfig.ui.labels.date, render: (p: KundenPostenMat) => formatDate(p.datum) },
-    {
-      key: 'material',
-      label: appConfig.ui.labels.material,
-      render: (p: KundenPostenMat) => {
-        const mat = materialien.find((m) => m.id === p.material_id);
-        return mat?.bezeichnung || `Material #${p.material_id}`;
-      }
-    },
-    { key: 'menge', label: appConfig.ui.labels.quantity, render: (p: KundenPostenMat) => p.menge.toFixed(2) },
-    { key: 'preis', label: 'Preis', render: (p: KundenPostenMat) => formatCurrency(p.preis) },
-    { key: 'bezahlt', label: 'Bezahlt', render: (p: KundenPostenMat) => formatCurrency(p.bezahlt) },
-    { key: 'offen', label: appConfig.ui.labels.open_amount, render: (p: KundenPostenMat) => formatCurrency(p.offen) },
-    {
-      key: 'status',
-      label: 'Status',
-      render: (p: KundenPostenMat) => (
-        <Badge variant={p.status === 'bezahlt' ? 'success' : p.status === 'teilbezahlt' ? 'warning' : 'error'}>
-          {p.status === 'bezahlt'
-            ? 'Bezahlt'
-            : p.status === 'teilbezahlt'
-              ? 'Teilbezahlt'
-              : appConfig.ui.labels.open_amount}
-        </Badge>
-      )
-    },
-    {
-      key: 'actions',
-      label: 'Aktionen',
-      render: (p: KundenPostenMat) => (
-        <div className="flex gap-2">
-          {p.offen > 0 && (
-            <Button kind="icon" onClick={() => openZahlungDialog(p, 'mat')}>
-              <DollarSign />
-            </Button>
-          )}
-        </div>
-      )
+  const getPostenMatColumnRender = (key: string) => {
+    switch (key) {
+      case 'datum':
+        return (p: KundenPostenMat) => formatDate(p.datum);
+      case 'material':
+        return (p: KundenPostenMat) => {
+          const mat = materialien.find((m) => m.id === p.material_id);
+          return mat?.bezeichnung || `Material #${p.material_id}`;
+        };
+      case 'menge':
+        return (p: KundenPostenMat) => p.menge.toFixed(2);
+      case 'preis':
+        return (p: KundenPostenMat) => formatCurrency(p.preis);
+      case 'bezahlt':
+        return (p: KundenPostenMat) => formatCurrency(p.bezahlt);
+      case 'offen':
+        return (p: KundenPostenMat) => formatCurrency(p.offen);
+      case 'status':
+        return (p: KundenPostenMat) => (
+          <Badge variant={p.status === 'bezahlt' ? 'success' : p.status === 'teilbezahlt' ? 'warning' : 'error'}>
+            {p.status === 'bezahlt'
+              ? 'Bezahlt'
+              : p.status === 'teilbezahlt'
+                ? 'Teilbezahlt'
+                : appConfig.labels.open_amount}
+          </Badge>
+        );
+      case 'actions':
+        return (p: KundenPostenMat) => (
+          <div className="flex gap-2">
+            {!isEmptyRow(p) && p.offen > 0 && (
+              <Button kind="act" onClick={() => openZahlungDialog(p, 'mat')}>
+                <DollarSign />
+              </Button>
+            )}
+          </div>
+        );
+      default:
+        return undefined;
     }
-  ];
+  };
 
-  const postenNoMatColumns = [
-    { key: 'datum', label: appConfig.ui.labels.date, render: (p: KundenPostenNoMat) => formatDate(p.datum) },
-    { key: 'bezeichnung', label: appConfig.ui.labels.designation },
-    { key: 'betrag', label: appConfig.ui.labels.amount, render: (p: KundenPostenNoMat) => formatCurrency(p.betrag) },
-    { key: 'bezahlt', label: 'Bezahlt', render: (p: KundenPostenNoMat) => formatCurrency(p.bezahlt) },
-    { key: 'offen', label: appConfig.ui.labels.open_amount, render: (p: KundenPostenNoMat) => formatCurrency(p.offen) },
-    {
-      key: 'status',
-      label: 'Status',
-      render: (p: KundenPostenNoMat) => (
-        <Badge variant={p.status === 'bezahlt' ? 'success' : p.status === 'teilbezahlt' ? 'warning' : 'error'}>
-          {p.status === 'bezahlt'
-            ? 'Bezahlt'
-            : p.status === 'teilbezahlt'
-              ? 'Teilbezahlt'
-              : appConfig.ui.labels.open_amount}
-        </Badge>
-      )
-    },
-    {
-      key: 'actions',
-      label: 'Aktionen',
-      render: (p: KundenPostenNoMat) => (
-        <div className="flex gap-2">
-          {p.offen > 0 && (
-            <Button kind="icon" onClick={() => openZahlungDialog(p, 'nomat')}>
-              <DollarSign />
-            </Button>
-          )}
-        </div>
-      )
+  const postenMatColumns = appConfig.table.kunden.mat.columns.map((col) => ({
+    key: col.key,
+    label: col.label,
+    type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
+    render: getPostenMatColumnRender(col.key)
+  }));
+
+  const getPostenNoMatColumnRender = (key: string) => {
+    switch (key) {
+      case 'datum':
+        return (p: KundenPostenNoMat) => formatDate(p.datum);
+      case 'betrag':
+        return (p: KundenPostenNoMat) => formatCurrency(p.betrag);
+      case 'bezahlt':
+        return (p: KundenPostenNoMat) => formatCurrency(p.bezahlt);
+      case 'offen':
+        return (p: KundenPostenNoMat) => formatCurrency(p.offen);
+      case 'status':
+        return (p: KundenPostenNoMat) => (
+          <Badge variant={p.status === 'bezahlt' ? 'success' : p.status === 'teilbezahlt' ? 'warning' : 'error'}>
+            {p.status === 'bezahlt'
+              ? 'Bezahlt'
+              : p.status === 'teilbezahlt'
+                ? 'Teilbezahlt'
+                : appConfig.labels.open_amount}
+          </Badge>
+        );
+      case 'actions':
+        return (p: KundenPostenNoMat) => (
+          <div className="flex gap-2">
+            {!isEmptyRow(p) && p.offen > 0 && (
+              <Button kind="act" onClick={() => openZahlungDialog(p, 'nomat')}>
+                <DollarSign />
+              </Button>
+            )}
+          </div>
+        );
+      default:
+        return undefined;
     }
-  ];
+  };
+
+  const postenNoMatColumns = appConfig.table.kunden.nomat.columns.map((col) => ({
+    key: col.key,
+    label: col.label,
+    type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
+    render: getPostenNoMatColumnRender(col.key)
+  }));
 
   // Render Overview
   if (view === 'overview') {
     return (
       <PageLayout
-        title={appConfig.ui.page_titles.customers}
+        title={appConfig.page_titles.customers}
         actions={
-          <Button kind="icon" onClick={() => setCreateKundeDialogOpen(true)}>
+          <Button kind="new" onClick={() => setCreateKundeDialogOpen(true)}>
             <UserPlus />
           </Button>
         }
@@ -503,7 +529,7 @@ export function KundenPage() {
             data={kunden}
             columns={overviewColumns}
             loading={loading}
-            emptyMessage={appConfig.ui.empty_states.no_customers}
+            emptyMessage={appConfig.empty_states.no_customers}
             onRowClick={handleRowClick}
           />
 
@@ -514,7 +540,7 @@ export function KundenPage() {
               setCreateKundeDialogOpen(false);
               setKundeFormData({ name: '' });
             }}
-            title={appConfig.ui.dialog_titles.new_customer}
+            title={appConfig.dialog_titles.new_customer}
             actions={
               <>
                 <Button
@@ -524,14 +550,14 @@ export function KundenPage() {
                     setKundeFormData({ name: '' });
                   }}
                 >
-                  {appConfig.ui.buttons.cancel}
+                  {appConfig.buttons.cancel}
                 </Button>
-                <Button onClick={handleCreateKunde}>{appConfig.ui.buttons.create}</Button>
+                <Button onClick={() => void handleCreateKunde()}>{appConfig.buttons.create}</Button>
               </>
             }
           >
             <Input
-              label={appConfig.ui.labels.name}
+              label={appConfig.labels.name}
               value={kundeFormData.name}
               onChange={(e) => setKundeFormData({ name: e.target.value })}
             />
@@ -549,7 +575,7 @@ export function KundenPage() {
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
             <Button kind="rect" onClick={handleBackToOverview}>
-              ← {appConfig.ui.buttons.cancel}
+              ← {appConfig.buttons.cancel}
             </Button>
             <h2 className="text-2xl font-semibold text-neutral-50">{selectedKunde?.name}</h2>
           </div>
@@ -563,10 +589,10 @@ export function KundenPage() {
                 }
               }}
             >
-              {appConfig.ui.buttons.edit}
+              {appConfig.buttons.edit}
             </Button>
             <Button kind="rect" onClick={() => setDeleteKundeDialogOpen(true)}>
-              {appConfig.ui.buttons.delete}
+              {appConfig.buttons.delete}
             </Button>
           </div>
         </div>
@@ -579,14 +605,14 @@ export function KundenPage() {
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-semibold text-neutral-50">Material-Posten</h3>
             <Button onClick={() => setCreatePostenMatDialogOpen(true)}>
-              {appConfig.ui.dialog_titles.new_material_post}
+              {appConfig.dialog_titles.new_material_post}
             </Button>
           </div>
           <Table
             data={postenMat}
             columns={postenMatColumns}
             loading={detailLoading}
-            emptyMessage={appConfig.ui.empty_states.no_material_posts}
+            emptyMessage={appConfig.empty_states.no_material_posts}
           />
         </div>
 
@@ -596,14 +622,14 @@ export function KundenPage() {
             <div className="flex justify-between items-center">
               <h3 className="text-xl font-semibold text-neutral-50">Sonstige Posten</h3>
               <Button onClick={() => setCreatePostenNoMatDialogOpen(true)}>
-                {appConfig.ui.dialog_titles.new_other_post}
+                {appConfig.dialog_titles.new_other_post}
               </Button>
             </div>
             <Table
               data={postenNoMat}
               columns={postenNoMatColumns}
               loading={detailLoading}
-              emptyMessage={appConfig.ui.empty_states.no_other_posts}
+              emptyMessage={appConfig.empty_states.no_other_posts}
             />
           </div>
         )}
@@ -616,7 +642,7 @@ export function KundenPage() {
             setEditKundeDialogOpen(false);
             setKundeFormData({ name: '' });
           }}
-          title={appConfig.ui.dialog_titles.edit_customer}
+          title={appConfig.dialog_titles.edit_customer}
           actions={
             <>
               <Button
@@ -626,14 +652,14 @@ export function KundenPage() {
                   setKundeFormData({ name: '' });
                 }}
               >
-                {appConfig.ui.buttons.cancel}
+                {appConfig.buttons.cancel}
               </Button>
-              <Button onClick={handleUpdateKunde}>{appConfig.ui.buttons.save}</Button>
+              <Button onClick={() => void handleUpdateKunde()}>{appConfig.buttons.save}</Button>
             </>
           }
         >
           <Input
-            label={appConfig.ui.labels.name}
+            label={appConfig.labels.name}
             value={kundeFormData.name}
             onChange={(e) => setKundeFormData({ name: e.target.value })}
           />
@@ -643,20 +669,20 @@ export function KundenPage() {
         <Dialog
           open={deleteKundeDialogOpen}
           onClose={() => setDeleteKundeDialogOpen(false)}
-          title={appConfig.ui.dialog_titles.delete_customer}
+          title={appConfig.dialog_titles.delete_customer}
           actions={
             <>
               <Button kind="rect" onClick={() => setDeleteKundeDialogOpen(false)}>
-                {appConfig.ui.buttons.cancel}
+                {appConfig.buttons.cancel}
               </Button>
-              <Button kind="rect" onClick={handleDeleteKunde}>
-                {appConfig.ui.buttons.delete}
+              <Button kind="rect" onClick={() => void handleDeleteKunde()}>
+                {appConfig.buttons.delete}
               </Button>
             </>
           }
         >
           <p className="text-neutral-300">
-            {appConfig.ui.messages.confirm_delete_customer.replace('{name}', selectedKunde?.name || '')}
+            {appConfig.messages.confirm_delete_customer.replace('{name}', selectedKunde?.name || '')}
           </p>
         </Dialog>
 
@@ -667,7 +693,7 @@ export function KundenPage() {
             setCreatePostenMatDialogOpen(false);
             resetPostenMatForm();
           }}
-          title={appConfig.ui.dialog_titles.new_material_post}
+          title={appConfig.dialog_titles.new_material_post}
           actions={
             <>
               <Button
@@ -677,41 +703,41 @@ export function KundenPage() {
                   resetPostenMatForm();
                 }}
               >
-                {appConfig.ui.buttons.cancel}
+                {appConfig.buttons.cancel}
               </Button>
-              <Button onClick={handleCreatePostenMat}>{appConfig.ui.buttons.create}</Button>
+              <Button onClick={handleCreatePostenMat}>{appConfig.buttons.create}</Button>
             </>
           }
         >
           <div className="space-y-4">
             <Input
-              label={appConfig.ui.labels.date}
+              label={appConfig.labels.date}
               type="date"
               value={postenMatFormData.datum}
               onChange={(e) => setPostenMatFormData({ ...postenMatFormData, datum: e.target.value })}
             />
             <Select
-              label={appConfig.ui.labels.material}
+              label={appConfig.labels.material}
               value={postenMatFormData.material_id.toString()}
               onChange={(e) => setPostenMatFormData({ ...postenMatFormData, material_id: parseInt(e.target.value) })}
               options={materialien.map((m) => ({ value: m.id.toString(), label: m.bezeichnung }))}
             />
             <Input
-              label={appConfig.ui.labels.quantity}
+              label={appConfig.labels.quantity}
               type="number"
               step="0.01"
               value={postenMatFormData.menge}
               onChange={(e) => setPostenMatFormData({ ...postenMatFormData, menge: parseFloat(e.target.value) || 0 })}
             />
             <Input
-              label={appConfig.ui.labels.amount}
+              label={appConfig.labels.amount}
               type="number"
               step="0.01"
               value={postenMatFormData.preis}
               onChange={(e) => setPostenMatFormData({ ...postenMatFormData, preis: parseFloat(e.target.value) || 0 })}
             />
             <Input
-              label={appConfig.ui.labels.note}
+              label={appConfig.labels.note}
               value={postenMatFormData.notiz}
               onChange={(e) => setPostenMatFormData({ ...postenMatFormData, notiz: e.target.value })}
             />
@@ -725,7 +751,7 @@ export function KundenPage() {
             setCreatePostenNoMatDialogOpen(false);
             resetPostenNoMatForm();
           }}
-          title={appConfig.ui.dialog_titles.new_other_post}
+          title={appConfig.dialog_titles.new_other_post}
           actions={
             <>
               <Button
@@ -735,26 +761,26 @@ export function KundenPage() {
                   resetPostenNoMatForm();
                 }}
               >
-                {appConfig.ui.buttons.cancel}
+                {appConfig.buttons.cancel}
               </Button>
-              <Button onClick={handleCreatePostenNoMat}>{appConfig.ui.buttons.create}</Button>
+              <Button onClick={handleCreatePostenNoMat}>{appConfig.buttons.create}</Button>
             </>
           }
         >
           <div className="space-y-4">
             <Input
-              label={appConfig.ui.labels.date}
+              label={appConfig.labels.date}
               type="date"
               value={postenNoMatFormData.datum}
               onChange={(e) => setPostenNoMatFormData({ ...postenNoMatFormData, datum: e.target.value })}
             />
             <Input
-              label={appConfig.ui.labels.designation}
+              label={appConfig.labels.designation}
               value={postenNoMatFormData.bezeichnung}
               onChange={(e) => setPostenNoMatFormData({ ...postenNoMatFormData, bezeichnung: e.target.value })}
             />
             <Input
-              label={appConfig.ui.labels.amount}
+              label={appConfig.labels.amount}
               type="number"
               step="0.01"
               value={postenNoMatFormData.betrag}
@@ -763,7 +789,7 @@ export function KundenPage() {
               }
             />
             <Input
-              label={appConfig.ui.labels.note}
+              label={appConfig.labels.note}
               value={postenNoMatFormData.notiz}
               onChange={(e) => setPostenNoMatFormData({ ...postenNoMatFormData, notiz: e.target.value })}
             />
@@ -778,7 +804,7 @@ export function KundenPage() {
             setSelectedPosten(null);
             setZahlungbetrag(0);
           }}
-          title={appConfig.ui.dialog_titles.record_payment}
+          title={appConfig.dialog_titles.record_payment}
           actions={
             <>
               <Button
@@ -789,19 +815,19 @@ export function KundenPage() {
                   setZahlungbetrag(0);
                 }}
               >
-                {appConfig.ui.buttons.cancel}
+                {appConfig.buttons.cancel}
               </Button>
-              <Button onClick={handleZahlung}>{appConfig.ui.buttons.record}</Button>
+              <Button onClick={handleZahlung}>{appConfig.buttons.record}</Button>
             </>
           }
         >
           <div className="space-y-4">
             <div className="p-4 bg-neutral-800 rounded">
-              <p className="text-neutral-400 text-sm">{appConfig.ui.labels.open_amount}</p>
+              <p className="text-neutral-400 text-sm">{appConfig.labels.open_amount}</p>
               <p className="text-2xl font-semibold text-neutral-50">{formatCurrency(selectedPosten?.offen || 0)}</p>
             </div>
             <Input
-              label={appConfig.ui.labels.payment_amount}
+              label={appConfig.labels.payment_amount}
               type="number"
               step="0.01"
               value={zahlungbetrag}

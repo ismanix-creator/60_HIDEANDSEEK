@@ -11,8 +11,7 @@
  *   year - Jahr (optional)
  *
  * @changelog
- *   0.4.0 - 2026-01-09 - Direct appConfig.theme.* access (spacingConfig eliminiert)
- *   0.3.0 - 2026-01-09 - Import auf appConfig.components.divider umgestellt (Phase 2.2.4)
+ *   0.4.0 - 2026-01-09 - Direct appConfig.* access (spacingConfig eliminiert)
  *   0.2.0 - 2025-12-11 - MonthDivider zentriert, Tailwind-Class entfernt
  *   0.1.0 - 2025-12-11 - Initial version
  */
@@ -23,24 +22,24 @@
 import type { MonthDividerProps } from '@/types/ui.types';
 import { appConfig } from '@/config';
 
-const dividerConfig = appConfig.components.divider;
+const dividerConfig = appConfig.divider;
 
-const colorsConfig = appConfig.theme.colors;
+const colorsConfig = appConfig.colors;
 
 // Helper: Tailwind-Scale (0-32) auf theme.spacing (xxs-xxl) mappen
 const spacingBase = (key: number | string): string => {
   const keyNum = typeof key === 'number' ? key : parseInt(String(key), 10);
-  if (isNaN(keyNum)) return appConfig.theme.spacing.md; // fallback
+  if (isNaN(keyNum)) return appConfig.spacing.md; // fallback
 
-  if (keyNum <= 0) return appConfig.theme.spacing.xxs;
-  if (keyNum === 1) return appConfig.theme.spacing.xs;
-  if (keyNum === 2) return appConfig.theme.spacing.xs;
-  if (keyNum === 3) return appConfig.theme.spacing.sm;
-  if (keyNum === 4) return appConfig.theme.spacing.md;
-  if (keyNum === 5) return appConfig.theme.spacing.md;
-  if (keyNum === 6) return appConfig.theme.spacing.lg;
-  if (keyNum === 8) return appConfig.theme.spacing.xl;
-  return appConfig.theme.spacing.xxl; // 10+
+  if (keyNum <= 0) return appConfig.spacing.xxs;
+  if (keyNum === 1) return appConfig.spacing.xs;
+  if (keyNum === 2) return appConfig.spacing.xs;
+  if (keyNum === 3) return appConfig.spacing.sm;
+  if (keyNum === 4) return appConfig.spacing.md;
+  if (keyNum === 5) return appConfig.spacing.md;
+  if (keyNum === 6) return appConfig.spacing.lg;
+  if (keyNum === 8) return appConfig.spacing.xl;
+  return appConfig.spacing.xxl; // 10+
 };
 
 // ═══════════════════════════════════════════════════════

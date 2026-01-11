@@ -16,10 +16,10 @@
 
 /**
  * Export validated config
- * Components nutzen direkten Zugriff: appConfig.theme.*
+ * Components nutzen direkten Zugriff: appConfig.*
  */
 export { appConfig } from './load.js';
-export type { AppConfig, AppConfigTheme, AppConfigComponents } from './schema/config.schema.js';
+export type { AppConfig } from './schema/config.schema.js';
 
 /**
  * Export navigation config

@@ -1,12 +1,19 @@
 /**
  * @file        config.schema.ts
  * @description Zod Schema für config.toml Validation (STRICT)
- * @version     2.2.0
+ * @version     2.13.0
  * @created     2026-01-07 19:45:00 CET
- * @updated     2026-01-11 16:50:00 CET
+ * @updated     2026-01-11 23:56:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   2.13.0 - 2026-01-11 23:56:00 CET - FINAL SYNC: Removed obsolete FortschrittColorsSchema, migrated all table fortschritt.colors to TableProgressColorsSchema (6 tables)
+ *   2.12.0 - 2026-01-11 23:50:00 CET - Sync with config.toml v2.10.0: Added table.progress.colors schema (11 fields), removed colors.yellow, removed badge.base.padding (kept paddingX/Y)
+ *   2.11.0 - 2026-01-11 15:00:40 CET - Fixed app.version schema: Accept number (config.toml has version=123), not SemVer string
+ *   2.10.0 - 2026-01-11 14:35:00 CET - Sync with config.toml v2.9.0: Added layout.areas schema, removed obsolete colors.table and input.types
+ *   2.9.0 - 2026-01-11 21:05:00 CET - Added table.behavior schema (minRows, emptyRowPlaceholder)
+ *   2.8.0 - 2026-01-11 19:30:00 CET - Full sync with config.toml v2.7.0: Added font properties (fontSize/fontWeight/fontMono) to navigation/badge/dialog/divider/infobox/input/table/pageHeader/button.rect, added table.kunden.mat/nomat columns, added bestand + fortschritt colors (7 schemas)
+ *   2.3.0 - 2026-01-11 18:00:00 CET - ButtonSchema refactored: nav/new/act/tab/rect (removed variant/sizes structure)
  *   2.2.0 - 2026-01-11 16:50:00 CET - Schema fix: Added missing height, maxHeight, shadow keys to DialogSchema.container
  *   2.1.0 - 2026-01-11 16:45:00 CET - Schema sync: Removed height/maxHeight from DialogSchema.container, made InputSchema.types optional, made ColumnSchema.monospace/buttons optional, removed duplicate ui.dialogs
  *   2.0.0 - 2026-01-11 14:30:00 CET - CRITICAL FIX: Removed nested config objects that don't exist in config.toml (wrapper, header, cell, row, cellTypes). Schema now matches TOML flat structure exactly. Allows token references {xyz.123} in all color/string fields.
@@ -28,7 +35,10 @@ import { z } from 'zod';
 const AppSchema = z
   .object({
     name: z.string().min(1),
-    version: z.string().regex(/^\d+\.\d+\.\d+$/),
+    version: z.union([
+      z.string().regex(/^\d+\.\d+\.\d+$/), // Semantic Versioning (e.g., "1.2.0")
+      z.number().int().positive() // Numeric Versioning (e.g., 123)
+    ]),
     description: z.string()
   })
   .strict();
@@ -61,7 +71,20 @@ const NavigationItemSchema = z
  */
 const NavigationSchema = z
   .object({
-    items: z.array(NavigationItemSchema)
+    items: z.array(NavigationItemSchema),
+    zIndex: z.number(),
+    borderWidth: z.string(),
+    transition: z.string(),
+    hoverScale: z.string(),
+    normalScale: z.string(),
+    fontSize: z.string(),
+    fontWeight: z.number(),
+    fontMono: z.boolean().optional(),
+    icon: z
+      .object({
+        rotateGlaeubiger: z.string()
+      })
+      .strict()
   })
   .strict();
 
@@ -92,7 +115,6 @@ const ThemeColorsSchema = z
     white: ColorScaleSchema,
     gray: ColorScaleSchema,
     black: ColorScaleSchema,
-    yellow: ColorScaleSchema,
     orange: ColorScaleSchema,
     red: ColorScaleSchema,
     green: ColorScaleSchema,
@@ -138,7 +160,6 @@ const ThemeColorsSchema = z
       .strict(),
     error: z
       .object({
-        500: z.string(),
         light: z.string(),
         main: z.string(),
         dark: z.string()
@@ -163,13 +184,6 @@ const ThemeColorsSchema = z
         light: z.string(),
         main: z.string(),
         dark: z.string()
-      })
-      .strict(),
-    table: z
-      .object({
-        stripe1: z.string(),
-        stripe2: z.string(),
-        selection: z.string()
       })
       .strict()
   })
@@ -236,23 +250,6 @@ const ThemeSpacingSchema = z
       })
       .strict(),
     mobile: ThemeSpacingMobileSchema
-  })
-  .strict();
-
-/**
- * Theme Icons Schema
- */
-const ThemeIconsSchema = z
-  .object({
-    sizes: z
-      .object({
-        xs: z.string(),
-        sm: z.string(),
-        md: z.string(),
-        lg: z.string(),
-        xl: z.string()
-      })
-      .strict()
   })
   .strict();
 
@@ -326,22 +323,6 @@ const ThemeResponsiveSchema = z
   .strict();
 
 /**
- * Theme Schema
- */
-const ThemeSchema = z
-  .object({
-    colors: ThemeColorsSchema,
-    typography: ThemeTypographySchema,
-    spacing: ThemeSpacingSchema,
-    icons: ThemeIconsSchema,
-    breakpoints: ThemeBreakpointsSchema,
-    borderRadius: ThemeBorderRadiusSchema,
-    shadows: ThemeShadowsSchema,
-    responsive: ThemeResponsiveSchema
-  })
-  .strict();
-
-/**
  * Badge Schema
  */
 const BadgeVariantSchema = z
@@ -355,12 +336,12 @@ const BadgeSchema = z
   .object({
     base: z
       .object({
-        padding: z.string(),
         paddingX: z.number(),
         paddingY: z.number(),
         borderRadius: z.string(),
         fontSize: z.string(),
         fontWeight: z.number(),
+        fontMono: z.boolean().optional(),
         display: z.string(),
         alignItems: z.string(),
         gap: z.string()
@@ -382,28 +363,8 @@ const BadgeSchema = z
 /**
  * Button Schema
  */
-// Button Variant: rect (standard rectangular buttons)
-const ButtonVariantRectSchema = z
-  .object({
-    bg: z.string(),
-    text: z.string(),
-    border: z.string(),
-    hoverBg: z.string(),
-    activeBg: z.string(),
-    disabledBg: z.string(),
-    disabledText: z.string(),
-    disabledBorder: z.string(),
-    saveBg: z.string(),
-    saveText: z.string(),
-    saveHoverBg: z.string(),
-    saveActiveBg: z.string(),
-    focusRing: z.string(),
-    focusRingOpacity: z.string()
-  })
-  .strict();
-
-// Button Variant: icon (icon-only buttons)
-const ButtonVariantIconSchema = z
+// Icon Button Types: nav, new, act, tab (Icon-Only Buttons mit direkter iconSize)
+const IconButtonSchema = z
   .object({
     bg: z.string(),
     icon: z.string(),
@@ -412,26 +373,33 @@ const ButtonVariantIconSchema = z
     activeBg: z.string(),
     disabledBg: z.string(),
     disabledIcon: z.string(),
-    disabledBorder: z.string(),
     focusRing: z.string(),
-    focusRingOpacity: z.string()
+    focusRingOpacity: z.string(),
+    iconSize: z.string() // Direct size in px (e.g., "24px", "32px", "20px")
   })
   .strict();
 
-// Button Size: rect (Standard für alle regulären Buttons)
-const ButtonSizeRectSchema = z
+// Rect Button Type (Standard Text-Buttons mit intent: default/save)
+const RectButtonSchema = z
   .object({
+    bg: z.string(),
+    text: z.string(),
+    border: z.string(),
+    hoverBg: z.string(),
+    activeBg: z.string(),
+    disabledBg: z.string(),
+    disabledText: z.string(),
+    saveBg: z.string(),
+    saveText: z.string(),
+    saveHoverBg: z.string(),
+    saveActiveBg: z.string(),
+    focusRing: z.string(),
+    focusRingOpacity: z.string(),
     padding: z.string(),
     fontSize: z.string(),
+    fontWeight: z.number(),
+    fontMono: z.boolean().optional(),
     height: z.string(),
-    iconSize: z.string() // Token-Referenz: {icons.sizes.md}
-  })
-  .strict();
-
-// Button Size: icon (Icon-Only)
-const ButtonSizeIconSchema = z
-  .object({
-    padding: z.string(),
     iconSize: z.string()
   })
   .strict();
@@ -439,18 +407,11 @@ const ButtonSizeIconSchema = z
 const ButtonSchema = z
   .object({
     borderRadius: z.string(),
-    variant: z
-      .object({
-        rect: ButtonVariantRectSchema,
-        icon: ButtonVariantIconSchema
-      })
-      .strict(),
-    sizes: z
-      .object({
-        rect: ButtonSizeRectSchema,
-        icon: ButtonSizeIconSchema
-      })
-      .strict()
+    nav: IconButtonSchema,
+    new: IconButtonSchema,
+    act: IconButtonSchema,
+    tab: IconButtonSchema,
+    rect: RectButtonSchema
   })
   .strict();
 
@@ -482,13 +443,17 @@ const DialogSchema = z
         borderBottom: z.string(),
         padding: z.string(),
         fontSize: z.string(),
-        fontWeight: z.string()
+        fontWeight: z.number(),
+        fontMono: z.boolean().optional()
       })
       .strict(),
     body: z
       .object({
         padding: z.string(),
-        gap: z.string()
+        gap: z.string(),
+        fontSize: z.string(),
+        fontWeight: z.number(),
+        fontMono: z.boolean().optional()
       })
       .strict(),
     footer: z
@@ -516,7 +481,8 @@ const DividerSchema = z
         paddingY: z.number(),
         paddingX: z.number(),
         fontSize: z.string(),
-        fontWeight: z.string(),
+        fontWeight: z.number(),
+        fontMono: z.boolean().optional(),
         textTransform: z.string()
       })
       .strict(),
@@ -552,6 +518,8 @@ const InfoboxSchema = z
         padding: z.string(),
         borderRadius: z.string(),
         fontSize: z.string(),
+        fontWeight: z.number(),
+        fontMono: z.boolean().optional(),
         borderWidth: z.string()
       })
       .strict(),
@@ -593,12 +561,6 @@ const InputStateSchema = z
   })
   .strict();
 
-const InputTypeSchema = z
-  .object({
-    type: z.string()
-  })
-  .strict();
-
 const InputSchema = z
   .object({
     base: z
@@ -611,6 +573,8 @@ const InputSchema = z
         paddingY: z.number(),
         borderRadius: z.string(),
         fontSize: z.string(),
+        fontWeight: z.number(),
+        fontMono: z.boolean().optional(),
         height: z.string(),
         borderWidth: z.string()
       })
@@ -622,17 +586,23 @@ const InputSchema = z
         disabled: InputStateSchema,
         default: InputStateSchema
       })
-      .strict(),
-    types: z
+      .strict()
+  })
+  .strict();
+
+/**
+ * Page Header Schema
+ */
+const PageHeaderSchema = z
+  .object({
+    button: z
       .object({
-        text: InputTypeSchema,
-        number: InputTypeSchema,
-        date: InputTypeSchema,
-        email: InputTypeSchema,
-        currency: InputTypeSchema
+        className: z.string(),
+        fontSize: z.string(),
+        fontWeight: z.number(),
+        fontMono: z.boolean().optional()
       })
       .strict()
-      .optional()
   })
   .strict();
 
@@ -644,7 +614,7 @@ export const ColumnSchema = z
     key: z.string().min(1),
     label: z.string().min(1),
     width: z.string(), // CSS Wert: %, rem, px, em, auto
-    type: z.enum(['text', 'number', 'currency', 'date', 'status', 'input', 'actions']),
+    type: z.enum(['text', 'number', 'currency', 'date', 'status', 'input', 'actions', 'progress', 'button']),
     monospace: z.boolean().optional(),
     buttons: z.array(z.string()).optional()
   })
@@ -666,6 +636,45 @@ export const TablePagesSchema = z
   .strict();
 
 /**
+ * Bestand Colors Schema (9 Stufen + zero_paid)
+ */
+const BestandColorsSchema = z
+  .object({
+    green_high: z.string(),
+    green_mid: z.string(),
+    green_low: z.string(),
+    yellow_high: z.string(),
+    yellow_mid: z.string(),
+    yellow_low: z.string(),
+    red_high: z.string(),
+    red_mid: z.string(),
+    red_low: z.string(),
+    zero_paid: z.string(),
+    text: z.string()
+  })
+  .strict();
+
+/**
+ * Table Progress Colors Schema (Universal: 9-stufige Skala + Zero-State)
+ * Zentrale Definition für alle Fortschrittsbalken (Bestand, Fortschritt)
+ */
+const TableProgressColorsSchema = z
+  .object({
+    green_high: z.string(),
+    green_mid: z.string(),
+    green_low: z.string(),
+    yellow_high: z.string(),
+    yellow_mid: z.string(),
+    yellow_low: z.string(),
+    red_high: z.string(),
+    red_mid: z.string(),
+    red_low: z.string(),
+    zero_paid: z.string(),
+    text: z.string()
+  })
+  .strict();
+
+/**
  * Table Schema
  */
 const TableSchema = z
@@ -674,6 +683,21 @@ const TableSchema = z
     rowHeight: z.string().regex(/^\d+px$/),
     cellPaddingX: z.string(),
     cellPaddingY: z.string(),
+
+    // Behavior (min rows, empty placeholder)
+    behavior: z
+      .object({
+        minRows: z.number().int().min(0),
+        emptyRowPlaceholder: z.string()
+      })
+      .strict(),
+
+    // Progress Colors (Universal: 9-stufige Skala für alle Fortschrittsbalken)
+    progress: z
+      .object({
+        colors: TableProgressColorsSchema
+      })
+      .strict(),
 
     // Wrapper (flat keys only)
     wrapperBg: z.string(),
@@ -684,14 +708,15 @@ const TableSchema = z
     // Header (flat keys only)
     headerBg: z.string(),
     headerText: z.string(),
-    headerFontSize: z.enum(['xs', 'sm', 'md', 'lg', 'xl']),
-    headerFontWeight: z.enum(['normal', 'medium', 'semibold', 'bold']),
-    headerFontFamily: z.enum(['base', 'mono']),
+    headerFontSize: z.string(),
+    headerFontWeight: z.number(),
+    headerFontMono: z.boolean(),
 
     // Cell (flat keys only)
     cellText: z.string(),
-    cellFontSize: z.enum(['xs', 'sm', 'md', 'lg', 'xl']),
-    cellFontFamily: z.enum(['base', 'mono']),
+    cellFontSize: z.string(),
+    cellFontWeight: z.number(),
+    cellFontMono: z.boolean(),
 
     // Row (flat keys only)
     rowBgOdd: z.string(),
@@ -699,40 +724,139 @@ const TableSchema = z
     rowBgHover: z.string(),
     rowBorderBottom: z.string(),
 
-    // Pages
-    pages: TablePagesSchema
-  })
-  .strict();
-
-/**
- * Components Schema
- */
-const ComponentsSchema = z
-  .object({
-    pageHeader: z
+    // Bestand Colors (Material)
+    bestand: z
       .object({
-        button: z
+        colors: BestandColorsSchema
+      })
+      .strict(),
+
+    // Material mit Fortschritt
+    material: z
+      .object({
+        columns: z.array(ColumnSchema),
+        fortschritt: z
           .object({
-            className: z.string()
+            colors: TableProgressColorsSchema
           })
           .strict()
       })
       .strict(),
+
+    // Kunden (Übersicht + Material-Posten + Sonstige Posten)
+    kunden: z
+      .object({
+        columns: z.array(ColumnSchema),
+        fortschritt: z
+          .object({
+            colors: TableProgressColorsSchema
+          })
+          .strict(),
+        mat: z
+          .object({
+            columns: z.array(ColumnSchema),
+            fortschritt: z
+              .object({
+                colors: TableProgressColorsSchema
+              })
+              .strict()
+          })
+          .strict(),
+        nomat: z
+          .object({
+            columns: z.array(ColumnSchema),
+            fortschritt: z
+              .object({
+                colors: TableProgressColorsSchema
+              })
+              .strict()
+          })
+          .strict()
+      })
+      .strict(),
+
+    // Schuldner mit Fortschritt
+    schuldner: z
+      .object({
+        columns: z.array(ColumnSchema),
+        fortschritt: z
+          .object({
+            colors: TableProgressColorsSchema
+          })
+          .strict()
+      })
+      .strict(),
+
+    // Gläubiger mit Fortschritt
+    glaeubiger: z
+      .object({
+        columns: z.array(ColumnSchema),
+        fortschritt: z
+          .object({
+            colors: TableProgressColorsSchema
+          })
+          .strict()
+      })
+      .strict()
+  })
+  .strict();
+
+/**
+ * Layout Areas Schema
+ */
+const LayoutAreaSchema = z
+  .object({
+    bg: z.string(),
+    border: z.string(),
+    borderWidth: z.string(),
+    borderRadius: z.string().optional()
+  })
+  .strict();
+
+const LayoutSchema = z
+  .object({
+    areas: z
+      .object({
+        navigation: LayoutAreaSchema,
+        header: LayoutAreaSchema,
+        content: LayoutAreaSchema,
+        footer: LayoutAreaSchema
+      })
+      .strict()
+  })
+  .strict();
+
+/**
+ * Main Config Schema (STRICT - matches TOML flat structure)
+ */
+export const ConfigSchema = z
+  .object({
+    // App & Auth
+    app: AppSchema,
+    auth: AuthSchema,
+    navigation: NavigationSchema,
+
+    // Theme (flat keys)
+    colors: ThemeColorsSchema,
+    typography: ThemeTypographySchema,
+    spacing: ThemeSpacingSchema,
+    breakpoints: ThemeBreakpointsSchema,
+    borderRadius: ThemeBorderRadiusSchema,
+    shadows: ThemeShadowsSchema,
+    responsive: ThemeResponsiveSchema,
+
+    // Components
     badge: BadgeSchema,
     button: ButtonSchema,
     dialog: DialogSchema,
     divider: DividerSchema,
     infobox: InfoboxSchema,
     input: InputSchema,
-    table: TableSchema
-  })
-  .strict();
+    pageHeader: PageHeaderSchema,
+    table: TableSchema,
+    layout: LayoutSchema,
 
-/**
- * UI Schema
- */
-const UISchema = z
-  .object({
+    // UI Texts
     buttons: z
       .object({
         save: z.string(),
@@ -879,26 +1003,8 @@ const UISchema = z
   .strict();
 
 /**
- * Main Config Schema (STRICT)
- */
-export const ConfigSchema = z
-  .object({
-    app: AppSchema,
-    auth: AuthSchema,
-    navigation: NavigationSchema,
-    theme: ThemeSchema,
-    components: ComponentsSchema,
-    ui: UISchema
-  })
-  .strict();
-
-/**
  * TypeScript Types
  */
 export type AppConfig = z.infer<typeof ConfigSchema>;
-export type AppConfigTheme = z.infer<typeof ThemeSchema>;
-export type AppConfigComponents = z.infer<typeof ComponentsSchema>;
-export type AppConfigUI = z.infer<typeof UISchema>;
-export type Column = z.infer<typeof ColumnSchema>;
 export type TablePage = z.infer<typeof TablePageSchema>;
 export type TablePages = z.infer<typeof TablePagesSchema>;

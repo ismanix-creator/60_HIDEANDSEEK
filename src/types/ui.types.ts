@@ -1,12 +1,14 @@
 /**
  * @file        ui.types.ts
  * @description TypeScript Type Definitions für UI-Komponenten
- * @version     0.2.0
+ * @version     0.4.0
  * @created     2026-01-07 01:18:02 CET
- * @updated     2026-01-09 13:43:15 CET
+ * @updated     2026-01-11 23:30:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.4.0 - 2026-01-11 23:30:00 CET - PageLayoutProps: Added optional footer prop
+ *   0.3.0 - 2026-01-11 18:00:00 CET - Button types refactored: nav/new/act/rect/tab (replaced icon kind)
  *   0.2.0 - 2026-01-09 - CellType um 'input' erweitert für Monospace User-Input Spalten
  *   0.1.0 - 2026-01-07 - Initial version mit allen UI-Komponenten-Types
  */
@@ -44,22 +46,29 @@ export interface TableProps<T = unknown> {
 // BUTTON TYPES
 // ═══════════════════════════════════════════════════════
 
-export type ButtonKind = 'rect' | 'icon';
-export type ButtonIntent = 'default' | 'save' | 'danger';
+export type ButtonKind = 'nav' | 'new' | 'act' | 'tab' | 'rect';
+export type ButtonIntent = 'default' | 'save';
 
 /**
- * New Button API (v0.13.0+)
+ * Button API (v0.15.0+)
  *
- * Legacy props (variant, size, iconOnly, icon, activeBorder, style, title) are intentionally
- * NOT included in ButtonProps to enforce TypeScript errors on old usage.
- * This ensures migration to new API.
+ * kind:
+ *   - 'nav': Navigation Icons in Sidebar
+ *   - 'new': Neu-Button neben Page Header
+ *   - 'act': Action Icons in Tabellen (edit, delete, payment, etc.)
+ *   - 'tab': Tab-Wechsel in Zahlungshistorien
+ *   - 'rect': Standard Text-Buttons (Dialog, Settings)
+ *
+ * intent (nur für kind='rect'):
+ *   - 'default': Standard-Button
+ *   - 'save': Grüner Speichern-Button
  */
 export interface ButtonProps {
   kind?: ButtonKind; // Default: 'rect'
   intent?: ButtonIntent; // Default: 'default' (only for kind='rect')
   disabled?: boolean;
-  loading?: boolean;
-  fullWidth?: boolean;
+  loading?: boolean; // Only for kind='rect'
+  fullWidth?: boolean; // Only for kind='rect'
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   children?: ReactNode;
   className?: string;
@@ -181,6 +190,7 @@ export interface PageLayoutProps {
   icon?: string | ReactNode;
   actions?: ReactNode;
   children: ReactNode;
+  footer?: ReactNode;
 }
 
 export interface NavItem {

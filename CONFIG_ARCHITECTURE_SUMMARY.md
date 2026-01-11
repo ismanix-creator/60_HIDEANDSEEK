@@ -50,7 +50,7 @@ Alle Consumers (UI Components, Server, Tests)
 - **spacingConfig eliminiert:** Alle Spacing-Werte direkt in theme.spacing integriert
 - **breakpointsConfig eliminiert:** Alle Breakpoint-Werte direkt in theme.breakpoints integriert
 - **100% config.toml-driven:** Keine *.config.ts mehr, nur noch appConfig
-- **Theme-Configs:** Alle Theme-Werte aus appConfig.theme.* (keine theme/*.config.ts imports in Components)
+- **Theme-Configs:** Alle Theme-Werte aus appConfig.* (keine theme/*.config.ts imports in Components)
 - **Component-Configs:** Alle Component-Werte aus appConfig.components.* (keine components/*.config.ts imports)
 
 ### Hardcode & Inline-Style Eliminierung

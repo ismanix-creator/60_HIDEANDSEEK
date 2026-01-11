@@ -22,7 +22,6 @@ describe('API Health', () => {
     const response = await app.request('/api/health');
     expect(response.status).toBe(200);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const body = (await response.json()) as Record<string, unknown>;
     expect(body).toEqual({ success: true });
 

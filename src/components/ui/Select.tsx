@@ -1,9 +1,9 @@
 /**
  * @file        Select.tsx
  * @description Wiederverwendbare Select-Komponente
- * @version     0.2.0
+ * @version     0.3.0
  * @created     2025-12-11 01:05:00 CET
- * @updated     2026-01-09 20:52:34 CET
+ * @updated     2026-01-11 18:35:00 CET
  * @author      Akki Scholze
  *
  * @props
@@ -15,7 +15,7 @@
  *   disabled - Deaktiviert das Select
  *
  * @changelog
- *   0.2.0 - 2026-01-09 - inputConfig Import entfernt, nutzt appConfig.components.input direkt
+ *   0.3.0 - 2026-01-11 18:35:00 CET - Fixed: Config-Zugriff auf appConfig.input statt appConfig.components.input (Config-Struktur-Migration)
  *   0.1.0 - 2025-12-11 - Initial version
  */
 
@@ -25,8 +25,8 @@
 import type { SelectProps } from '@/types/ui.types';
 import { appConfig } from '@/config';
 
-const colorsConfig = appConfig.theme.colors;
-const inputConfigBase = appConfig.components.input;
+const colorsConfig = appConfig.colors;
+const inputConfigBase = appConfig.input;
 
 // ═══════════════════════════════════════════════════════
 // HELPERS

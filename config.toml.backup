@@ -1,12 +1,11 @@
 # @file        config.toml
 # @description Single Source of Truth für App-Konfiguration
-# @version     2.10.0
+# @version     2.9.0
 # @created     2026-01-06 15:35:00 CET
-# @updated     2026-01-11 23:45:00 CET
+# @updated     2026-01-11 23:30:00 CET
 # @author      Akki Scholze
 #
 # @changelog
-#   2.10.0 - 2026-01-11 23:45:00 CET - Cleanup: Fortschritt-Farben konsolidiert (table.progress.colors), colors.yellow entfernt, fontMono=false entfernt, Badge Padding konsolidiert
 #   2.9.0 - 2026-01-11 23:30:00 CET - Added layout.areas (navigation, header, content, footer) for flexible border/bg control
 #   2.8.0 - 2026-01-11 21:00:00 CET - Added table.behavior.minRows and emptyRowPlaceholder for minimal table rows feature
 #   2.6.0 - 2026-01-11 02:15:24 CET - Button variants refactored: only rect and icon (legacy variants removed)
@@ -97,6 +96,7 @@ hoverScale = "1.05"
 normalScale = "1"
 fontSize = "14px"
 fontWeight = 500
+fontMono = false
 
 [navigation.icon]
 rotateGlaeubiger = "rotate(180deg) scaleX(-1)"
@@ -106,11 +106,13 @@ rotateGlaeubiger = "rotate(180deg) scaleX(-1)"
 # ========================================
 
 [badge.base]
+padding = "0.25rem 0.5rem"
 paddingX = 2
 paddingY = 1
 borderRadius = "0.25rem"
 fontSize = "12px"
 fontWeight = 500
+fontMono = false
 display = "inline-flex"
 alignItems = "center"
 gap = "0.25rem"
@@ -254,6 +256,7 @@ focusRingOpacity = "{opacity.40}"
 padding = "0.75rem 1.5rem"
 fontSize = "16px"
 fontWeight = 500
+fontMono = false
 height = "2.5rem"
 iconSize = "20px"
 
@@ -467,6 +470,18 @@ dark = "{blue.700}"
 800 = "#e8e8e8"
 900 = "#e0e0e0"
 
+[colors.yellow]
+50 = "#fffef0"
+100 = "#fffde7"
+200 = "#fffdcf"
+300 = "#fffacd"
+400 = "#ffeb3b"
+500 = "#ffeb3b"
+600 = "#fdd835"
+700 = "#fbc02d"
+800 = "#f9a825"
+900 = "#f57f17"
+
 [colors.opacity]
 0 = "rgba(0, 0, 0, 0)"
 10 = "rgba(0, 0, 0, 0.1)"
@@ -531,12 +546,14 @@ borderBottom = "{gray.600}"
 padding = "1.5rem"
 fontSize = "20px"
 fontWeight = 600
+fontMono = false
 
 [dialog.body]
 padding = "1.5rem"
 gap = "1rem"
 fontSize = "14px"
 fontWeight = 400
+fontMono = false
 
 [dialog.footer]
 borderTop = "{gray.600}"
@@ -557,6 +574,7 @@ paddingY = 2
 paddingX = 4
 fontSize = "14px"
 fontWeight = 600
+fontMono = false
 textTransform = "uppercase"
 
 [divider.horizontal]
@@ -576,6 +594,7 @@ padding = "1rem"
 borderRadius = "0.5rem"
 fontSize = "14px"
 fontWeight = 400
+fontMono = false
 borderWidth = "1px"
 
 [infobox.variants.info]
@@ -627,6 +646,7 @@ paddingY = 2
 borderRadius = "0.25rem"
 fontSize = "14px"
 fontWeight = 400
+fontMono = false
 height = "2.5rem"
 borderWidth = "1px"
 
@@ -660,8 +680,9 @@ outline = "none"
 
 [pageHeader.button]
 className = "page-header-button"
-fontSize = "80px"
-fontWeight = 700
+fontSize = "24px"
+fontWeight = 600
+fontMono = false
 
 # ========================================
 # RESPONSIVE
@@ -778,9 +799,9 @@ rowBorderBottom = "{gray.700}"
 minRows = 0                # Minimum Anzahl Datenzeilen (ohne Header) - 0 = nur Header
 emptyRowPlaceholder = ""   # Keine Einträge in leeren Rows (leer lassen)
 
-# Progress Bar Colors (Universal für alle Fortschrittsbalken)
-# Unterstützt 9-stufige Farbskala + Zero-State (für Bestand, Fortschritt, etc.)
-[table.progress.colors]
+# Progress Bar Colors für Bestand (Material) - Umgekehrte Anzeige (100% → 0%)
+# Bestand: 100-90% = Grün (hell/mittel/dunkel), 89-70% = Gelb (hell/mittel/dunkel), 69-0% = Rot (hell/mittel/dunkel), 0% bezahlt = Grau
+[table.bestand.colors]
 green_high = "{green.400}"    # 100-95%
 green_mid = "{green.600}"     # 94-90%
 green_low = "{green.700}"     # 89-85%
@@ -793,102 +814,46 @@ red_low = "{red.700}"         # 19-1%
 zero_paid = "{gray.600}"      # 0% aber bezahlt
 text = "{white.50}"           # Schrift innerhalb Balken
 
-# Bestand Colors (Material Bestandsanzeige)
-[table.bestand.colors]
-green_high = "{green.400}"
-green_mid = "{green.600}"
-green_low = "{green.700}"
-yellow_high = "{gold.400}"
-yellow_mid = "{gold.600}"
-yellow_low = "{gold.700}"
-red_high = "{orange.500}"
-red_mid = "{red.500}"
-red_low = "{red.700}"
-zero_paid = "{gray.600}"
-text = "{white.50}"
-
-# Material Fortschritt Colors
+# Progress Bar Colors für Fortschritt (Material) - Normale Anzeige (0% → 100%)
 [table.material.fortschritt.colors]
-green_high = "{green.400}"
-green_mid = "{green.600}"
-green_low = "{green.700}"
-yellow_high = "{gold.400}"
-yellow_mid = "{gold.600}"
-yellow_low = "{gold.700}"
-red_high = "{orange.500}"
-red_mid = "{red.500}"
-red_low = "{red.700}"
-zero_paid = "{gray.600}"
+red = "{red.600}"      # 0-33%
+yellow = "{gold.600}"  # 34-66%
+green = "{green.600}"  # 67-100%
 text = "{white.50}"
 
-# Kunden Fortschritt Colors
+# Progress Bar Colors für Fortschritt (Kunden Übersicht)
 [table.kunden.fortschritt.colors]
-green_high = "{green.400}"
-green_mid = "{green.600}"
-green_low = "{green.700}"
-yellow_high = "{gold.400}"
-yellow_mid = "{gold.600}"
-yellow_low = "{gold.700}"
-red_high = "{orange.500}"
-red_mid = "{red.500}"
-red_low = "{red.700}"
-zero_paid = "{gray.600}"
+red = "{red.600}"      # 0-33%
+yellow = "{gold.600}"  # 34-66%
+green = "{green.600}"  # 67-100%
 text = "{white.50}"
 
-# Kunden Material-Posten Fortschritt Colors
+# Progress Bar Colors für Fortschritt (Kunden Material-Posten)
 [table.kunden.mat.fortschritt.colors]
-green_high = "{green.400}"
-green_mid = "{green.600}"
-green_low = "{green.700}"
-yellow_high = "{gold.400}"
-yellow_mid = "{gold.600}"
-yellow_low = "{gold.700}"
-red_high = "{orange.500}"
-red_mid = "{red.500}"
-red_low = "{red.700}"
-zero_paid = "{gray.600}"
+red = "{red.600}"      # 0-33%
+yellow = "{gold.600}"  # 34-66%
+green = "{green.600}"  # 67-100%
 text = "{white.50}"
 
-# Kunden Sonstige-Posten Fortschritt Colors
+# Progress Bar Colors für Fortschritt (Kunden Sonstige Posten)
 [table.kunden.nomat.fortschritt.colors]
-green_high = "{green.400}"
-green_mid = "{green.600}"
-green_low = "{green.700}"
-yellow_high = "{gold.400}"
-yellow_mid = "{gold.600}"
-yellow_low = "{gold.700}"
-red_high = "{orange.500}"
-red_mid = "{red.500}"
-red_low = "{red.700}"
-zero_paid = "{gray.600}"
+red = "{red.600}"      # 0-33%
+yellow = "{gold.600}"  # 34-66%
+green = "{green.600}"  # 67-100%
 text = "{white.50}"
 
-# Schuldner Fortschritt Colors
+# Progress Bar Colors für Fortschritt (Schuldner)
 [table.schuldner.fortschritt.colors]
-green_high = "{green.400}"
-green_mid = "{green.600}"
-green_low = "{green.700}"
-yellow_high = "{gold.400}"
-yellow_mid = "{gold.600}"
-yellow_low = "{gold.700}"
-red_high = "{orange.500}"
-red_mid = "{red.500}"
-red_low = "{red.700}"
-zero_paid = "{gray.600}"
+red = "{red.600}"      # 0-33%
+yellow = "{gold.600}"  # 34-66%
+green = "{green.600}"  # 67-100%
 text = "{white.50}"
 
-# Gläubiger Fortschritt Colors
+# Progress Bar Colors für Fortschritt (Gläubiger)
 [table.glaeubiger.fortschritt.colors]
-green_high = "{green.400}"
-green_mid = "{green.600}"
-green_low = "{green.700}"
-yellow_high = "{gold.400}"
-yellow_mid = "{gold.600}"
-yellow_low = "{gold.700}"
-red_high = "{orange.500}"
-red_mid = "{red.500}"
-red_low = "{red.700}"
-zero_paid = "{gray.600}"
+red = "{red.600}"      # 0-33%
+yellow = "{gold.600}"  # 34-66%
+green = "{green.600}"  # 67-100%
 text = "{white.50}"
 
 # ========================================

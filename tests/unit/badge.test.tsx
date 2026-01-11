@@ -18,22 +18,23 @@ import { appConfig } from '@/config';
 describe('Badge Component', () => {
   describe('Config Loading', () => {
     it('should load badge config from appConfig', () => {
-      expect(appConfig.components.badge).toBeDefined();
-      expect(appConfig.components.badge.base).toBeDefined();
-      expect(appConfig.components.badge.variants).toBeDefined();
+      expect(appConfig.badge).toBeDefined();
+      expect(appConfig.badge.base).toBeDefined();
+      expect(appConfig.badge.variants).toBeDefined();
     });
 
     it('should have all required variants in config', () => {
       const variants = ['success', 'error', 'warning', 'pending', 'neutral'];
       variants.forEach((variant) => {
-        expect(appConfig.components.badge.variants).toHaveProperty(variant);
+        expect(appConfig.badge.variants).toHaveProperty(variant);
       });
     });
 
     it('should have base styles in config', () => {
-      expect(appConfig.components.badge.base.fontSize).toBeDefined();
-      expect(appConfig.components.badge.base.fontWeight).toBeDefined();
-      expect(appConfig.components.badge.base.padding).toBeDefined();
+      expect(appConfig.badge.base.fontSize).toBeDefined();
+      expect(appConfig.badge.base.fontWeight).toBeDefined();
+      expect(appConfig.badge.base.paddingX).toBeDefined();
+      expect(appConfig.badge.base.paddingY).toBeDefined();
     });
   });
 
@@ -94,15 +95,15 @@ describe('Badge Component', () => {
     it('should apply config-driven fontSize', () => {
       const { container } = render(<Badge>Test</Badge>);
       const badge = container.firstChild as HTMLElement;
-      const fontSize = appConfig.components.badge.base.fontSize;
+      const fontSize = appConfig.badge.base.fontSize;
       expect(badge.style.fontSize).toBe(fontSize);
     });
 
     it('should apply variant-specific background color', () => {
       const { container } = render(<Badge variant="success">Test</Badge>);
       const badge = container.firstChild as HTMLElement;
-      // Config-driven color should be applied
-      expect(badge.style.backgroundColor).toBeTruthy();
+      // Config-driven color should be applied (check that a color is set)
+      expect(badge.style.backgroundColor).not.toBe('');
     });
   });
 });

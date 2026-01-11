@@ -40,17 +40,17 @@ describe('Material API', () => {
     });
 
     expect(createRes.status).toBe(201);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
     const created = (await createRes.json()) as Record<string, unknown>;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     expect(created.success).toBe(true);
 
     const listRes = await app.request('/api/material');
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
     const list = (await listRes.json()) as Record<string, unknown>;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     expect(list.success).toBe(true);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     expect((list.data as unknown[]).length).toBe(1);
   });
 

@@ -1,9 +1,9 @@
 /**
  * @file        Table.tsx
  * @description Wiederverwendbare Table-Komponente (SEASIDE Dark Theme) - Responsive
- * @version     0.10.0
+ * @version     0.12.0
  * @created     2025-12-11 01:05:00 CET
- * @updated     2026-01-11 03:06:28 CET
+ * @updated     2026-01-11 22:30:00 CET
  * @author      Akki Scholze
  *
  * @props
@@ -14,10 +14,11 @@
  *   emptyMessage - Nachricht bei leerer Tabelle
  *
  * @changelog
+ *   0.12.0 - 2026-01-11 22:30:00 - Feature: minRows Logic implementiert (table.behavior.minRows aus Config)
+ *   0.11.0 - 2026-01-11 - Fixed: Config-Zugriff auf appConfig.table statt appConfig.components.table (Config-Struktur-Migration)
  *   0.10.0 - 2026-01-11 - Fixed: unused parameter warning in formatCellValue (renamed column to _column)
  *   0.9.0 - 2026-01-10 - Row-Click auf Aktions-Spalte (letzte) ausgeschlossen (Task 2.4.3)
- *   0.8.0 - 2026-01-09 - Direct appConfig.theme.* access (spacingConfig eliminiert)
- *   0.7.0 - 2026-01-09 - Import auf appConfig.components.table umgestellt (Phase 2.2.7)
+ *   0.8.0 - 2026-01-09 - Direct appConfig.* access (spacingConfig eliminiert)
  *   0.6.0 - 2026-01-09 - overflowY:hidden für konsistente Border-Farbe an borderRadius-Ecken
  *   0.5.0 - 2025-12-14 - Responsive: Horizontal Scroll auf Mobile, WebkitOverflowScrolling
  *   0.4.2 - 2025-12-12 - Optionales rowStyle Callback für zeilenspezifische Styles
@@ -37,10 +38,10 @@ import { appConfig } from '@/config';
 import { formatCurrency, formatDate, formatNumber } from '@/utils/format';
 import { useResponsive } from '@/hooks/useResponsive';
 
-const tableConfig = appConfig.components.table;
+const tableConfig = appConfig.table;
 
-const colorsConfig = appConfig.theme.colors;
-const typographyConfig = appConfig.theme.typography;
+const colorsConfig = appConfig.colors;
+const typographyConfig = appConfig.typography;
 
 // ═══════════════════════════════════════════════════════
 // HELPERS
@@ -109,20 +110,20 @@ function formatCellValue<T>(item: T, _column: TableColumn<T>): React.ReactNode {
   }
 }
 
-// Helper: Tailwind-Scale (0-32) auf theme.spacing (xxs-xxl) mappen
+// Helper: Tailwind-Scale (0-32) auf spacing (xxs-xxl) mappen
 const spacingBase = (key: number | string): string => {
   const keyNum = typeof key === 'number' ? key : parseInt(String(key), 10);
-  if (isNaN(keyNum)) return appConfig.theme.spacing.md; // fallback
+  if (isNaN(keyNum)) return appConfig.spacing.md; // fallback
 
-  if (keyNum <= 0) return appConfig.theme.spacing.xxs;
-  if (keyNum === 1) return appConfig.theme.spacing.xs;
-  if (keyNum === 2) return appConfig.theme.spacing.xs;
-  if (keyNum === 3) return appConfig.theme.spacing.sm;
-  if (keyNum === 4) return appConfig.theme.spacing.md;
-  if (keyNum === 5) return appConfig.theme.spacing.md;
-  if (keyNum === 6) return appConfig.theme.spacing.lg;
-  if (keyNum === 8) return appConfig.theme.spacing.xl;
-  return appConfig.theme.spacing.xxl; // 10+
+  if (keyNum <= 0) return appConfig.spacing.xxs;
+  if (keyNum === 1) return appConfig.spacing.xs;
+  if (keyNum === 2) return appConfig.spacing.xs;
+  if (keyNum === 3) return appConfig.spacing.sm;
+  if (keyNum === 4) return appConfig.spacing.md;
+  if (keyNum === 5) return appConfig.spacing.md;
+  if (keyNum === 6) return appConfig.spacing.lg;
+  if (keyNum === 8) return appConfig.spacing.xl;
+  return appConfig.spacing.xxl; // 10+
 };
 
 const EDGE_PADDING_STEPS = 1;
@@ -149,12 +150,27 @@ function getAlign<T>(_column: TableColumn<T>): CSSProperties['textAlign'] {
 }
 
 function getFontFamily<T>(_column: TableColumn<T>): string {
-  // Use global font family from table config (no type-specific cellTypes config)
-  const base = tableConfig.cellFontFamily;
-  const chosen: string = (base as string | undefined) || 'inherit';
-  if (chosen === 'base') return appConfig.theme.typography.fontFamily.base;
-  if (chosen === 'mono') return appConfig.theme.typography.fontFamily.mono;
-  return chosen;
+  // Use global font family from table config (cellFontMono: boolean)
+  const useMono = tableConfig.cellFontMono;
+  if (useMono) return appConfig.typography.fontFamily.mono;
+  return appConfig.typography.fontFamily.base;
+}
+
+// ═══════════════════════════════════════════════════════
+// EMPTY ROW HANDLING
+// ═══════════════════════════════════════════════════════
+type EmptyRow = { isEmpty: true; id: string };
+
+export function isEmptyRow<T>(row: T | EmptyRow): row is EmptyRow {
+  return (row as EmptyRow).isEmpty === true;
+}
+
+function ensureMinRows<T>(data: T[], minRows: number): Array<T | EmptyRow> {
+  const rows: Array<T | EmptyRow> = [...data];
+  while (rows.length < minRows) {
+    rows.push({ isEmpty: true, id: `empty-${rows.length}` });
+  }
+  return rows;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -166,7 +182,6 @@ export function Table<T>({
   keyField,
   onRowClick,
   rowStyle,
-  emptyMessage,
   loading = false,
   className = ''
 }: TableProps<T>) {
@@ -202,25 +217,9 @@ export function Table<T>({
     );
   }
 
-  if (data.length === 0) {
-    // Fallback: empty nicht in config.toml definiert
-    const emptyPaddingY = '2rem';
-    const emptyColor = colorsConfig.gray?.[500] || '#6b7280';
-    const emptyText = 'Keine Daten vorhanden';
-
-    return (
-      <div
-        style={{
-          textAlign: 'center',
-          paddingTop: emptyPaddingY,
-          paddingBottom: emptyPaddingY,
-          color: emptyColor
-        }}
-      >
-        {emptyMessage || emptyText}
-      </div>
-    );
-  }
+  // Apply minRows logic from config
+  const minRows = tableConfig.behavior.minRows;
+  const rowsToRender = ensureMinRows(data, minRows);
 
   const lastColumnIndex = columns.length - 1;
   const headerPaddingY = spacingBase(tableConfig.cellPaddingY);
@@ -243,7 +242,7 @@ export function Table<T>({
     backgroundColor: getColorValue(tableConfig.wrapperBg),
     borderRadius: tableConfig.wrapperBorderRadius,
     border: `2px solid ${getColorValue(tableConfig.wrapperBorder)}`,
-    boxShadow: appConfig.theme.shadows[tableConfig.wrapperShadow as keyof typeof appConfig.theme.shadows] || 'none'
+    boxShadow: appConfig.shadows[tableConfig.wrapperShadow as keyof typeof appConfig.shadows] || 'none'
   };
 
   // Table Style
@@ -279,12 +278,11 @@ export function Table<T>({
                     paddingLeft: isFirst ? headerEdgePadding : headerPaddingX,
                     paddingRight: isLast ? headerEdgePadding : headerPaddingX,
                     textAlign: getAlign(column),
-                    fontSize:
-                      typographyConfig.fontSize[tableConfig.headerFontSize as keyof typeof typographyConfig.fontSize],
-                    fontWeight:
-                      typographyConfig.fontWeight[
-                        tableConfig.headerFontWeight as keyof typeof typographyConfig.fontWeight
-                      ],
+                    fontSize: tableConfig.headerFontSize,
+                    fontWeight: tableConfig.headerFontWeight,
+                    fontFamily: tableConfig.headerFontMono
+                      ? appConfig.typography.fontFamily.mono
+                      : appConfig.typography.fontFamily.base,
                     color: getColorValue(tableConfig.headerText),
                     borderBottom: `2px solid ${getColorValue(tableConfig.rowBorderBottom)}`
                   }}
@@ -296,21 +294,22 @@ export function Table<T>({
           </tr>
         </thead>
         <tbody>
-          {data.map((item, rowIndex) => {
-            const rowKey = String(item[keyField as keyof T]);
+          {rowsToRender.map((item, rowIndex) => {
+            const empty = isEmptyRow(item);
+            const rowKey = empty ? item.id : String(item[keyField as keyof T]);
             return (
               <tr
                 key={rowKey}
                 style={{
                   backgroundColor:
                     rowIndex % 2 === 0 ? getColorValue(tableConfig.rowBgOdd) : getColorValue(tableConfig.rowBgEven),
-                  cursor: onRowClick ? 'pointer' : 'default',
+                  cursor: onRowClick && !empty ? 'pointer' : 'default',
                   borderBottom: `2px solid ${getColorValue(tableConfig.rowBorderBottom)}`,
-                  ...(rowStyle ? rowStyle(item) : undefined)
+                  ...(rowStyle && !empty ? rowStyle(item) : undefined)
                 }}
                 onMouseEnter={(e) => {
-                  // Hover nur auf Desktop
-                  if (onRowClick && !isMobile) {
+                  // Hover nur auf Desktop und nicht auf Empty Rows
+                  if (onRowClick && !isMobile && !empty) {
                     e.currentTarget.style.backgroundColor = getColorValue(tableConfig.rowBgHover);
                   }
                 }}
@@ -330,8 +329,8 @@ export function Table<T>({
                     <td
                       key={columnKey}
                       onClick={() => {
-                        // Row-Click NICHT auf der letzten Spalte (actions)
-                        if (!isLast && onRowClick) {
+                        // Row-Click NICHT auf der letzten Spalte (actions) oder auf Empty Rows
+                        if (!isLast && onRowClick && !empty) {
                           onRowClick(item);
                         }
                       }}
@@ -361,7 +360,7 @@ export function Table<T>({
                           gap: spacingBase(0)
                         }}
                       >
-                        {formatCellValue(item, column)}
+                        {empty ? tableConfig.behavior.emptyRowPlaceholder : formatCellValue(item, column)}
                       </div>
                     </td>
                   );

@@ -14,7 +14,6 @@
  */
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Navigation } from '@/components/layout/Navigation';
 import { MaterialPage, KundenPage, GlaeubigerPage, SchuldnerPage, SettingsPage } from '@/pages';
 import { SetupPage } from '@/pages/SetupPage';
 import { LoginPage } from '@/pages/LoginPage';
@@ -22,7 +21,6 @@ import { LoginPage } from '@/pages/LoginPage';
 export function App() {
   return (
     <BrowserRouter>
-      <Navigation />
       <Routes>
         <Route path="/" element={<Navigate to="/material" replace />} />
         <Route path="/material" element={<MaterialPage />} />

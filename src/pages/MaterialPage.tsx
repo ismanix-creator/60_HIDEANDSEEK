@@ -1,17 +1,20 @@
 /**
  * @file        MaterialPage.tsx
  * @description Material-Verwaltung mit Bar/Kombi-Buchungen und Historie
- * @version     1.1.0
+ * @version     1.4.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-11 03:06:28 CET
+ * @updated     2026-01-11 22:35:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   1.4.0 - 2026-01-11 22:35:00 - Feature: Action Buttons mit disabled-State für Empty Rows
+ *   1.3.0 - 2026-01-11 18:35:00 - Fixed: Config-Zugriff appConfig.* → appConfig.* (validation/errors/labels/buttons/etc., Config-Struktur-Migration)
+ *   1.2.0 - 2026-01-11 03:41:48 - Fixed: floating promises in onClick handlers (void wrapper)
  *   1.1.0 - 2026-01-11 - Fixed: floating promises + unsafe-any errors in API responses
  *   1.0.0 - 2026-01-10 06:30:00 - Config-Fix: Fehlende Labels durch Hardcodes ersetzt (Task 2.3.6)
- *   0.9.0 - 2026-01-10 00:16:26 - Alle verbleibenden Hardcodes durch appConfig.ui.labels.* ersetzt (Task 2.3.1 komplett)
- *   0.8.0 - 2026-01-10 01:10:34 - 44 verbleibende Hardcodes durch appConfig.ui.* ersetzt (Phase 2.3.1 Final)
- *   0.7.0 - 2026-01-09 21:51:40 - 9 verbleibende Hardcodes durch appConfig.ui.labels.* ersetzt (Phase 2.3.B)
+ *   0.9.0 - 2026-01-10 00:16:26 - Alle verbleibenden Hardcodes durch appConfig.labels.* ersetzt (Task 2.3.1 komplett)
+ *   0.8.0 - 2026-01-10 01:10:34 - 44 verbleibende Hardcodes durch appConfig.* ersetzt (Phase 2.3.1 Final)
+ *   0.7.0 - 2026-01-09 21:51:40 - 9 verbleibende Hardcodes durch appConfig.labels.* ersetzt (Phase 2.3.B)
  *   0.6.0 - 2026-01-09 20:55:55 - 44 UI-Text-Hardcodes entfernt (Phase 2.3.1)
  *   0.5.1 - 2026-01-09 - Bezeichnung-Spalte als Monospace (type: 'input')
  *   0.5.0 - 2026-01-09 - Button als actions Prop an PageLayout übergeben (horizontal zentriert)
@@ -27,7 +30,7 @@
 
 import { useState, useEffect } from 'react';
 import { PageLayout } from '@/components/layout/PageLayout';
-import { Table } from '@/components/ui/Table';
+import { Table, isEmptyRow } from '@/components/ui/Table';
 import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
 import { Input } from '@/components/ui/Input';
@@ -64,7 +67,6 @@ export function MaterialPage() {
   const [kombiDialogOpen, setKombiDialogOpen] = useState(false);
   const [historieDialogOpen, setHistorieDialogOpen] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
-  const [zahlungsHistorie, setZahlungsHistorie] = useState<unknown[]>([]);
 
   // Preissteuerung für Material-Dialog
   const [ekPreisMode, setEkPreisMode] = useState<'stueck' | 'gesamt'>('stueck');
@@ -119,14 +121,14 @@ export function MaterialPage() {
       if (matResult.success && matResult.data) {
         setMaterialien(matResult.data);
       } else {
-        setError(matResult.error || appConfig.ui.errors.load_failed);
+        setError(matResult.error || appConfig.errors.load_failed);
       }
 
       if (kundenResult.success && kundenResult.data) {
         setKunden(kundenResult.data);
       }
     } catch (err) {
-      setError(appConfig.ui.errors.network_error);
+      setError(appConfig.errors.network_error);
     } finally {
       setLoading(false);
     }
@@ -149,7 +151,7 @@ export function MaterialPage() {
    */
   const openHistorieDialog = (material: Material) => {
     setSelectedMaterial(material);
-    loadHistorie(material.id);
+    void loadHistorie(material.id);
     setHistorieDialogOpen(true);
   };
 
@@ -161,27 +163,27 @@ export function MaterialPage() {
   const handleCreate = async (): Promise<void> => {
     setError(null);
     if (!formData.datum) {
-      setError(appConfig.ui.validation.date_required);
+      setError(appConfig.validation.date_required);
       return;
     }
     if (!formData.bezeichnung.trim()) {
-      setError(appConfig.ui.validation.designation_required);
+      setError(appConfig.validation.designation_required);
       return;
     }
     if (formData.menge <= 0) {
-      setError(appConfig.ui.validation.quantity_must_be_positive);
+      setError(appConfig.validation.quantity_must_be_positive);
       return;
     }
     if (ekPreisMode === 'stueck' && formData.ek_stueck <= 0) {
-      setError(appConfig.ui.validation.ek_stueck_must_be_positive);
+      setError(appConfig.validation.ek_stueck_must_be_positive);
       return;
     }
     if (ekPreisMode === 'gesamt' && formData.ek_gesamt <= 0) {
-      setError(appConfig.ui.validation.ek_gesamt_must_be_positive);
+      setError(appConfig.validation.ek_gesamt_must_be_positive);
       return;
     }
     if (formData.vk_stueck <= 0) {
-      setError(appConfig.ui.validation.vk_stueck_must_be_positive);
+      setError(appConfig.validation.vk_stueck_must_be_positive);
       return;
     }
 
@@ -192,7 +194,7 @@ export function MaterialPage() {
 
     const baseName = formData.bezeichnung.trim().toUpperCase();
     if (!baseName) {
-      setError(appConfig.ui.validation.designation_required);
+      setError(appConfig.validation.designation_required);
       return;
     }
     const monthPart = (() => {
@@ -222,12 +224,12 @@ export function MaterialPage() {
       if (result.success) {
         setCreateDialogOpen(false);
         resetForm();
-        loadMaterial();
+        void loadMaterial();
       } else {
-        setError(result.error || appConfig.ui.errors.create_failed);
+        setError(result.error || appConfig.errors.create_failed);
       }
     } catch (err) {
-      setError(appConfig.ui.errors.network_error);
+      setError(appConfig.errors.network_error);
     }
   };
 
@@ -253,12 +255,12 @@ export function MaterialPage() {
         setEditDialogOpen(false);
         setSelectedMaterial(null);
         resetForm();
-        loadMaterial();
+        void loadMaterial();
       } else {
-        setError(result.error || appConfig.ui.errors.update_failed);
+        setError(result.error || appConfig.errors.update_failed);
       }
     } catch (err) {
-      setError(appConfig.ui.errors.network_error);
+      setError(appConfig.errors.network_error);
     }
   };
 
@@ -272,12 +274,12 @@ export function MaterialPage() {
       if (result.success) {
         setDeleteDialogOpen(false);
         setSelectedMaterial(null);
-        loadMaterial();
+        void loadMaterial();
       } else {
-        setError(result.error || appConfig.ui.errors.delete_failed);
+        setError(result.error || appConfig.errors.delete_failed);
       }
     } catch (err) {
-      setError(appConfig.ui.errors.network_error);
+      setError(appConfig.errors.network_error);
     }
   };
 
@@ -346,15 +348,15 @@ export function MaterialPage() {
       if (result.success) {
         setBarDialogOpen(false);
         resetBarForm();
-        loadMaterial();
+        void loadMaterial();
         if (selectedMaterial) {
-          loadHistorie(selectedMaterial.id);
+          void loadHistorie(selectedMaterial.id);
         }
       } else {
-        setError(result.error || appConfig.ui.errors.create_failed);
+        setError(result.error || appConfig.errors.create_failed);
       }
     } catch (err) {
-      setError(appConfig.ui.errors.network_error);
+      setError(appConfig.errors.network_error);
     }
   };
 
@@ -373,15 +375,15 @@ export function MaterialPage() {
       if (result.success) {
         setKombiDialogOpen(false);
         resetKombiForm();
-        loadMaterial();
+        void loadMaterial();
         if (selectedMaterial) {
-          loadHistorie(selectedMaterial.id);
+          void loadHistorie(selectedMaterial.id);
         }
       } else {
-        setError(result.error || appConfig.ui.errors.create_failed);
+        setError(result.error || appConfig.errors.create_failed);
       }
     } catch (err) {
-      setError(appConfig.ui.errors.network_error);
+      setError(appConfig.errors.network_error);
     }
   };
 
@@ -424,7 +426,7 @@ export function MaterialPage() {
       notiz: ''
     });
     setPreisMode('stueck');
-    loadHistorie(m.id);
+    void loadHistorie(m.id);
     setBarDialogOpen(true);
   };
 
@@ -440,7 +442,7 @@ export function MaterialPage() {
       notiz: ''
     });
     setPreisMode('stueck');
-    loadHistorie(m.id);
+    void loadHistorie(m.id);
     setKombiDialogOpen(true);
   };
 
@@ -488,63 +490,61 @@ export function MaterialPage() {
   };
 
   // Table Columns
-  const columns = [
-    { key: 'datum', label: appConfig.ui.labels.date, render: (m: Material) => formatDate(m.datum) },
-    { key: 'bezeichnung', label: appConfig.ui.labels.designation, type: 'input' as const },
-    { key: 'menge', label: appConfig.ui.labels.quantity, render: (m: Material) => m.menge.toFixed(2) },
-    {
-      key: 'ek_stueck',
-      label: appConfig.ui.labels.purchase_price,
-      render: (m: Material) => formatCurrency(m.ek_stueck)
-    },
-    {
-      key: 'ek_gesamt',
-      label: 'EK Gesamt',
-      render: (m: Material) => formatCurrency(m.ek_gesamt)
-    },
-    {
-      key: 'vk_stueck',
-      label: 'VK Stück',
-      render: (m: Material) => formatCurrency(m.vk_stueck)
-    },
-    { key: 'bestand', label: 'Bestand', render: (m: Material) => m.bestand.toFixed(2) },
-    {
-      key: 'einnahmen',
-      label: 'Einnahmen',
-      render: (m: Material) => formatCurrency(m.einnahmen_bar + m.einnahmen_kombi)
-    },
-    {
-      key: 'gewinn_aktuell',
-      label: 'Gewinn',
-      render: (m: Material) => formatCurrency(m.gewinn_aktuell)
-    },
-    {
-      key: 'actions',
-      label: appConfig.ui.labels.actions,
-      render: (m: Material) => (
-        <div className="flex gap-2 flex-wrap">
-          <Button kind="icon" onClick={() => openBarDialog(m)}>
-            <Banknote />
-          </Button>
-          <Button kind="icon" onClick={() => openKombiDialog(m)}>
-            <FileText />
-          </Button>
-          <Button kind="icon" onClick={() => openEditDialog(m)}>
-            <Pencil />
-          </Button>
-          <Button kind="icon" onClick={() => openDeleteDialog(m)}>
-            <Trash2 />
-          </Button>
-        </div>
-      )
+  const getColumnRender = (key: string) => {
+    switch (key) {
+      case 'datum':
+        return (m: Material) => formatDate(m.datum);
+      case 'menge':
+        return (m: Material) => m.menge.toFixed(2);
+      case 'ek_stueck':
+        return (m: Material) => formatCurrency(m.ek_stueck);
+      case 'ek_gesamt':
+        return (m: Material) => formatCurrency(m.ek_gesamt);
+      case 'vk_stueck':
+        return (m: Material) => formatCurrency(m.vk_stueck);
+      case 'bestand':
+        return (m: Material) => m.bestand.toFixed(2);
+      case 'einnahmen':
+        return (m: Material) => formatCurrency(m.einnahmen_bar + m.einnahmen_kombi);
+      case 'gewinn_aktuell':
+        return (m: Material) => formatCurrency(m.gewinn_aktuell);
+      case 'actions':
+        return (m: Material) => {
+          const empty = isEmptyRow(m);
+          return (
+            <div className="flex gap-2 flex-wrap">
+              <Button kind="act" disabled={empty} onClick={() => void openBarDialog(m)}>
+                <Banknote />
+              </Button>
+              <Button kind="act" disabled={isEmptyRow(m)} onClick={() => void openKombiDialog(m)}>
+                <FileText />
+              </Button>
+              <Button kind="act" disabled={isEmptyRow(m)} onClick={() => void openEditDialog(m)}>
+                <Pencil />
+              </Button>
+              <Button kind="act" disabled={isEmptyRow(m)} onClick={() => void openDeleteDialog(m)}>
+                <Trash2 />
+              </Button>
+            </div>
+          );
+        };
+      default:
+        return undefined;
     }
-  ];
+  };
+
+  const columns = appConfig.table.material.columns.map((col) => ({
+    key: col.key,
+    label: col.label,
+    type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
+    render: getColumnRender(col.key)
+  }));
 
   return (
     <PageLayout
-      title={appConfig.ui.page_titles.material}
+      title={appConfig.page_titles.material}
       actions={
-        <Button kind="icon" onClick={() => setCreateDialogOpen(true)}>
+        <Button kind="new" onClick={() => setCreateDialogOpen(true)}>
           <PackagePlus />
         </Button>
       }
@@ -558,11 +558,10 @@ export function MaterialPage() {
           data={materialien}
           columns={columns}
           loading={loading}
-          emptyMessage={appConfig.ui.empty_states.no_material_posts}
-          onRowClick={(m) => openHistorieDialog(m)}
+          emptyMessage={appConfig.empty_states.no_material_posts}
+          onRowClick={(m) => void openHistorieDialog(m)}
         />
 
-        {/* Dialogs */}
         {/* Create Material Dialog */}
         <Dialog
           open={createDialogOpen}
@@ -571,7 +570,7 @@ export function MaterialPage() {
             setError(null);
             resetForm();
           }}
-          title={appConfig.ui.dialog_titles.new_material}
+          title={appConfig.dialog_titles.new_material}
           actions={
             <>
               <Button
@@ -582,9 +581,9 @@ export function MaterialPage() {
                   resetForm();
                 }}
               >
-                {appConfig.ui.buttons.cancel}
+                {appConfig.buttons.cancel}
               </Button>
-              <Button onClick={handleCreate}>{appConfig.ui.buttons.create}</Button>
+              <Button onClick={() => void handleCreate()}>{appConfig.buttons.create}</Button>
             </>
           }
         >
@@ -595,20 +594,20 @@ export function MaterialPage() {
               </div>
             )}
             <Input
-              label={appConfig.ui.labels.date}
+              label={appConfig.labels.date}
               type="date"
               value={formData.datum}
               onChange={(e) => setFormData({ ...formData, datum: e.target.value })}
               className="w-full max-w-sm text-center"
             />
             <Input
-              label={appConfig.ui.labels.designation}
+              label={appConfig.labels.designation}
               value={formData.bezeichnung}
               onChange={(e) => setFormData({ ...formData, bezeichnung: e.target.value.toUpperCase() })}
               className="w-full max-w-sm text-center"
             />
             <Input
-              label={appConfig.ui.labels.quantity}
+              label={appConfig.labels.quantity}
               type="number"
               min={0}
               step="0.01"
@@ -619,14 +618,14 @@ export function MaterialPage() {
             <div className="space-y-2 w-full max-w-sm">
               <div className="flex gap-2 justify-center">
                 <Button kind="rect" onClick={() => handleCreateEkMode('stueck')}>
-                  {appConfig.ui.labels.purchase_price}
+                  {appConfig.labels.purchase_price}
                 </Button>
                 <Button kind="rect" onClick={() => handleCreateEkMode('gesamt')}>
                   EK Gesamt
                 </Button>
               </div>
               <Input
-                label={ekPreisMode === 'stueck' ? appConfig.ui.labels.purchase_price : 'EK Gesamt'}
+                label={ekPreisMode === 'stueck' ? appConfig.labels.purchase_price : 'EK Gesamt'}
                 type="number"
                 min={0}
                 step={ekPreisMode === 'stueck' ? '0.1' : '5'}
@@ -637,11 +636,11 @@ export function MaterialPage() {
               <p className="text-sm text-neutral-400 text-center">
                 {ekPreisMode === 'stueck'
                   ? `EK Gesamt: ${formatCurrency(formData.ek_stueck * formData.menge || 0)}`
-                  : `${appConfig.ui.labels.purchase_price}: ${formatCurrency(calcEkStueckAusGesamt(formData.ek_gesamt, formData.menge) || 0)}`}
+                  : `${appConfig.labels.purchase_price}: ${formatCurrency(calcEkStueckAusGesamt(formData.ek_gesamt, formData.menge) || 0)}`}
               </p>
             </div>
             <Input
-              label={appConfig.ui.labels.price_per_unit}
+              label={appConfig.labels.price_per_unit}
               type="number"
               min={0}
               step="0.1"
@@ -650,7 +649,7 @@ export function MaterialPage() {
               className="w-full max-w-sm text-center"
             />
             <Input
-              label={appConfig.ui.labels.note}
+              label={appConfig.labels.note}
               value={formData.notiz}
               onChange={(e) => setFormData({ ...formData, notiz: e.target.value.toUpperCase() })}
               className="w-full max-w-sm text-center"
@@ -666,7 +665,7 @@ export function MaterialPage() {
             setSelectedMaterial(null);
             resetForm();
           }}
-          title={appConfig.ui.dialog_titles.edit_material}
+          title={appConfig.dialog_titles.edit_material}
           actions={
             <>
               <Button
@@ -677,26 +676,26 @@ export function MaterialPage() {
                   resetForm();
                 }}
               >
-                {appConfig.ui.buttons.cancel}
+                {appConfig.buttons.cancel}
               </Button>
-              <Button onClick={handleUpdate}>{appConfig.ui.buttons.save}</Button>
+              <Button onClick={() => void handleUpdate()}>{appConfig.buttons.save}</Button>
             </>
           }
         >
           <div className="space-y-4">
             <Input
-              label={appConfig.ui.labels.date}
+              label={appConfig.labels.date}
               type="date"
               value={formData.datum}
               onChange={(e) => setFormData({ ...formData, datum: e.target.value })}
             />
             <Input
-              label={appConfig.ui.labels.designation}
+              label={appConfig.labels.designation}
               value={formData.bezeichnung}
               onChange={(e) => setFormData({ ...formData, bezeichnung: e.target.value })}
             />
             <Input
-              label={appConfig.ui.labels.quantity}
+              label={appConfig.labels.quantity}
               type="number"
               min={0}
               step="0.01"
@@ -704,7 +703,7 @@ export function MaterialPage() {
               onChange={(e) => setFormData({ ...formData, menge: parseFloat(e.target.value) || 0 })}
             />
             <Input
-              label={appConfig.ui.labels.purchase_price}
+              label={appConfig.labels.purchase_price}
               type="number"
               min={0}
               step="0.1"
@@ -712,7 +711,7 @@ export function MaterialPage() {
               onChange={(e) => setFormData({ ...formData, ek_stueck: parseFloat(e.target.value) || 0 })}
             />
             <Input
-              label={appConfig.ui.labels.price_per_unit}
+              label={appConfig.labels.price_per_unit}
               type="number"
               min={0}
               step="0.1"
@@ -722,14 +721,14 @@ export function MaterialPage() {
             <div className="space-y-2">
               <div className="flex gap-2">
                 <Button kind="rect" onClick={() => handleCreateEkMode('stueck')}>
-                  {appConfig.ui.labels.purchase_price}
+                  {appConfig.labels.purchase_price}
                 </Button>
                 <Button kind="rect" onClick={() => handleCreateEkMode('gesamt')}>
                   EK Gesamt
                 </Button>
               </div>
               <Input
-                label={ekPreisMode === 'stueck' ? appConfig.ui.labels.purchase_price : 'EK Gesamt'}
+                label={ekPreisMode === 'stueck' ? appConfig.labels.purchase_price : 'EK Gesamt'}
                 type="number"
                 min={0}
                 step={ekPreisMode === 'stueck' ? '0.1' : '5'}
@@ -739,11 +738,11 @@ export function MaterialPage() {
               <p className="text-sm text-neutral-400">
                 {ekPreisMode === 'stueck'
                   ? `EK Gesamt: ${formatCurrency(formData.ek_stueck * formData.menge || 0)}`
-                  : `${appConfig.ui.labels.purchase_price}: ${formatCurrency(calcEkStueckAusGesamt(formData.ek_gesamt, formData.menge) || 0)}`}
+                  : `${appConfig.labels.purchase_price}: ${formatCurrency(calcEkStueckAusGesamt(formData.ek_gesamt, formData.menge) || 0)}`}
               </p>
             </div>
             <Input
-              label={appConfig.ui.labels.note}
+              label={appConfig.labels.note}
               value={formData.notiz}
               onChange={(e) => setFormData({ ...formData, notiz: e.target.value })}
             />
@@ -757,7 +756,7 @@ export function MaterialPage() {
             setDeleteDialogOpen(false);
             setSelectedMaterial(null);
           }}
-          title={appConfig.ui.dialog_titles.delete_material}
+          title={appConfig.dialog_titles.delete_material}
           actions={
             <>
               <Button
@@ -767,16 +766,16 @@ export function MaterialPage() {
                   setSelectedMaterial(null);
                 }}
               >
-                {appConfig.ui.buttons.cancel}
+                {appConfig.buttons.cancel}
               </Button>
-              <Button kind="rect" onClick={handleDelete}>
-                {appConfig.ui.buttons.delete}
+              <Button kind="rect" onClick={() => void handleDelete()}>
+                {appConfig.buttons.delete}
               </Button>
             </>
           }
         >
           <p className="text-neutral-300">
-            {appConfig.ui.messages.confirm_delete_material.replace('{name}', selectedMaterial?.bezeichnung || '')}
+            {appConfig.messages.confirm_delete_material.replace('{name}', selectedMaterial?.bezeichnung || '')}
           </p>
         </Dialog>
 
@@ -799,10 +798,10 @@ export function MaterialPage() {
                   resetBarForm();
                 }}
               >
-                {appConfig.ui.buttons.cancel}
+                {appConfig.buttons.cancel}
               </Button>
-              <Button kind="rect" onClick={handleBarBewegung}>
-                {appConfig.ui.buttons.record}
+              <Button kind="rect" onClick={() => void handleBarBewegung()}>
+                {appConfig.buttons.record}
               </Button>
             </>
           }
@@ -813,13 +812,13 @@ export function MaterialPage() {
               <p className="text-2xl font-semibold text-neutral-50">{selectedMaterial?.bestand.toFixed(2) || '0.00'}</p>
             </div>
             <Input
-              label={appConfig.ui.labels.date}
+              label={appConfig.labels.date}
               type="date"
               value={barFormData.datum}
               onChange={(e) => setBarFormData({ ...barFormData, datum: e.target.value })}
             />
             <Input
-              label={appConfig.ui.labels.quantity}
+              label={appConfig.labels.quantity}
               type="number"
               step="0.01"
               value={barFormData.menge}
@@ -848,12 +847,12 @@ export function MaterialPage() {
               )}
             </div>
             <Input
-              label={appConfig.ui.labels.info}
+              label={appConfig.labels.info}
               value={barFormData.info}
               onChange={(e) => setBarFormData({ ...barFormData, info: e.target.value })}
             />
             <Input
-              label={appConfig.ui.labels.note}
+              label={appConfig.labels.note}
               value={barFormData.notiz}
               onChange={(e) => setBarFormData({ ...barFormData, notiz: e.target.value })}
             />
@@ -879,10 +878,10 @@ export function MaterialPage() {
                   resetKombiForm();
                 }}
               >
-                {appConfig.ui.buttons.cancel}
+                {appConfig.buttons.cancel}
               </Button>
-              <Button kind="rect" onClick={handleKombiBewegung}>
-                {appConfig.ui.buttons.record}
+              <Button kind="rect" onClick={() => void handleKombiBewegung()}>
+                {appConfig.buttons.record}
               </Button>
             </>
           }
@@ -893,19 +892,19 @@ export function MaterialPage() {
               <p className="text-2xl font-semibold text-neutral-50">{selectedMaterial?.bestand.toFixed(2) || '0.00'}</p>
             </div>
             <Select
-              label={appConfig.ui.labels.name}
+              label={appConfig.labels.name}
               value={kombiFormData.kunde_id.toString()}
               onChange={(e) => setKombiFormData({ ...kombiFormData, kunde_id: parseInt(e.target.value) })}
               options={kunden.map((k) => ({ value: k.id.toString(), label: k.name }))}
             />
             <Input
-              label={appConfig.ui.labels.date}
+              label={appConfig.labels.date}
               type="date"
               value={kombiFormData.datum}
               onChange={(e) => setKombiFormData({ ...kombiFormData, datum: e.target.value })}
             />
             <Input
-              label={appConfig.ui.labels.quantity}
+              label={appConfig.labels.quantity}
               type="number"
               step="0.01"
               value={kombiFormData.menge}
@@ -934,7 +933,7 @@ export function MaterialPage() {
               )}
             </div>
             <Input
-              label={appConfig.ui.labels.note}
+              label={appConfig.labels.note}
               value={kombiFormData.notiz}
               onChange={(e) => setKombiFormData({ ...kombiFormData, notiz: e.target.value })}
             />
@@ -951,8 +950,8 @@ export function MaterialPage() {
           }}
           title={
             selectedMaterial
-              ? `${appConfig.ui.dialog_titles.history}: ${selectedMaterial.bezeichnung}`
-              : appConfig.ui.dialog_titles.history
+              ? `${appConfig.dialog_titles.history}: ${selectedMaterial.bezeichnung}`
+              : appConfig.dialog_titles.history
           }
           actions={
             <Button
@@ -962,7 +961,7 @@ export function MaterialPage() {
                 setHistorie([]);
               }}
             >
-              {appConfig.ui.buttons.close}
+              {appConfig.buttons.close}
             </Button>
           }
         >
@@ -976,18 +975,18 @@ export function MaterialPage() {
                 >
                   <div className="space-y-1 text-sm">
                     <p>
-                      {appConfig.ui.labels.quantity}: {item.menge.toFixed(2)}
+                      {appConfig.labels.quantity}: {item.menge.toFixed(2)}
                     </p>
                     <p>Preis: {formatCurrency(item.preis)}</p>
                     {item.kunde_name && <p>Kunde: {item.kunde_name}</p>}
                     {item.info && (
                       <p>
-                        {appConfig.ui.labels.info.replace(' (optional)', '')}: {item.info}
+                        {appConfig.labels.info.replace(' (optional)', '')}: {item.info}
                       </p>
                     )}
                     {item.notiz && (
                       <p>
-                        {appConfig.ui.labels.note.replace(' (optional)', '')}: {item.notiz}
+                        {appConfig.labels.note.replace(' (optional)', '')}: {item.notiz}
                       </p>
                     )}
                   </div>
@@ -995,7 +994,7 @@ export function MaterialPage() {
               ))}
             </div>
           ) : (
-            <p className="text-neutral-400 text-sm text-center py-4">{appConfig.ui.empty_states.no_history}</p>
+            <p className="text-neutral-400 text-sm text-center py-4">{appConfig.empty_states.no_history}</p>
           )}
         </Dialog>
       </div>

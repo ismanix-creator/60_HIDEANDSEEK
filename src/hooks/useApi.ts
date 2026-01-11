@@ -33,6 +33,15 @@ export interface UseApiResult {
   fetch: <T = unknown>(endpoint: string, options?: RequestInit) => Promise<ApiResponse<T>>;
 }
 
+/**
+ * Type Guard: Prüft ob ein Unknown Object ein gültiges ApiResponse ist
+ */
+function isApiResponse<T>(value: unknown): value is ApiResponse<T> {
+  if (typeof value !== 'object' || value === null) return false;
+  const obj = value as Record<string, unknown>;
+  return 'success' in obj && typeof obj.success === 'boolean';
+}
+
 // API_BASE_URL from .env (VITE_API_URL)
 // DEV: Can be empty (Vite proxy handles /api → backend)
 // PROD: Must be set to absolute URL (ngrok/production)
@@ -70,8 +79,8 @@ export function useApi(): UseApiResult {
 
       const json = (await response.json()) as Record<string, unknown>;
 
-      if ('success' in json && 'data' in json) {
-        return json as ApiResponse<T>;
+      if (isApiResponse<T>(json)) {
+        return json;
       }
 
       if (!response.ok) {

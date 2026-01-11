@@ -48,16 +48,19 @@ export function SettingsPage() {
   // Load users and kunden
   useEffect(() => {
     const load = async (): Promise<void> => {
-      const [usersResult, kundenResult] = await Promise.all([api.fetch<User[]>('/api/admin/users'), api.fetch<Kunde[]>('/api/kunden')]);
+      const [usersResult, kundenResult] = await Promise.all([
+        api.fetch<{ users: User[] }>('/api/admin/users'),
+        api.fetch<Kunde[]>('/api/kunden')
+      ]);
       if (usersResult.success && usersResult.data) {
-        setUsers(usersResult.data);
+        setUsers(usersResult.data.users);
       }
       if (kundenResult.success && kundenResult.data) {
         setKunden(kundenResult.data);
       }
       setLoading(false);
     };
-    load().catch((err: unknown) => {
+    void load().catch((err: unknown) => {
       setMessage({ text: `Fehler beim Laden: ${err instanceof Error ? err.message : 'Unknown error'}`, type: 'error' });
       setLoading(false);
     });
@@ -80,8 +83,9 @@ export function SettingsPage() {
 
       setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, status: 'active', kunde_id: kundeId } : u)));
       setMessage({ text: 'User aktiviert', type: 'success' });
-    } catch (err: any) {
-      setMessage({ text: `Fehler: ${err.message}`, type: 'error' });
+    } catch (err: unknown) {
+      const error = err as any;
+      setMessage({ text: `Fehler: ${error.message}`, type: 'error' });
     }
   };
 
@@ -94,8 +98,9 @@ export function SettingsPage() {
 
       setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, status: 'disabled' } : u)));
       setMessage({ text: 'User deaktiviert', type: 'success' });
-    } catch (err: any) {
-      setMessage({ text: `Fehler: ${err.message}`, type: 'error' });
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Unbekannter Fehler';
+      setMessage({ text: `Fehler: ${errorMessage}`, type: 'error' });
     }
   };
 
@@ -154,7 +159,7 @@ export function SettingsPage() {
                       ]}
                       className="flex-1"
                     />
-                    <Button kind="rect" intent="save" onClick={() => handleApprove(user.id)}>
+                    <Button kind="rect" intent="save" onClick={() => void handleApprove(user.id)}>
                       Freischalten
                     </Button>
                   </div>
@@ -182,7 +187,7 @@ export function SettingsPage() {
                       </p>
                     </div>
                     {user.role !== 'admin' && (
-                      <Button kind="rect" onClick={() => handleDisable(user.id)}>
+                      <Button kind="rect" onClick={() => void handleDisable(user.id)}>
                         Deaktivieren
                       </Button>
                     )}

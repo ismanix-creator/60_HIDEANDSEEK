@@ -57,8 +57,9 @@ export function SetupPage() {
 
       setStatus({ type: 'success', message: 'Admin bootstrap successful! You can now login.' });
       setForm({ username: '', displayName: '', password: '' });
-    } catch (error: any) {
-      setStatus({ type: 'error', message: error.message });
+    } catch (error: unknown) {
+      const err = error as any;
+      setStatus({ type: 'error', message: err.message });
     } finally {
       setLoading(false);
     }
@@ -84,8 +85,9 @@ export function SetupPage() {
         message: `Signup successful! Status: ${result.data.status}. Waiting for admin approval.`
       });
       setForm({ username: '', displayName: '', password: '' });
-    } catch (error: any) {
-      setStatus({ type: 'error', message: error.message });
+    } catch (error: unknown) {
+      const err = error as any;
+      setStatus({ type: 'error', message: err.message });
     } finally {
       setLoading(false);
     }
@@ -94,7 +96,7 @@ export function SetupPage() {
   return (
     <div
       style={{
-        padding: appConfig.theme.spacing.xxl,
+        padding: appConfig.spacing.xxl,
         maxWidth: '600px',
         margin: '0 auto'
       }}
@@ -103,9 +105,9 @@ export function SetupPage() {
 
       <div
         style={{
-          marginBottom: appConfig.theme.spacing.xxl,
+          marginBottom: appConfig.spacing.xxl,
           display: 'flex',
-          gap: appConfig.theme.spacing.md
+          gap: appConfig.spacing.md
         }}
       >
         <Button kind="rect" onClick={() => setMode('bootstrap')}>
@@ -121,7 +123,7 @@ export function SetupPage() {
           <h2>Admin Bootstrap</h2>
           <p>First-run admin setup. Only available if admin account is in bootstrap status.</p>
           <form onSubmit={handleBootstrap}>
-            <div style={{ marginBottom: appConfig.theme.spacing.lg }}>
+            <div style={{ marginBottom: appConfig.spacing.lg }}>
               <Input
                 type="text"
                 label="Username"
@@ -130,7 +132,7 @@ export function SetupPage() {
                 required
               />
             </div>
-            <div style={{ marginBottom: appConfig.theme.spacing.lg }}>
+            <div style={{ marginBottom: appConfig.spacing.lg }}>
               <Input
                 type="text"
                 label="Display Name"
@@ -139,7 +141,7 @@ export function SetupPage() {
                 required
               />
             </div>
-            <div style={{ marginBottom: appConfig.theme.spacing.lg }}>
+            <div style={{ marginBottom: appConfig.spacing.lg }}>
               <Input
                 type="password"
                 label="Password"
@@ -160,7 +162,7 @@ export function SetupPage() {
           <h2>Customer Signup</h2>
           <p>Register as a customer. Your account will be pending until admin approves.</p>
           <form onSubmit={handleSignup}>
-            <div style={{ marginBottom: appConfig.theme.spacing.lg }}>
+            <div style={{ marginBottom: appConfig.spacing.lg }}>
               <Input
                 type="text"
                 label="Username"
@@ -169,7 +171,7 @@ export function SetupPage() {
                 required
               />
             </div>
-            <div style={{ marginBottom: appConfig.theme.spacing.lg }}>
+            <div style={{ marginBottom: appConfig.spacing.lg }}>
               <Input
                 type="text"
                 label="Display Name"
@@ -178,7 +180,7 @@ export function SetupPage() {
                 required
               />
             </div>
-            <div style={{ marginBottom: appConfig.theme.spacing.lg }}>
+            <div style={{ marginBottom: appConfig.spacing.lg }}>
               <Input
                 type="password"
                 label="Password"
@@ -195,7 +197,7 @@ export function SetupPage() {
       )}
 
       {status && (
-        <div style={{ marginTop: appConfig.theme.spacing.xxl }}>
+        <div style={{ marginTop: appConfig.spacing.xxl }}>
           <Infobox variant={status.type === 'success' ? 'success' : 'error'}>{status.message}</Infobox>
         </div>
       )}

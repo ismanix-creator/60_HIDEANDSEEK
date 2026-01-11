@@ -1,20 +1,21 @@
 /**
  * @file        SchuldnerPage.tsx
  * @description Schuldner-Verwaltung Seite
- * @version     1.1.0
+ * @version     1.2.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-11 03:06:28 CET
+ * @updated     2026-01-11 22:35:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   1.2.0 - 2026-01-11 22:35:00 - Feature: Action Buttons mit disabled-State für Empty Rows
  *   1.1.0 - 2026-01-11 - Fixed: floating promises + type signatures
  *   1.0.0 - 2026-01-10 18:30:00 - TASK 2.5: Zahlungshistorie Dialog vollständig implementiert (Final)
  *   0.8.1 - 2026-01-10 04:26:18 - TASK 2.4.2: Header-Update (keine inline-styles vorhanden, bereits bereinigt in 0.7.1)
  *   0.7.1 - 2026-01-10 02:15:23 - TASK 2.4.2: Inline Monospace-Style entfernt (betrag Spalte)
  *   0.6.1 - 2026-01-10 00:20:42 - TASK 2.3.4: Überprüfung abgeschlossen - keine Hardcodes gefunden (bereits vollständig config-driven)
- *   0.6.0 - 2026-01-10 19:22:00 - Font-Familie Hardcode entfernt (appConfig.ui.typography.monospace)
+ *   0.6.0 - 2026-01-10 19:22:00 - Font-Familie Hardcode entfernt (appConfig.typography.monospace)
  *   0.5.0 - 2026-01-09 23:45:00 - Alle verbleibenden Hardcodes entfernt (Phase 2.3 Final)
- *   0.4.0 - 2026-01-09 - 19 Hardcodes durch appConfig.ui.* ersetzt (Phase 2.3)
+ *   0.4.0 - 2026-01-09 - 19 Hardcodes durch appConfig.* ersetzt (Phase 2.3)
  *   0.3.1 - 2026-01-09 - Name + Betrag-Spalten als Monospace (type: 'input')
  *   0.3.0 - 2026-01-09 - Button als actions Prop an PageLayout übergeben (horizontal zentriert)
  *   0.2.0 - 2026-01-09 - Doppelten Header entfernt (PageLayout zeigt bereits Titel)
@@ -23,7 +24,7 @@
 
 import { useState, useEffect } from 'react';
 import { PageLayout } from '@/components/layout/PageLayout';
-import { Table } from '@/components/ui/Table';
+import { Table, isEmptyRow } from '@/components/ui/Table';
 import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
 import { Input } from '@/components/ui/Input';
@@ -68,10 +69,10 @@ export function SchuldnerPage() {
       if (result.success && result.data) {
         setSchuldner(result.data);
       } else {
-        setError(result.error || appConfig.ui.errors.load_failed);
+        setError(result.error || appConfig.errors.load_failed);
       }
     } catch (err) {
-      setError(appConfig.ui.errors.network_error);
+      setError(appConfig.errors.network_error);
     } finally {
       setLoading(false);
     }
@@ -91,12 +92,12 @@ export function SchuldnerPage() {
       if (result.success) {
         setCreateDialogOpen(false);
         resetForm();
-        loadSchuldner();
+        void loadSchuldner();
       } else {
-        setError(result.error || appConfig.ui.errors.create_failed);
+        setError(result.error || appConfig.errors.create_failed);
       }
     } catch (err) {
-      setError(appConfig.ui.errors.network_error);
+      setError(appConfig.errors.network_error);
     }
   };
 
@@ -116,12 +117,12 @@ export function SchuldnerPage() {
         setEditDialogOpen(false);
         setSelectedSchuldner(null);
         resetForm();
-        loadSchuldner();
+        void loadSchuldner();
       } else {
-        setError(result.error || appConfig.ui.errors.update_failed);
+        setError(result.error || appConfig.errors.update_failed);
       }
     } catch (err) {
-      setError(appConfig.ui.errors.network_error);
+      setError(appConfig.errors.network_error);
     }
   };
 
@@ -135,12 +136,12 @@ export function SchuldnerPage() {
       if (result.success) {
         setDeleteDialogOpen(false);
         setSelectedSchuldner(null);
-        loadSchuldner();
+        void loadSchuldner();
       } else {
-        setError(result.error || appConfig.ui.errors.delete_failed);
+        setError(result.error || appConfig.errors.delete_failed);
       }
     } catch (err) {
-      setError(appConfig.ui.errors.network_error);
+      setError(appConfig.errors.network_error);
     }
   };
 
@@ -157,12 +158,12 @@ export function SchuldnerPage() {
         setZahlungDialogOpen(false);
         setSelectedSchuldner(null);
         setZahlungbetrag(0);
-        loadSchuldner();
+        void loadSchuldner();
       } else {
-        setError(result.error || appConfig.ui.errors.booking_failed);
+        setError(result.error || appConfig.errors.booking_failed);
       }
     } catch (err) {
-      setError(appConfig.ui.errors.network_error);
+      setError(appConfig.errors.network_error);
     }
   };
 
@@ -197,7 +198,7 @@ export function SchuldnerPage() {
     setSelectedSchuldner(s);
     setZahlungsHistorie([]);
     setHistorieDialogOpen(true);
-    loadZahlungsHistorie(s.id);
+    void loadZahlungsHistorie(s.id);
   };
 
   // Load Zahlungshistorie
@@ -227,61 +228,61 @@ export function SchuldnerPage() {
   };
 
   // Table Columns
-  const columns = [
-    { key: 'datum', label: appConfig.ui.labels.date, render: (s: Schuldner) => formatDate(s.datum) },
-    { key: 'name', label: appConfig.ui.labels.name, type: 'input' as const },
-    {
-      key: 'betrag',
-      label: appConfig.ui.labels.amount,
-      type: 'input' as const,
-      render: (s: Schuldner) => formatCurrency(s.betrag)
-    },
-    { key: 'bezahlt', label: appConfig.ui.labels.amount_paid, render: (s: Schuldner) => formatCurrency(s.bezahlt) },
-    { key: 'offen', label: appConfig.ui.labels.open_amount, render: (s: Schuldner) => formatCurrency(s.offen) },
-    {
-      key: 'faelligkeit',
-      label: appConfig.ui.labels.due_date,
-      render: (s: Schuldner) => (s.faelligkeit ? formatDate(s.faelligkeit) : '-')
-    },
-    {
-      key: 'status',
-      label: appConfig.ui.labels.status,
-      render: (s: Schuldner) => (
-        <Badge variant={s.status === 'bezahlt' ? 'success' : s.status === 'teilbezahlt' ? 'warning' : 'error'}>
-          {s.status === 'bezahlt'
-            ? appConfig.ui.status.paid
-            : s.status === 'teilbezahlt'
-              ? appConfig.ui.status.partial
-              : appConfig.ui.status.open}
-        </Badge>
-      )
-    },
-    {
-      key: 'actions',
-      label: appConfig.ui.labels.actions,
-      render: (s: Schuldner) => (
-        <div className="flex gap-2">
-          {s.offen > 0 && (
-            <Button kind="icon" onClick={() => openZahlungDialog(s)}>
-              <DollarSign />
+  const getColumnRender = (key: string) => {
+    switch (key) {
+      case 'datum':
+        return (s: Schuldner) => formatDate(s.datum);
+      case 'betrag':
+        return (s: Schuldner) => formatCurrency(s.betrag);
+      case 'bezahlt':
+        return (s: Schuldner) => formatCurrency(s.bezahlt);
+      case 'offen':
+        return (s: Schuldner) => formatCurrency(s.offen);
+      case 'faelligkeit':
+        return (s: Schuldner) => (s.faelligkeit ? formatDate(s.faelligkeit) : '-');
+      case 'status':
+        return (s: Schuldner) => (
+          <Badge variant={s.status === 'bezahlt' ? 'success' : s.status === 'teilbezahlt' ? 'warning' : 'error'}>
+            {s.status === 'bezahlt'
+              ? appConfig.status.paid
+              : s.status === 'teilbezahlt'
+                ? appConfig.status.partial
+                : appConfig.status.open}
+          </Badge>
+        );
+      case 'actions':
+        return (s: Schuldner) => (
+          <div className="flex gap-2">
+            {!isEmptyRow(s) && s.offen > 0 && (
+              <Button kind="act" onClick={() => openZahlungDialog(s)}>
+                <DollarSign />
+              </Button>
+            )}
+            <Button kind="act" disabled={isEmptyRow(s)} onClick={() => openEditDialog(s)}>
+              <Pencil />
             </Button>
-          )}
-          <Button kind="icon" onClick={() => openEditDialog(s)}>
-            <Pencil />
-          </Button>
-          <Button kind="icon" onClick={() => openDeleteDialog(s)}>
-            <Trash2 />
-          </Button>
-        </div>
-      )
+            <Button kind="act" disabled={isEmptyRow(s)} onClick={() => openDeleteDialog(s)}>
+              <Trash2 />
+            </Button>
+          </div>
+        );
+      default:
+        return undefined;
     }
-  ];
+  };
+
+  const columns = appConfig.table.schuldner.columns.map((col) => ({
+    key: col.key,
+    label: col.label,
+    type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
+    render: getColumnRender(col.key)
+  }));
 
   return (
     <PageLayout
-      title={appConfig.ui.page_titles.debtors}
+      title={appConfig.page_titles.debtors}
       actions={
-        <Button kind="icon" onClick={() => setCreateDialogOpen(true)}>
+        <Button kind="new" onClick={() => setCreateDialogOpen(true)}>
           <div style={{ position: 'relative', display: 'inline-flex' }}>
             <HandCoins />
             <Plus
@@ -307,7 +308,7 @@ export function SchuldnerPage() {
           data={schuldner}
           columns={columns}
           loading={loading}
-          emptyMessage={appConfig.ui.empty_states.no_debtors}
+          emptyMessage={appConfig.empty_states.no_debtors}
           onRowClick={(s) => openHistorieDialog(s)}
         />
 
@@ -318,7 +319,7 @@ export function SchuldnerPage() {
             setCreateDialogOpen(false);
             resetForm();
           }}
-          title={appConfig.ui.dialog_titles.new_debtor}
+          title={appConfig.dialog_titles.new_debtor}
           actions={
             <>
               <Button
@@ -328,39 +329,39 @@ export function SchuldnerPage() {
                   resetForm();
                 }}
               >
-                {appConfig.ui.buttons.cancel}
+                {appConfig.buttons.cancel}
               </Button>
-              <Button onClick={handleCreate}>{appConfig.ui.buttons.create}</Button>
+              <Button onClick={() => void handleCreate()}>{appConfig.buttons.create}</Button>
             </>
           }
         >
           <div className="space-y-4">
             <Input
-              label={appConfig.ui.labels.date}
+              label={appConfig.labels.date}
               type="date"
               value={formData.datum}
               onChange={(e) => setFormData({ ...formData, datum: e.target.value })}
             />
             <Input
-              label={appConfig.ui.labels.name}
+              label={appConfig.labels.name}
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
             <Input
-              label={appConfig.ui.labels.amount}
+              label={appConfig.labels.amount}
               type="number"
               step="0.01"
               value={formData.betrag}
               onChange={(e) => setFormData({ ...formData, betrag: parseFloat(e.target.value) || 0 })}
             />
             <Input
-              label={appConfig.ui.labels.due_date}
+              label={appConfig.labels.due_date}
               type="date"
               value={formData.faelligkeit}
               onChange={(e) => setFormData({ ...formData, faelligkeit: e.target.value })}
             />
             <Input
-              label={appConfig.ui.labels.note}
+              label={appConfig.labels.note}
               value={formData.notiz}
               onChange={(e) => setFormData({ ...formData, notiz: e.target.value })}
             />
@@ -375,7 +376,7 @@ export function SchuldnerPage() {
             setSelectedSchuldner(null);
             resetForm();
           }}
-          title={appConfig.ui.dialog_titles.edit_debtor}
+          title={appConfig.dialog_titles.edit_debtor}
           actions={
             <>
               <Button
@@ -386,39 +387,39 @@ export function SchuldnerPage() {
                   resetForm();
                 }}
               >
-                {appConfig.ui.buttons.cancel}
+                {appConfig.buttons.cancel}
               </Button>
-              <Button onClick={handleUpdate}>{appConfig.ui.buttons.save}</Button>
+              <Button onClick={() => void handleUpdate()}>{appConfig.buttons.save}</Button>
             </>
           }
         >
           <div className="space-y-4">
             <Input
-              label={appConfig.ui.labels.date}
+              label={appConfig.labels.date}
               type="date"
               value={formData.datum}
               onChange={(e) => setFormData({ ...formData, datum: e.target.value })}
             />
             <Input
-              label={appConfig.ui.labels.name}
+              label={appConfig.labels.name}
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
             <Input
-              label={appConfig.ui.labels.amount}
+              label={appConfig.labels.amount}
               type="number"
               step="0.01"
               value={formData.betrag}
               onChange={(e) => setFormData({ ...formData, betrag: parseFloat(e.target.value) || 0 })}
             />
             <Input
-              label={appConfig.ui.labels.due_date}
+              label={appConfig.labels.due_date}
               type="date"
               value={formData.faelligkeit}
               onChange={(e) => setFormData({ ...formData, faelligkeit: e.target.value })}
             />
             <Input
-              label={appConfig.ui.labels.note}
+              label={appConfig.labels.note}
               value={formData.notiz}
               onChange={(e) => setFormData({ ...formData, notiz: e.target.value })}
             />
@@ -432,7 +433,7 @@ export function SchuldnerPage() {
             setDeleteDialogOpen(false);
             setSelectedSchuldner(null);
           }}
-          title={appConfig.ui.dialog_titles.delete_debtor}
+          title={appConfig.dialog_titles.delete_debtor}
           actions={
             <>
               <Button
@@ -442,16 +443,16 @@ export function SchuldnerPage() {
                   setSelectedSchuldner(null);
                 }}
               >
-                {appConfig.ui.buttons.cancel}
+                {appConfig.buttons.cancel}
               </Button>
-              <Button kind="rect" onClick={handleDelete}>
-                {appConfig.ui.buttons.delete}
+              <Button kind="rect" onClick={() => void handleDelete()}>
+                {appConfig.buttons.delete}
               </Button>
             </>
           }
         >
           <p className="text-neutral-300">
-            {appConfig.ui.messages.confirm_delete_debtor.replace('{name}', selectedSchuldner?.name || '')}
+            {appConfig.messages.confirm_delete_debtor.replace('{name}', selectedSchuldner?.name || '')}
           </p>
         </Dialog>
 
@@ -463,7 +464,7 @@ export function SchuldnerPage() {
             setSelectedSchuldner(null);
             setZahlungbetrag(0);
           }}
-          title={appConfig.ui.dialog_titles.record_payment}
+          title={appConfig.dialog_titles.record_payment}
           actions={
             <>
               <Button
@@ -474,19 +475,19 @@ export function SchuldnerPage() {
                   setZahlungbetrag(0);
                 }}
               >
-                {appConfig.ui.buttons.cancel}
+                {appConfig.buttons.cancel}
               </Button>
-              <Button onClick={handleZahlung}>{appConfig.ui.buttons.record}</Button>
+              <Button onClick={() => void handleZahlung()}>{appConfig.buttons.record}</Button>
             </>
           }
         >
           <div className="space-y-4">
             <div className="p-4 bg-neutral-800 rounded">
-              <p className="text-neutral-400 text-sm">{appConfig.ui.labels.open_amount}</p>
+              <p className="text-neutral-400 text-sm">{appConfig.labels.open_amount}</p>
               <p className="text-2xl font-semibold text-neutral-50">{formatCurrency(selectedSchuldner?.offen || 0)}</p>
             </div>
             <Input
-              label={appConfig.ui.labels.payment_amount}
+              label={appConfig.labels.payment_amount}
               type="number"
               step="0.01"
               value={zahlungbetrag}
@@ -505,8 +506,8 @@ export function SchuldnerPage() {
           }}
           title={
             selectedSchuldner
-              ? `${appConfig.ui.dialog_titles.history}: ${selectedSchuldner.name}`
-              : appConfig.ui.dialog_titles.history
+              ? `${appConfig.dialog_titles.history}: ${selectedSchuldner.name}`
+              : appConfig.dialog_titles.history
           }
           actions={
             <Button
@@ -516,7 +517,7 @@ export function SchuldnerPage() {
                 setZahlungsHistorie([]);
               }}
             >
-              {appConfig.ui.buttons.close}
+              {appConfig.buttons.close}
             </Button>
           }
         >
@@ -529,7 +530,9 @@ export function SchuldnerPage() {
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <p className="text-sm text-neutral-400">{formatDate(String(payment.datum))}</p>
-                        <p className="text-lg font-semibold text-neutral-50">{formatCurrency(Number(payment.betrag))}</p>
+                        <p className="text-lg font-semibold text-neutral-50">
+                          {formatCurrency(Number(payment.betrag))}
+                        </p>
                       </div>
                       <Badge
                         variant={
@@ -541,10 +544,10 @@ export function SchuldnerPage() {
                         }
                       >
                         {payment.status === 'bezahlt'
-                          ? appConfig.ui.status.paid
+                          ? appConfig.status.paid
                           : payment.status === 'teilbezahlt'
-                            ? appConfig.ui.status.partial
-                            : appConfig.ui.status.open}
+                            ? appConfig.status.partial
+                            : appConfig.status.open}
                       </Badge>
                     </div>
                   </div>
@@ -552,7 +555,7 @@ export function SchuldnerPage() {
               })}
             </div>
           ) : (
-            <p className="text-neutral-400 text-sm text-center py-4">{appConfig.ui.empty_states.no_history}</p>
+            <p className="text-neutral-400 text-sm text-center py-4">{appConfig.empty_states.no_history}</p>
           )}
         </Dialog>
       </div>

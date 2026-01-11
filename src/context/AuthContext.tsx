@@ -46,7 +46,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const stored = localStorage.getItem(AUTH_STORAGE_KEY);
     if (stored) {
       try {
-        setUser(JSON.parse(stored));
+        const parsed = JSON.parse(stored) as User;
+        setUser(parsed);
       } catch {
         localStorage.removeItem(AUTH_STORAGE_KEY);
       }
@@ -77,9 +78,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(sessionUser));
   };
 
-  const logout = (): void => {
+  const logout = (): Promise<void> => {
     setUser(null);
     localStorage.removeItem(AUTH_STORAGE_KEY);
+    return Promise.resolve();
   };
 
   const value: AuthContextValue = {
