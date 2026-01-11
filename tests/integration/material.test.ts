@@ -40,13 +40,18 @@ describe('Material API', () => {
     });
 
     expect(createRes.status).toBe(201);
-    const created = await createRes.json();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const created = (await createRes.json()) as Record<string, unknown>;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     expect(created.success).toBe(true);
 
     const listRes = await app.request('/api/material');
-    const list = await listRes.json();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const list = (await listRes.json()) as Record<string, unknown>;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     expect(list.success).toBe(true);
-    expect(list.data.length).toBe(1);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect((list.data as unknown[]).length).toBe(1);
   });
 
   it('rejects bar movement if stock would go negative', async () => {

@@ -50,7 +50,7 @@ export default [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        project: ['./tsconfig.json'],
+        project: ['./tsconfig.json', './tsconfig.server.json'],
         tsconfigRootDir: new URL('.', import.meta.url).pathname,
         sourceType: 'module'
       }

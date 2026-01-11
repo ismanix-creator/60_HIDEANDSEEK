@@ -1,9 +1,9 @@
 /**
  * @file        PageLayout.tsx
  * @description Seiten-Layout mit Titel und Actions (SEASIDE Dark Theme) - Responsive
- * @version     0.6.0
+ * @version     0.6.1
  * @created     2025-12-11 01:05:00 CET
- * @updated     2026-01-09 12:59:24 CET
+ * @updated     2026-01-11 00:05:00 CET
  * @author      Akki Scholze
  *
  * @props
@@ -58,7 +58,7 @@ export function PageLayout({ title, icon, actions, children }: PageLayoutProps) 
           style={{
             height: iconsConfig.sizes.md,
             width: iconsConfig.sizes.md,
-            color: colorsConfig.primary[500]
+            color: colorsConfig.blue[500]
           }}
         />
       ) : null;

@@ -1,9 +1,9 @@
 /**
  * @file        config-from-toml.ts
  * @description Generated config from config.toml (do not edit)
- * @version     0.1.0
+ * @version     2.5.0
  * @created     2026-01-06 19:14:38 CET
- * @updated     2026-01-06 19:14:38 CET
+ * @updated     2026-01-11 02:07:12 CET
  * @author      Akki Scholze
  */
 
@@ -36,25 +36,19 @@ export const configFromToml = {
         "key": "glaeubiger",
         "label": "Gläubiger",
         "path": "/glaeubiger",
-        "icon": "arrow-down-circle"
+        "icon": "hand-coins"
       },
       {
         "key": "schuldner",
         "label": "Schuldner",
         "path": "/schuldner",
-        "icon": "arrow-up-circle"
+        "icon": "hand-coins"
       },
       {
         "key": "settings",
         "label": "Einstellungen",
         "path": "/settings",
         "icon": "settings"
-      },
-      {
-        "key": "setup",
-        "label": "Setup",
-        "path": "/setup",
-        "icon": "user-cog"
       },
       {
         "key": "login",
@@ -279,6 +273,7 @@ export const configFromToml = {
         "50": "rgba(0, 0, 0, 0.5)",
         "60": "rgba(0, 0, 0, 0.6)",
         "70": "rgba(0, 0, 0, 0.7)",
+        "75": "rgba(0, 0, 0, 0.75)",
         "80": "rgba(0, 0, 0, 0.8)",
         "90": "rgba(0, 0, 0, 0.9)",
         "100": "rgba(0, 0, 0, 1)"
@@ -296,11 +291,7 @@ export const configFromToml = {
       },
       "button": {
         "gray": "{gray.700}",
-        "active": "{gray.600}",
-        "customer": "{black.800}",
-        "offer": "{gray.900}",
-        "order": "{gray.800}",
-        "invoice": "{gray.700}"
+        "active": "{gray.600}"
       },
       "status": {
         "error": "{red.500}",
@@ -364,20 +355,6 @@ export const configFromToml = {
       "xxl": "3rem",
       "layout": {
         "contentMaxWidthRem": "100rem"
-      },
-      "component": {
-        "button": {
-          "paddingX": {
-            "sm": "0.5rem",
-            "md": "1rem",
-            "lg": "1.5rem"
-          },
-          "paddingY": {
-            "sm": "0.25rem",
-            "md": "0.5rem",
-            "lg": "0.75rem"
-          }
-        }
       },
       "mobile": {
         "xxs": "0.0625rem",
@@ -486,86 +463,66 @@ export const configFromToml = {
     },
     "button": {
       "borderRadius": "0.25rem",
-      "variants": {
-        "primary": {
-          "bg": "{blue.500}",
-          "text": "{white.50}",
-          "hover": "{blue.700}",
-          "border": "transparent"
-        },
-        "secondary": {
+      "variant": {
+        "rect": {
           "bg": "{black.700}",
           "text": "{white.50}",
-          "hover": "{gray.800}",
-          "border": "transparent"
+          "border": "transparent",
+          "hoverBg": "{black.800}",
+          "activeBg": "{black.900}",
+          "disabledBg": "{black.800}",
+          "disabledText": "{gray.500}",
+          "disabledBorder": "transparent",
+          "saveBg": "{green.600}",
+          "saveText": "{white.50}",
+          "saveHoverBg": "{green.700}",
+          "saveActiveBg": "{green.800}",
+          "focusRing": "{blue.500}",
+          "focusRingOpacity": "{opacity.40}"
         },
-        "danger": {
-          "bg": "{red.500}",
-          "text": "{white.50}",
-          "hover": "{red.700}",
-          "border": "transparent"
-        },
-        "outline": {
+        "icon": {
           "bg": "transparent",
-          "text": "{blue.500}",
-          "hover": "{black.800}",
-          "border": "{blue.500}"
-        },
-        "ghost": {
-          "bg": "transparent",
-          "text": "{blue.500}",
-          "hover": "{black.800}",
-          "border": "transparent"
-        },
-        "success": {
-          "bg": "{green.600}",
-          "text": "{white.50}",
-          "hover": "{green.700}",
-          "border": "transparent"
-        },
-        "warning": {
-          "bg": "{gold.700}",
-          "text": "{black.800}",
-          "hover": "{orange.700}",
-          "border": "transparent"
-        },
-        "transparent": {
-          "bg": "transparent",
-          "text": "{white.50}",
-          "hover": "{gray.800}",
-          "border": "transparent"
+          "icon": "{white.50}",
+          "border": "transparent",
+          "hoverBg": "{black.800}",
+          "activeBg": "{black.900}",
+          "disabledBg": "transparent",
+          "disabledIcon": "{gray.600}",
+          "disabledBorder": "transparent",
+          "focusRing": "{blue.500}",
+          "focusRingOpacity": "{opacity.40}"
         }
       },
       "sizes": {
-        "btn": {
+        "rect": {
           "padding": "0.75rem 1.5rem",
-          "paddingX": 6,
-          "paddingY": 3,
           "fontSize": "md",
           "height": "2.5rem",
           "iconSize": "{icons.sizes.md}"
         },
         "icon": {
           "padding": "0.5rem",
-          "iconSize": "dynamic"
+          "iconSize": "{icons.sizes.lg}"
         }
       }
     },
     "dialog": {
       "overlay": {
-        "bg": "rgba(0, 0, 0, 0.75)"
+        "bg": "{opacity.75}"
       },
       "container": {
-        "bg": "#2d2d2d",
-        "border": "#3d3d3d",
+        "bg": "{gray.700}",
+        "border": "{gray.600}",
         "borderRadius": "0.5rem",
         "padding": "0",
         "maxWidth": "90vw",
         "width": "600px",
+        "height": "80vh",
+        "maxHeight": "80vh",
         "shadow": "xl"
       },
       "header": {
-        "borderBottom": "#3d3d3d",
+        "borderBottom": "{gray.600}",
         "padding": "1.5rem",
         "fontSize": "lg",
         "fontWeight": "semibold"
@@ -575,7 +532,7 @@ export const configFromToml = {
         "gap": "1rem"
       },
       "footer": {
-        "borderTop": "#3d3d3d",
+        "borderTop": "{gray.600}",
         "padding": "1rem 1.5rem",
         "marginTop": "0",
         "gap": "0.5rem"
@@ -583,9 +540,9 @@ export const configFromToml = {
     },
     "divider": {
       "month": {
-        "bg": "#252525",
-        "text": "#ffffff",
-        "border": "#3d3d3d",
+        "bg": "{black.800}",
+        "text": "{white.50}",
+        "border": "{gray.700}",
         "padding": "0.5rem 1rem",
         "paddingY": 2,
         "paddingX": 4,
@@ -594,12 +551,12 @@ export const configFromToml = {
         "textTransform": "uppercase"
       },
       "horizontal": {
-        "border": "#3d3d3d",
+        "border": "{gray.700}",
         "margin": "1rem 0",
         "marginY": 4,
         "height": "1px",
         "thickness": "1px",
-        "color": "#3d3d3d"
+        "color": "{gray.700}"
       }
     },
     "infobox": {
@@ -611,33 +568,33 @@ export const configFromToml = {
       },
       "variants": {
         "info": {
-          "bg": "#1e3a5f",
-          "border": "#3498db",
+          "bg": "{blue.800}",
+          "border": "{blue.500}",
           "icon": "info",
-          "iconColor": "#3498db"
+          "iconColor": "{blue.500}"
         },
         "success": {
-          "bg": "#1e4620",
-          "border": "#27ae60",
+          "bg": "{green.800}",
+          "border": "{green.600}",
           "icon": "check-circle",
-          "iconColor": "#27ae60"
+          "iconColor": "{green.600}"
         },
         "warning": {
-          "bg": "#4a3c1e",
-          "border": "#f39c12",
+          "bg": "{brown.700}",
+          "border": "{gold.700}",
           "icon": "alert-triangle",
-          "iconColor": "#f39c12"
+          "iconColor": "{gold.700}"
         },
         "error": {
-          "bg": "#4a1e1e",
-          "border": "#e74c3c",
+          "bg": "{red.800}",
+          "border": "{red.500}",
           "icon": "x-circle",
-          "iconColor": "#e74c3c"
+          "iconColor": "{red.500}"
         }
       },
       "panel": {
-        "bg": "#252525",
-        "border": "#3d3d3d",
+        "bg": "{black.800}",
+        "border": "{gray.700}",
         "borderRadius": "0.5rem",
         "padding": "1rem"
       },
@@ -649,9 +606,9 @@ export const configFromToml = {
     },
     "input": {
       "base": {
-        "bg": "#1e1e1e",
-        "border": "#3d3d3d",
-        "text": "#ffffff",
+        "bg": "{black.900}",
+        "border": "{gray.700}",
+        "text": "{white.50}",
         "padding": "0.5rem 0.75rem",
         "paddingX": 3,
         "paddingY": 2,
@@ -662,45 +619,28 @@ export const configFromToml = {
       },
       "states": {
         "focus": {
-          "border": "#2196f3",
-          "bg": "#1e1e1e",
-          "outline": "2px solid rgba(33, 150, 243, 0.2)",
-          "text": "#ffffff"
+          "border": "{blue.500}",
+          "bg": "{black.900}",
+          "outline": "2px solid {blue.500}",
+          "text": "{white.50}"
         },
         "error": {
-          "border": "#e74c3c",
-          "bg": "#1e1e1e",
-          "outline": "2px solid rgba(231, 76, 60, 0.2)",
-          "text": "#ffffff"
+          "border": "{red.500}",
+          "bg": "{black.900}",
+          "outline": "2px solid {red.500}",
+          "text": "{white.50}"
         },
         "disabled": {
-          "border": "#3d3d3d",
-          "bg": "#2d2d2d",
-          "text": "#666666",
+          "border": "{gray.700}",
+          "bg": "{gray.800}",
+          "text": "{gray.600}",
           "outline": "none"
         },
         "default": {
-          "border": "#3d3d3d",
-          "bg": "#1e1e1e",
-          "text": "#ffffff",
+          "border": "{gray.700}",
+          "bg": "{black.900}",
+          "text": "{white.50}",
           "outline": "none"
-        }
-      },
-      "types": {
-        "text": {
-          "type": "text"
-        },
-        "number": {
-          "type": "number"
-        },
-        "date": {
-          "type": "date"
-        },
-        "email": {
-          "type": "email"
-        },
-        "currency": {
-          "type": "text"
         }
       }
     },
@@ -729,48 +669,6 @@ export const configFromToml = {
       "rowBgEven": "{gray.800}",
       "rowBgHover": "{gray.700}",
       "rowBorderBottom": "{gray.700}",
-      "wrapper": {
-        "bg": "{black.800}",
-        "border": "{gray.700}",
-        "borderRadius": "0.5rem",
-        "shadow": "md"
-      },
-      "header": {
-        "bg": "{gray.900}",
-        "text": "{white.50}",
-        "paddingX": "1rem",
-        "paddingY": "0.75rem",
-        "fontSize": "sm",
-        "fontWeight": "semibold",
-        "fontFamily": "base"
-      },
-      "cell": {
-        "text": "{white.50}",
-        "paddingX": "1rem",
-        "paddingY": "0.75rem",
-        "fontSize": "sm",
-        "fontFamily": "base"
-      },
-      "row": {
-        "bgOdd": "{black.900}",
-        "bgEven": "{gray.800}",
-        "bgHover": "{gray.700}",
-        "borderBottom": "{gray.700}"
-      },
-      "cellTypes": {
-        "number": {
-          "fontFamily": "mono"
-        },
-        "currency": {
-          "fontFamily": "mono"
-        },
-        "date": {
-          "fontFamily": "base"
-        },
-        "input": {
-          "fontFamily": "mono"
-        }
-      },
       "pages": {
         "material": {
           "columns": [
@@ -778,73 +676,62 @@ export const configFromToml = {
               "key": "datum",
               "label": "Datum",
               "width": "12%",
-              "type": "date",
-              "monospace": false,
-              "buttons": []
+              "type": "date"
             },
             {
               "key": "bezeichnung",
               "label": "Bezeichnung",
               "width": "20%",
-              "type": "text",
-              "monospace": false,
-              "buttons": []
+              "type": "text"
             },
             {
               "key": "menge",
               "label": "Menge",
               "width": "10%",
               "type": "number",
-              "monospace": false,
-              "buttons": []
+              "monospace": false
             },
             {
               "key": "ek_stueck",
               "label": "EK Stück",
               "width": "12%",
               "type": "currency",
-              "monospace": false,
-              "buttons": []
+              "monospace": false
             },
             {
               "key": "ek_gesamt",
               "label": "EK Gesamt",
               "width": "12%",
               "type": "currency",
-              "monospace": false,
-              "buttons": []
+              "monospace": false
             },
             {
               "key": "vk_stueck",
               "label": "VK Stück",
               "width": "12%",
               "type": "currency",
-              "monospace": false,
-              "buttons": []
+              "monospace": false
             },
             {
               "key": "bestand",
               "label": "Bestand",
               "width": "10%",
               "type": "number",
-              "monospace": false,
-              "buttons": []
+              "monospace": false
             },
             {
               "key": "einnahmen",
               "label": "Einnahmen",
               "width": "12%",
               "type": "currency",
-              "monospace": false,
-              "buttons": []
+              "monospace": false
             },
             {
               "key": "gewinn_aktuell",
               "label": "Gewinn",
               "width": "12%",
               "type": "currency",
-              "monospace": false,
-              "buttons": []
+              "monospace": false
             },
             {
               "key": "actions",
@@ -866,41 +753,34 @@ export const configFromToml = {
               "key": "name",
               "label": "Kunde",
               "width": "20%",
-              "type": "text",
-              "monospace": false,
-              "buttons": []
+              "type": "text"
             },
             {
               "key": "gesamt",
               "label": "Gesamt",
               "width": "15%",
               "type": "currency",
-              "monospace": false,
-              "buttons": []
+              "monospace": false
             },
             {
               "key": "bezahlt",
               "label": "Bezahlt",
               "width": "15%",
               "type": "currency",
-              "monospace": false,
-              "buttons": []
+              "monospace": false
             },
             {
               "key": "offen",
               "label": "Offener Betrag",
               "width": "15%",
               "type": "currency",
-              "monospace": false,
-              "buttons": []
+              "monospace": false
             },
             {
               "key": "status",
               "label": "Status",
               "width": "15%",
-              "type": "status",
-              "monospace": false,
-              "buttons": []
+              "type": "status"
             },
             {
               "key": "actions",
@@ -920,57 +800,46 @@ export const configFromToml = {
               "key": "datum",
               "label": "Datum",
               "width": "12%",
-              "type": "date",
-              "monospace": false,
-              "buttons": []
+              "type": "date"
             },
             {
               "key": "name",
               "label": "Name",
               "width": "20%",
-              "type": "text",
-              "monospace": false,
-              "buttons": []
+              "type": "text"
             },
             {
               "key": "betrag",
               "label": "Betrag",
               "width": "13%",
               "type": "currency",
-              "monospace": false,
-              "buttons": []
+              "monospace": false
             },
             {
               "key": "bezahlt",
               "label": "Bezahlt",
               "width": "13%",
               "type": "currency",
-              "monospace": false,
-              "buttons": []
+              "monospace": false
             },
             {
               "key": "offen",
               "label": "Offen",
               "width": "13%",
               "type": "currency",
-              "monospace": false,
-              "buttons": []
+              "monospace": false
             },
             {
               "key": "faelligkeit",
               "label": "Fälligkeit",
               "width": "12%",
-              "type": "date",
-              "monospace": false,
-              "buttons": []
+              "type": "date"
             },
             {
               "key": "status",
               "label": "Status",
               "width": "10%",
-              "type": "status",
-              "monospace": false,
-              "buttons": []
+              "type": "status"
             },
             {
               "key": "actions",
@@ -990,57 +859,46 @@ export const configFromToml = {
               "key": "datum",
               "label": "Datum",
               "width": "12%",
-              "type": "date",
-              "monospace": false,
-              "buttons": []
+              "type": "date"
             },
             {
               "key": "name",
               "label": "Name",
               "width": "20%",
-              "type": "text",
-              "monospace": false,
-              "buttons": []
+              "type": "text"
             },
             {
               "key": "betrag",
               "label": "Betrag",
               "width": "13%",
               "type": "currency",
-              "monospace": false,
-              "buttons": []
+              "monospace": false
             },
             {
               "key": "bezahlt",
               "label": "Bezahlt",
               "width": "13%",
               "type": "currency",
-              "monospace": false,
-              "buttons": []
+              "monospace": false
             },
             {
               "key": "offen",
               "label": "Offen",
               "width": "13%",
               "type": "currency",
-              "monospace": false,
-              "buttons": []
+              "monospace": false
             },
             {
               "key": "faelligkeit",
               "label": "Fälligkeit",
               "width": "12%",
-              "type": "date",
-              "monospace": false,
-              "buttons": []
+              "type": "date"
             },
             {
               "key": "status",
               "label": "Status",
               "width": "10%",
-              "type": "status",
-              "monospace": false,
-              "buttons": []
+              "type": "status"
             },
             {
               "key": "actions",

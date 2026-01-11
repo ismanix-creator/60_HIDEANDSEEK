@@ -1,13 +1,14 @@
 /**
  * @file        LoginPage.tsx
  * @description Login Page (prepared but not enforced by default)
- * @version     1.1.0
+ * @version     1.3.0
  * @created     2026-01-08 01:50:00 CET
- * @updated     2026-01-10 10:30:00 CET
+ * @updated     2026-01-11 03:06:28 CET
  * @author      Akki Scholze
  *
  * @changelog
- *   1.1.0 - 2026-01-10 - Inline-Styles durch UI-Components (Button, Input) ersetzt
+ *   1.3.0 - 2026-01-11 - Fixed: floating promises + type signatures
+ *   1.2.0 - 2026-01-11 - useApi integriert und appConfig.client.apiUrl entfernt
  *   1.0.0 - 2026-01-08 - Initial login page
  */
 
@@ -16,43 +17,57 @@ import { useNavigate } from 'react-router-dom';
 import { appConfig } from '@/config';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { useApi } from '@/hooks';
+
+type LoginResponse = {
+  userId: string;
+  username: string;
+  displayName?: string;
+  role: string;
+  kundeId?: number | null;
+  status?: string;
+  message?: string;
+  error?: string;
+};
 
 export function LoginPage() {
+  const api = useApi();
   const [form, setForm] = useState({ username: '', password: '' });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
-      const res = await fetch(`${appConfig.client.apiUrl}/api/auth/login`, {
+      const result = await api.fetch<LoginResponse>('/api/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Login failed');
+      if (!result.success || !result.data) {
+        throw new Error(result.error || 'Login failed');
       }
 
-      // Store user in localStorage
-      localStorage.setItem('userId', data.userId);
-      localStorage.setItem('username', data.username);
-      localStorage.setItem('role', data.role);
-      if (data.kundeId) {
-        localStorage.setItem('kundeId', String(data.kundeId));
+      const { userId, username, displayName, role, kundeId } = result.data;
+
+      localStorage.setItem('userId', String(userId));
+      localStorage.setItem('username', username);
+      if (displayName) {
+        localStorage.setItem('displayName', displayName);
+      }
+      localStorage.setItem('role', role);
+      if (typeof kundeId !== 'undefined' && kundeId !== null) {
+        localStorage.setItem('kundeId', String(kundeId));
       }
 
-      // Redirect to main app
       navigate('/material');
-    } catch (error: any) {
-      setError(error.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Login failed';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -69,11 +84,11 @@ export function LoginPage() {
       <h1>Login</h1>
       <p
         style={{
-          color: appConfig.theme.colors.neutral['500'],
+          color: appConfig.theme.colors.gray['500'],
           marginBottom: appConfig.theme.spacing.xl
         }}
       >
-        {appConfig.auth.enabled ? 'Login required' : 'Auth disabled (dev mode)'}
+        {appConfig.auth.enabled ? 'Login erforderlich' : 'Auth deaktiviert (dev mode)'}
       </p>
 
       <form onSubmit={handleLogin}>
@@ -95,13 +110,7 @@ export function LoginPage() {
             required
           />
         </div>
-        <Button
-          type="submit"
-          disabled={loading}
-          fullWidth
-          variant="primary"
-          size="btn"
-        >
+        <Button type="submit" disabled={loading} fullWidth kind="rect">
           {loading ? 'Logging in...' : 'Login'}
         </Button>
       </form>
@@ -111,8 +120,8 @@ export function LoginPage() {
           style={{
             marginTop: appConfig.theme.spacing.lg,
             padding: appConfig.theme.spacing.md,
-            background: appConfig.theme.colors.status.error,
-            color: appConfig.theme.colors.neutral['50'],
+            background: appConfig.theme.colors.red['500'],
+            color: appConfig.theme.colors.white['50'],
             borderRadius: appConfig.theme.borderRadius.md
           }}
         >
@@ -129,7 +138,7 @@ export function LoginPage() {
         <a
           href="/setup"
           style={{
-            color: appConfig.theme.colors.primary['500'],
+            color: appConfig.theme.colors.blue['500'],
             textDecoration: 'none'
           }}
         >

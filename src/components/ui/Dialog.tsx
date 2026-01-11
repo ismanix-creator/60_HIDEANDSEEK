@@ -1,9 +1,9 @@
 /**
  * @file        Dialog.tsx
  * @description Wiederverwendbare Dialog/Modal-Komponente (SEASIDE Dark Theme) - Responsive
- * @version     0.6.0
+ * @version     0.6.1
  * @created     2025-12-11 01:05:00 CET
- * @updated     2026-01-09 23:18:50 CET
+ * @updated     2026-01-11 00:05:00 CET
  * @author      Akki Scholze
  *
  * @props
@@ -203,7 +203,7 @@ export function Dialog({ open = true, onClose, title, children, actions, footer,
             style={closeButtonStyle}
             onMouseEnter={(e) => {
               if (!isMobile) {
-                e.currentTarget.style.backgroundColor = colorsConfig.neutral[200];
+                e.currentTarget.style.backgroundColor = colorsConfig.gray[200];
                 e.currentTarget.style.color = colorsConfig.text.primary;
               }
             }}

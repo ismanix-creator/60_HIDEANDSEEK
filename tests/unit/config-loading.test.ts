@@ -4,11 +4,12 @@
  * Tests für neue Config-Sektionen (theme.shadows, components.*, ui.*)
  * und Zod-Validation mit strict() Enforcement.
  *
- * @version 1.0.1
+ * @version 1.0.2
  * @created 2026-01-09
- * @updated 2026-01-09 23:11 CET
+ * @updated 2026-01-11 01:58:38 CET
  *
  * @changelog
+ *   1.0.2 - 2026-01-11 01:58:38 CET - Updated for 'sizes.btn' → 'sizes.rect' rename
  *   1.0.1 - 2026-01-09 - Version assertion korrigiert (0.0.0 → 1.2.0)
  *   1.0.0 - 2026-01-09 - Initial test suite
  */
@@ -66,7 +67,7 @@ describe('Config Loading - Phase 1 Extensions', () => {
     it('should load components.button', () => {
       expect(appConfig.components.button).toBeDefined();
       expect(appConfig.components.button.variants.primary.bg).toBe('#2196f3');
-      expect(appConfig.components.button.sizes.md.height).toBe('2.5rem');
+      expect(appConfig.components.button.sizes.rect.height).toBe('2.5rem');
     });
 
     it('should load components.dialog', () => {
@@ -77,8 +78,8 @@ describe('Config Loading - Phase 1 Extensions', () => {
 
     it('should load components.input', () => {
       expect(appConfig.components.input).toBeDefined();
+      expect(appConfig.components.input.base.fontSize).toBe('sm');
       expect(appConfig.components.input.states.focus.border).toBe('#2196f3');
-      expect(appConfig.components.input.types.email.type).toBe('email');
     });
 
     it('should load components.table', () => {

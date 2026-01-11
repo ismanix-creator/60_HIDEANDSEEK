@@ -1,12 +1,13 @@
 /**
  * @file        MaterialPage.tsx
  * @description Material-Verwaltung mit Bar/Kombi-Buchungen und Historie
- * @version     1.0.0
+ * @version     1.1.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-10 06:30:00 CET
+ * @updated     2026-01-11 03:06:28 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   1.1.0 - 2026-01-11 - Fixed: floating promises + unsafe-any errors in API responses
  *   1.0.0 - 2026-01-10 06:30:00 - Config-Fix: Fehlende Labels durch Hardcodes ersetzt (Task 2.3.6)
  *   0.9.0 - 2026-01-10 00:16:26 - Alle verbleibenden Hardcodes durch appConfig.ui.labels.* ersetzt (Task 2.3.1 komplett)
  *   0.8.0 - 2026-01-10 01:10:34 - 44 verbleibende Hardcodes durch appConfig.ui.* ersetzt (Phase 2.3.1 Final)
@@ -63,6 +64,7 @@ export function MaterialPage() {
   const [kombiDialogOpen, setKombiDialogOpen] = useState(false);
   const [historieDialogOpen, setHistorieDialogOpen] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
+  const [zahlungsHistorie, setZahlungsHistorie] = useState<unknown[]>([]);
 
   // Preissteuerung für Material-Dialog
   const [ekPreisMode, setEkPreisMode] = useState<'stueck' | 'gesamt'>('stueck');
@@ -131,7 +133,7 @@ export function MaterialPage() {
   };
 
   // Load Historie for selected Material
-  const loadHistorie = async (materialId: number) => {
+  const loadHistorie = async (materialId: number): Promise<void> => {
     try {
       const result = await api.fetch<MaterialHistorieItem[]>(`/api/material/${materialId}/historie`);
       if (result.success && result.data) {
@@ -152,11 +154,11 @@ export function MaterialPage() {
   };
 
   useEffect(() => {
-    loadMaterial();
+    void loadMaterial();
   }, []);
 
   // Create Material
-  const handleCreate = async () => {
+  const handleCreate = async (): Promise<void> => {
     setError(null);
     if (!formData.datum) {
       setError(appConfig.ui.validation.date_required);
@@ -230,7 +232,7 @@ export function MaterialPage() {
   };
 
   // Update Material
-  const handleUpdate = async () => {
+  const handleUpdate = async (): Promise<void> => {
     if (!selectedMaterial) return;
     try {
       const ekGesamt = ekPreisMode === 'stueck' ? formData.ek_stueck * formData.menge : formData.ek_gesamt;
@@ -261,7 +263,7 @@ export function MaterialPage() {
   };
 
   // Delete Material
-  const handleDelete = async () => {
+  const handleDelete = async (): Promise<void> => {
     if (!selectedMaterial) return;
     try {
       const result = await api.fetch(`/api/material/${selectedMaterial.id}`, {
@@ -330,7 +332,7 @@ export function MaterialPage() {
   };
 
   // Bar Bewegung
-  const handleBarBewegung = async () => {
+  const handleBarBewegung = async (): Promise<void> => {
     try {
       // Calculate price based on mode
       const finalPreis = preisMode === 'stueck' ? barFormData.menge * barFormData.preis : barFormData.preis;
@@ -357,7 +359,7 @@ export function MaterialPage() {
   };
 
   // Kombi Bewegung
-  const handleKombiBewegung = async () => {
+  const handleKombiBewegung = async (): Promise<void> => {
     try {
       // Calculate price based on mode
       const finalPreis = preisMode === 'stueck' ? kombiFormData.menge * kombiFormData.preis : kombiFormData.preis;
@@ -521,38 +523,18 @@ export function MaterialPage() {
       label: appConfig.ui.labels.actions,
       render: (m: Material) => (
         <div className="flex gap-2 flex-wrap">
-          <Button
-            icon={<Banknote />}
-            iconOnly
-            size="icon"
-            variant="success"
-            onClick={() => openBarDialog(m)}
-            title={appConfig.ui.tooltips.bar_transaction}
-          />
-          <Button
-            icon={<FileText />}
-            iconOnly
-            size="icon"
-            variant="primary"
-            onClick={() => openKombiDialog(m)}
-            title={appConfig.ui.tooltips.kombi_transaction}
-          />
-          <Button
-            icon={<Pencil />}
-            iconOnly
-            size="icon"
-            variant="secondary"
-            onClick={() => openEditDialog(m)}
-            title={appConfig.ui.tooltips.edit}
-          />
-          <Button
-            icon={<Trash2 />}
-            iconOnly
-            size="icon"
-            variant="danger"
-            onClick={() => openDeleteDialog(m)}
-            title={appConfig.ui.tooltips.delete}
-          />
+          <Button kind="icon" onClick={() => openBarDialog(m)}>
+            <Banknote />
+          </Button>
+          <Button kind="icon" onClick={() => openKombiDialog(m)}>
+            <FileText />
+          </Button>
+          <Button kind="icon" onClick={() => openEditDialog(m)}>
+            <Pencil />
+          </Button>
+          <Button kind="icon" onClick={() => openDeleteDialog(m)}>
+            <Trash2 />
+          </Button>
         </div>
       )
     }
@@ -562,14 +544,9 @@ export function MaterialPage() {
     <PageLayout
       title={appConfig.ui.page_titles.material}
       actions={
-        <Button
-          icon={<PackagePlus />}
-          iconOnly
-          variant="transparent"
-          size="btn"
-          onClick={() => setCreateDialogOpen(true)}
-          title={appConfig.ui.dialog_titles.new_material}
-        />
+        <Button kind="icon" onClick={() => setCreateDialogOpen(true)}>
+          <PackagePlus />
+        </Button>
       }
     >
       <div className="space-y-4">
@@ -598,7 +575,7 @@ export function MaterialPage() {
           actions={
             <>
               <Button
-                variant="secondary"
+                kind="rect"
                 onClick={() => {
                   setCreateDialogOpen(false);
                   setError(null);
@@ -641,27 +618,15 @@ export function MaterialPage() {
             />
             <div className="space-y-2 w-full max-w-sm">
               <div className="flex gap-2 justify-center">
-                <Button
-                  size="btn"
-                  variant={ekPreisMode === 'stueck' ? 'primary' : 'secondary'}
-                  onClick={() => handleCreateEkMode('stueck')}
-                >
+                <Button kind="rect" onClick={() => handleCreateEkMode('stueck')}>
                   {appConfig.ui.labels.purchase_price}
                 </Button>
-                <Button
-                  size="btn"
-                  variant={ekPreisMode === 'gesamt' ? 'primary' : 'secondary'}
-                  onClick={() => handleCreateEkMode('gesamt')}
-                >
+                <Button kind="rect" onClick={() => handleCreateEkMode('gesamt')}>
                   EK Gesamt
                 </Button>
               </div>
               <Input
-                label={
-                  ekPreisMode === 'stueck'
-                    ? appConfig.ui.labels.purchase_price
-                    : 'EK Gesamt'
-                }
+                label={ekPreisMode === 'stueck' ? appConfig.ui.labels.purchase_price : 'EK Gesamt'}
                 type="number"
                 min={0}
                 step={ekPreisMode === 'stueck' ? '0.1' : '5'}
@@ -705,7 +670,7 @@ export function MaterialPage() {
           actions={
             <>
               <Button
-                variant="secondary"
+                kind="rect"
                 onClick={() => {
                   setEditDialogOpen(false);
                   setSelectedMaterial(null);
@@ -756,27 +721,15 @@ export function MaterialPage() {
             />
             <div className="space-y-2">
               <div className="flex gap-2">
-                <Button
-                  size="btn"
-                  variant={ekPreisMode === 'stueck' ? 'primary' : 'secondary'}
-                  onClick={() => handleCreateEkMode('stueck')}
-                >
+                <Button kind="rect" onClick={() => handleCreateEkMode('stueck')}>
                   {appConfig.ui.labels.purchase_price}
                 </Button>
-                <Button
-                  size="btn"
-                  variant={ekPreisMode === 'gesamt' ? 'primary' : 'secondary'}
-                  onClick={() => handleCreateEkMode('gesamt')}
-                >
+                <Button kind="rect" onClick={() => handleCreateEkMode('gesamt')}>
                   EK Gesamt
                 </Button>
               </div>
               <Input
-                label={
-                  ekPreisMode === 'stueck'
-                    ? appConfig.ui.labels.purchase_price
-                    : 'EK Gesamt'
-                }
+                label={ekPreisMode === 'stueck' ? appConfig.ui.labels.purchase_price : 'EK Gesamt'}
                 type="number"
                 min={0}
                 step={ekPreisMode === 'stueck' ? '0.1' : '5'}
@@ -808,7 +761,7 @@ export function MaterialPage() {
           actions={
             <>
               <Button
-                variant="secondary"
+                kind="rect"
                 onClick={() => {
                   setDeleteDialogOpen(false);
                   setSelectedMaterial(null);
@@ -816,7 +769,7 @@ export function MaterialPage() {
               >
                 {appConfig.ui.buttons.cancel}
               </Button>
-              <Button variant="danger" onClick={handleDelete}>
+              <Button kind="rect" onClick={handleDelete}>
                 {appConfig.ui.buttons.delete}
               </Button>
             </>
@@ -839,7 +792,7 @@ export function MaterialPage() {
           actions={
             <>
               <Button
-                variant="secondary"
+                kind="rect"
                 onClick={() => {
                   setBarDialogOpen(false);
                   setSelectedMaterial(null);
@@ -848,7 +801,7 @@ export function MaterialPage() {
               >
                 {appConfig.ui.buttons.cancel}
               </Button>
-              <Button variant="success" onClick={handleBarBewegung}>
+              <Button kind="rect" onClick={handleBarBewegung}>
                 {appConfig.ui.buttons.record}
               </Button>
             </>
@@ -874,18 +827,10 @@ export function MaterialPage() {
             />
             <div className="space-y-2">
               <div className="flex gap-2">
-                <Button
-                  size="btn"
-                  variant={preisMode === 'stueck' ? 'primary' : 'secondary'}
-                  onClick={() => setPreisMode('stueck')}
-                >
+                <Button kind="rect" onClick={() => setPreisMode('stueck')}>
                   Preis/Stück
                 </Button>
-                <Button
-                  size="btn"
-                  variant={preisMode === 'gesamt' ? 'primary' : 'secondary'}
-                  onClick={() => setPreisMode('gesamt')}
-                >
+                <Button kind="rect" onClick={() => setPreisMode('gesamt')}>
                   Preis Gesamt
                 </Button>
               </div>
@@ -927,7 +872,7 @@ export function MaterialPage() {
           actions={
             <>
               <Button
-                variant="secondary"
+                kind="rect"
                 onClick={() => {
                   setKombiDialogOpen(false);
                   setSelectedMaterial(null);
@@ -936,7 +881,7 @@ export function MaterialPage() {
               >
                 {appConfig.ui.buttons.cancel}
               </Button>
-              <Button variant="primary" onClick={handleKombiBewegung}>
+              <Button kind="rect" onClick={handleKombiBewegung}>
                 {appConfig.ui.buttons.record}
               </Button>
             </>
@@ -968,25 +913,15 @@ export function MaterialPage() {
             />
             <div className="space-y-2">
               <div className="flex gap-2">
-                <Button
-                  size="btn"
-                  variant={preisMode === 'stueck' ? 'primary' : 'secondary'}
-                  onClick={() => setPreisMode('stueck')}
-                >
+                <Button kind="rect" onClick={() => setPreisMode('stueck')}>
                   Preis/Stück
                 </Button>
-                <Button
-                  size="btn"
-                  variant={preisMode === 'gesamt' ? 'primary' : 'secondary'}
-                  onClick={() => setPreisMode('gesamt')}
-                >
+                <Button kind="rect" onClick={() => setPreisMode('gesamt')}>
                   Preis Gesamt
                 </Button>
               </div>
               <Input
-                label={
-                  preisMode === 'stueck' ? 'Preis pro Stück' : 'Preis Gesamt'
-                }
+                label={preisMode === 'stueck' ? 'Preis pro Stück' : 'Preis Gesamt'}
                 type="number"
                 step="0.01"
                 value={kombiFormData.preis}
@@ -1043,14 +978,8 @@ export function MaterialPage() {
                     <p>
                       {appConfig.ui.labels.quantity}: {item.menge.toFixed(2)}
                     </p>
-                    <p>
-                      Preis: {formatCurrency(item.preis)}
-                    </p>
-                    {item.kunde_name && (
-                      <p>
-                        Kunde: {item.kunde_name}
-                      </p>
-                    )}
+                    <p>Preis: {formatCurrency(item.preis)}</p>
+                    {item.kunde_name && <p>Kunde: {item.kunde_name}</p>}
                     {item.info && (
                       <p>
                         {appConfig.ui.labels.info.replace(' (optional)', '')}: {item.info}

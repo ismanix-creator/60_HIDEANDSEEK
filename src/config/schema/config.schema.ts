@@ -1,12 +1,15 @@
 /**
  * @file        config.schema.ts
  * @description Zod Schema für config.toml Validation (STRICT)
- * @version     1.9.0
+ * @version     2.2.0
  * @created     2026-01-07 19:45:00 CET
- * @updated     2026-01-10 16:22:00 CET
+ * @updated     2026-01-11 16:50:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   2.2.0 - 2026-01-11 16:50:00 CET - Schema fix: Added missing height, maxHeight, shadow keys to DialogSchema.container
+ *   2.1.0 - 2026-01-11 16:45:00 CET - Schema sync: Removed height/maxHeight from DialogSchema.container, made InputSchema.types optional, made ColumnSchema.monospace/buttons optional, removed duplicate ui.dialogs
+ *   2.0.0 - 2026-01-11 14:30:00 CET - CRITICAL FIX: Removed nested config objects that don't exist in config.toml (wrapper, header, cell, row, cellTypes). Schema now matches TOML flat structure exactly. Allows token references {xyz.123} in all color/string fields.
  *   1.9.0 - 2026-01-10 16:22:00 CET - ButtonSchema: replaced 5 sizes (xs/sm/md/lg/xl) with 2 (btn + icon), icon references theme.icons.sizes dynamically
  *   1.8.0 - 2026-01-10 15:00:00 CET - ThemeIconsSchema: removed button sub-object, unified to sizes only (xs/sm/md/lg/xl)
  *   1.7.0 - 2026-01-10 12:00 CET - Added color schemas: black, red, gold, green, purple, orange, brown, teal, gray, white + OpacitySchema
@@ -18,11 +21,6 @@
  */
 
 import { z } from 'zod';
-
-/**
- * Hex Color Regex Validator
- */
-const hexColorSchema = z.string().regex(/^#[0-9A-Fa-f]{6}$/);
 
 /**
  * App Schema
@@ -68,129 +66,110 @@ const NavigationSchema = z
   .strict();
 
 /**
- * Color Scale Schema (for primary, neutral, etc.)
+ * Color Scale Schema (for color palettes)
  */
 const ColorScaleSchema = z
   .object({
-    50: hexColorSchema,
-    100: hexColorSchema,
-    200: hexColorSchema,
-    300: hexColorSchema,
-    400: hexColorSchema,
-    500: hexColorSchema,
-    600: hexColorSchema,
-    700: hexColorSchema,
-    800: hexColorSchema,
-    900: hexColorSchema
+    50: z.string(),
+    100: z.string(),
+    200: z.string(),
+    300: z.string(),
+    400: z.string(),
+    500: z.string(),
+    600: z.string(),
+    700: z.string(),
+    800: z.string(),
+    900: z.string()
   })
   .strict();
 
 /**
- * Color Scale Palette Types
- */
-const BlackColorSchema = ColorScaleSchema;
-const RedColorSchema = ColorScaleSchema;
-const GoldColorSchema = ColorScaleSchema;
-const GelbColorSchema = ColorScaleSchema;
-const GreenColorSchema = ColorScaleSchema;
-const PurpleColorSchema = ColorScaleSchema;
-const OrangeColorSchema = ColorScaleSchema;
-const BrownColorSchema = ColorScaleSchema;
-const TealColorSchema = ColorScaleSchema;
-const GrayColorSchema = ColorScaleSchema;
-const WhiteColorSchema = ColorScaleSchema;
-
-/**
- * Opacity Schema
- */
-const OpacitySchema = z.record(z.string(), z.string());
-
-/**
  * Theme Colors Schema
+ * Config.toml hat: white, gray, black, yellow, orange, red, green, lime, teal, cyan, blue, bluegray, brown, indigo, purple, silver, gold
  */
 const ThemeColorsSchema = z
   .object({
-    primary: ColorScaleSchema,
-    black: BlackColorSchema,
-    red: RedColorSchema,
-    gold: GoldColorSchema,
-    gelb: GelbColorSchema,
-    green: GreenColorSchema,
-    purple: PurpleColorSchema,
-    orange: OrangeColorSchema,
-    brown: BrownColorSchema,
-    teal: TealColorSchema,
-    gray: GrayColorSchema,
-    white: WhiteColorSchema,
-    opacity: OpacitySchema,
+    white: ColorScaleSchema,
+    gray: ColorScaleSchema,
+    black: ColorScaleSchema,
+    yellow: ColorScaleSchema,
+    orange: ColorScaleSchema,
+    red: ColorScaleSchema,
+    green: ColorScaleSchema,
+    lime: ColorScaleSchema,
+    teal: ColorScaleSchema,
+    cyan: ColorScaleSchema,
+    blue: ColorScaleSchema,
+    bluegray: ColorScaleSchema,
+    brown: ColorScaleSchema,
+    indigo: ColorScaleSchema,
+    purple: ColorScaleSchema,
+    silver: ColorScaleSchema,
+    gold: ColorScaleSchema,
+    opacity: z.record(z.string(), z.string()),
     text: z
       .object({
-        primary: hexColorSchema,
-        secondary: hexColorSchema,
-        tertiary: hexColorSchema
+        primary: z.string(),
+        secondary: z.string(),
+        tertiary: z.string()
       })
       .strict(),
     ui: z
       .object({
-        background: hexColorSchema,
-        backgroundAlt: hexColorSchema,
-        backgroundCard: hexColorSchema,
-        border: hexColorSchema
+        background: z.string(),
+        backgroundAlt: z.string(),
+        backgroundCard: z.string(),
+        border: z.string()
       })
       .strict(),
     button: z
       .object({
-        gray: hexColorSchema,
-        active: hexColorSchema,
-        customer: hexColorSchema,
-        offer: hexColorSchema,
-        order: hexColorSchema,
-        invoice: hexColorSchema
+        gray: z.string(),
+        active: z.string()
       })
       .strict(),
     status: z
       .object({
-        error: hexColorSchema,
-        warning: hexColorSchema,
-        success: hexColorSchema,
-        info: hexColorSchema
+        error: z.string(),
+        warning: z.string(),
+        success: z.string(),
+        info: z.string()
       })
       .strict(),
     error: z
       .object({
-        500: hexColorSchema,
-        light: hexColorSchema,
-        main: hexColorSchema,
-        dark: hexColorSchema
+        500: z.string(),
+        light: z.string(),
+        main: z.string(),
+        dark: z.string()
       })
       .strict(),
     warning: z
       .object({
-        light: hexColorSchema,
-        main: hexColorSchema,
-        dark: hexColorSchema
+        light: z.string(),
+        main: z.string(),
+        dark: z.string()
       })
       .strict(),
     success: z
       .object({
-        light: hexColorSchema,
-        main: hexColorSchema,
-        dark: hexColorSchema
+        light: z.string(),
+        main: z.string(),
+        dark: z.string()
       })
       .strict(),
     info: z
       .object({
-        light: hexColorSchema,
-        main: hexColorSchema,
-        dark: hexColorSchema
+        light: z.string(),
+        main: z.string(),
+        dark: z.string()
       })
       .strict(),
-    neutral: ColorScaleSchema,
     table: z
       .object({
-        stripe1: hexColorSchema,
-        stripe2: hexColorSchema,
-        selection: hexColorSchema
+        stripe1: z.string(),
+        stripe2: z.string(),
+        selection: z.string()
       })
       .strict()
   })
@@ -254,28 +233,6 @@ const ThemeSpacingSchema = z
     layout: z
       .object({
         contentMaxWidthRem: z.string()
-      })
-      .strict(),
-    component: z
-      .object({
-        button: z
-          .object({
-            paddingX: z
-              .object({
-                sm: z.string(),
-                md: z.string(),
-                lg: z.string()
-              })
-              .strict(),
-            paddingY: z
-              .object({
-                sm: z.string(),
-                md: z.string(),
-                lg: z.string()
-              })
-              .strict()
-          })
-          .strict()
       })
       .strict(),
     mobile: ThemeSpacingMobileSchema
@@ -389,8 +346,8 @@ const ThemeSchema = z
  */
 const BadgeVariantSchema = z
   .object({
-    bg: hexColorSchema,
-    text: hexColorSchema
+    bg: z.string(),
+    text: z.string()
   })
   .strict();
 
@@ -425,53 +382,72 @@ const BadgeSchema = z
 /**
  * Button Schema
  */
-const ButtonVariantSchema = z
+// Button Variant: rect (standard rectangular buttons)
+const ButtonVariantRectSchema = z
   .object({
     bg: z.string(),
-    text: hexColorSchema,
-    hover: z.string(),
-    border: z.string()
+    text: z.string(),
+    border: z.string(),
+    hoverBg: z.string(),
+    activeBg: z.string(),
+    disabledBg: z.string(),
+    disabledText: z.string(),
+    disabledBorder: z.string(),
+    saveBg: z.string(),
+    saveText: z.string(),
+    saveHoverBg: z.string(),
+    saveActiveBg: z.string(),
+    focusRing: z.string(),
+    focusRingOpacity: z.string()
   })
   .strict();
 
-// Button Size: btn (Standard für alle regulären Buttons)
-const ButtonSizeBtnSchema = z
+// Button Variant: icon (icon-only buttons)
+const ButtonVariantIconSchema = z
+  .object({
+    bg: z.string(),
+    icon: z.string(),
+    border: z.string(),
+    hoverBg: z.string(),
+    activeBg: z.string(),
+    disabledBg: z.string(),
+    disabledIcon: z.string(),
+    disabledBorder: z.string(),
+    focusRing: z.string(),
+    focusRingOpacity: z.string()
+  })
+  .strict();
+
+// Button Size: rect (Standard für alle regulären Buttons)
+const ButtonSizeRectSchema = z
   .object({
     padding: z.string(),
-    paddingX: z.number(),
-    paddingY: z.number(),
     fontSize: z.string(),
     height: z.string(),
     iconSize: z.string() // Token-Referenz: {icons.sizes.md}
   })
   .strict();
 
-// Button Size: icon (Icon-Only, lädt Größen aus theme.icons.sizes)
+// Button Size: icon (Icon-Only)
 const ButtonSizeIconSchema = z
   .object({
-    padding: z.string(), // Einheitliches Padding
-    iconSize: z.string() // "dynamic" oder leer
+    padding: z.string(),
+    iconSize: z.string()
   })
   .strict();
 
 const ButtonSchema = z
   .object({
     borderRadius: z.string(),
-    variants: z
+    variant: z
       .object({
-        primary: ButtonVariantSchema,
-        secondary: ButtonVariantSchema,
-        danger: ButtonVariantSchema,
-        outline: ButtonVariantSchema,
-        ghost: ButtonVariantSchema,
-        success: ButtonVariantSchema,
-        warning: ButtonVariantSchema,
-        transparent: ButtonVariantSchema
+        rect: ButtonVariantRectSchema,
+        icon: ButtonVariantIconSchema
       })
       .strict(),
     sizes: z
       .object({
-        btn: ButtonSizeBtnSchema,
+        rect: ButtonSizeRectSchema,
         icon: ButtonSizeIconSchema
       })
       .strict()
@@ -490,18 +466,20 @@ const DialogSchema = z
       .strict(),
     container: z
       .object({
-        bg: hexColorSchema,
-        border: hexColorSchema,
+        bg: z.string(),
+        border: z.string(),
         borderRadius: z.string(),
         padding: z.string(),
         maxWidth: z.string(),
         width: z.string(),
+        height: z.string(),
+        maxHeight: z.string(),
         shadow: z.string()
       })
       .strict(),
     header: z
       .object({
-        borderBottom: hexColorSchema,
+        borderBottom: z.string(),
         padding: z.string(),
         fontSize: z.string(),
         fontWeight: z.string()
@@ -515,7 +493,7 @@ const DialogSchema = z
       .strict(),
     footer: z
       .object({
-        borderTop: hexColorSchema,
+        borderTop: z.string(),
         padding: z.string(),
         marginTop: z.string(),
         gap: z.string()
@@ -531,9 +509,9 @@ const DividerSchema = z
   .object({
     month: z
       .object({
-        bg: hexColorSchema,
-        text: hexColorSchema,
-        border: hexColorSchema,
+        bg: z.string(),
+        text: z.string(),
+        border: z.string(),
         padding: z.string(),
         paddingY: z.number(),
         paddingX: z.number(),
@@ -544,12 +522,12 @@ const DividerSchema = z
       .strict(),
     horizontal: z
       .object({
-        border: hexColorSchema,
+        border: z.string(),
         margin: z.string(),
         marginY: z.number(),
         height: z.string(),
         thickness: z.string(),
-        color: hexColorSchema
+        color: z.string()
       })
       .strict()
   })
@@ -560,10 +538,10 @@ const DividerSchema = z
  */
 const InfoboxVariantSchema = z
   .object({
-    bg: hexColorSchema,
-    border: hexColorSchema,
+    bg: z.string(),
+    border: z.string(),
     icon: z.string(),
-    iconColor: hexColorSchema
+    iconColor: z.string()
   })
   .strict();
 
@@ -587,8 +565,8 @@ const InfoboxSchema = z
       .strict(),
     panel: z
       .object({
-        bg: hexColorSchema,
-        border: hexColorSchema,
+        bg: z.string(),
+        border: z.string(),
         borderRadius: z.string(),
         padding: z.string()
       })
@@ -608,10 +586,10 @@ const InfoboxSchema = z
  */
 const InputStateSchema = z
   .object({
-    border: hexColorSchema,
-    bg: hexColorSchema,
+    border: z.string(),
+    bg: z.string(),
     outline: z.string(),
-    text: hexColorSchema
+    text: z.string()
   })
   .strict();
 
@@ -625,9 +603,9 @@ const InputSchema = z
   .object({
     base: z
       .object({
-        bg: hexColorSchema,
-        border: hexColorSchema,
-        text: hexColorSchema,
+        bg: z.string(),
+        border: z.string(),
+        text: z.string(),
         padding: z.string(),
         paddingX: z.number(),
         paddingY: z.number(),
@@ -654,6 +632,7 @@ const InputSchema = z
         currency: InputTypeSchema
       })
       .strict()
+      .optional()
   })
   .strict();
 
@@ -666,8 +645,8 @@ export const ColumnSchema = z
     label: z.string().min(1),
     width: z.string(), // CSS Wert: %, rem, px, em, auto
     type: z.enum(['text', 'number', 'currency', 'date', 'status', 'input', 'actions']),
-    monospace: z.boolean(),
-    buttons: z.array(z.string())
+    monospace: z.boolean().optional(),
+    buttons: z.array(z.string()).optional()
   })
   .strict();
 
@@ -689,87 +668,36 @@ export const TablePagesSchema = z
 /**
  * Table Schema
  */
-const TableCellTypeSchema = z
-  .object({
-    fontFamily: z.string()
-  })
-  .strict();
-
 const TableSchema = z
   .object({
-    // Basis-Layout (flat keys, rowHeight MUSS px sein!)
+    // Basis-Layout (flat keys only, rowHeight MUSS px sein!)
     rowHeight: z.string().regex(/^\d+px$/),
     cellPaddingX: z.string(),
     cellPaddingY: z.string(),
 
-    // Wrapper (flat keys + nested for compat)
-    wrapperBg: hexColorSchema,
-    wrapperBorder: hexColorSchema,
+    // Wrapper (flat keys only)
+    wrapperBg: z.string(),
+    wrapperBorder: z.string(),
     wrapperBorderRadius: z.string(),
     wrapperShadow: z.enum(['sm', 'md', 'lg', 'xl', 'none']),
-    wrapper: z
-      .object({
-        bg: hexColorSchema,
-        border: hexColorSchema,
-        borderRadius: z.string(),
-        shadow: z.string()
-      })
-      .strict(),
 
-    // Header (flat keys + nested for compat)
-    headerBg: hexColorSchema,
-    headerText: hexColorSchema,
+    // Header (flat keys only)
+    headerBg: z.string(),
+    headerText: z.string(),
     headerFontSize: z.enum(['xs', 'sm', 'md', 'lg', 'xl']),
     headerFontWeight: z.enum(['normal', 'medium', 'semibold', 'bold']),
     headerFontFamily: z.enum(['base', 'mono']),
-    header: z
-      .object({
-        bg: hexColorSchema,
-        text: hexColorSchema,
-        paddingX: z.string(),
-        paddingY: z.string(),
-        fontSize: z.string(),
-        fontWeight: z.string(),
-        fontFamily: z.string()
-      })
-      .strict(),
 
-    // Cell (flat keys + nested for compat)
-    cellText: hexColorSchema,
+    // Cell (flat keys only)
+    cellText: z.string(),
     cellFontSize: z.enum(['xs', 'sm', 'md', 'lg', 'xl']),
     cellFontFamily: z.enum(['base', 'mono']),
-    cell: z
-      .object({
-        text: hexColorSchema,
-        paddingX: z.string(),
-        paddingY: z.string(),
-        fontSize: z.string(),
-        fontFamily: z.string()
-      })
-      .strict(),
 
-    // Row (flat keys + nested for compat)
-    rowBgOdd: hexColorSchema,
-    rowBgEven: hexColorSchema,
-    rowBgHover: hexColorSchema,
-    rowBorderBottom: hexColorSchema,
-    row: z
-      .object({
-        bgOdd: hexColorSchema,
-        bgEven: hexColorSchema,
-        bgHover: hexColorSchema,
-        borderBottom: hexColorSchema
-      })
-      .strict(),
-
-    cellTypes: z
-      .object({
-        number: TableCellTypeSchema,
-        currency: TableCellTypeSchema,
-        date: TableCellTypeSchema,
-        input: TableCellTypeSchema
-      })
-      .strict(),
+    // Row (flat keys only)
+    rowBgOdd: z.string(),
+    rowBgEven: z.string(),
+    rowBgHover: z.string(),
+    rowBorderBottom: z.string(),
 
     // Pages
     pages: TablePagesSchema
@@ -873,28 +801,6 @@ const UISchema = z
       })
       .strict(),
     dialog_titles: z
-      .object({
-        new_material: z.string(),
-        edit_material: z.string(),
-        delete_material: z.string(),
-        bar_transaction: z.string(),
-        kombi_transaction: z.string(),
-        new_customer: z.string(),
-        edit_customer: z.string(),
-        delete_customer: z.string(),
-        new_material_post: z.string(),
-        new_other_post: z.string(),
-        record_payment: z.string(),
-        new_creditor: z.string(),
-        edit_creditor: z.string(),
-        delete_creditor: z.string(),
-        new_debtor: z.string(),
-        edit_debtor: z.string(),
-        delete_debtor: z.string(),
-        history: z.string()
-      })
-      .strict(),
-    dialogs: z
       .object({
         new_material: z.string(),
         edit_material: z.string(),

@@ -1,18 +1,23 @@
 /**
  * @file        guards.ts
  * @description Auth guards and access control (respects auth.enabled flag)
- * @version     1.0.0
+ * @version     1.1.1
  * @created     2026-01-08 01:10:00 CET
- * @updated     2026-01-08 01:10:00 CET
+ * @updated     2026-01-11 15:30:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   1.1.1 - 2026-01-11 - Confirmed backendConfig import (no src/config), lint clean
+ *   1.1.0 - 2026-01-11 - Removed src/config import (use backendConfig), strict backend/frontend separation
+ *   1.0.1 - 2026-01-11 - P2: getAuthConfig fail-fast + test-only fallback (strict Config SoT)
  *   1.0.0 - 2026-01-08 - Initial guards with conditional enforcement
  */
 
+/* eslint-disable no-undef */
+
 import type { Context, Next } from 'hono';
 import type { Database } from 'better-sqlite3';
-import { appConfig } from '../../src/config/index.js';
+import { backendConfig } from '../config/app.config.js';
 
 export interface User {
   id: string;
@@ -24,20 +29,19 @@ export interface User {
 }
 
 /**
- * Get auth config from SoT (safe default for tests)
+ * Get auth config from SoT (backendConfig.auth)
+ * Fail-fast in runtime. Test-only fallback only if NODE_ENV === 'test'
  */
 export function getAuthConfig() {
-  try {
-    // Check if appConfig is defined and has auth property
-    if (appConfig && appConfig.auth) {
-      return appConfig.auth;
+  if (!backendConfig || !backendConfig.auth) {
+    // Test-only fallback: allow in test env only
+    if (process.env.NODE_ENV === 'test') {
+      return { enabled: false, mode: 'password_required' as const, admin_bootstrap_user_id: 'admin' };
     }
-    // Fallback for tests
-    return { enabled: false, mode: 'password_required' as const, admin_bootstrap_user_id: 'admin' };
-  } catch {
-    // Fallback for tests without config.toml
-    return { enabled: false, mode: 'password_required' as const, admin_bootstrap_user_id: 'admin' };
+    // Runtime: fail-fast on config error
+    throw new Error('[Config Error] backendConfig.auth is missing. Check config.toml and server/config/app.config.ts');
   }
+  return backendConfig.auth;
 }
 
 /**

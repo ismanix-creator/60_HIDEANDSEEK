@@ -1,12 +1,13 @@
 /**
  * @file        GlaeubigerPage.tsx
  * @description Gläubiger-Verwaltung Seite
- * @version     1.0.0
+ * @version     1.1.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-10 18:30:00 CET
+ * @updated     2026-01-11 03:06:28 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   1.1.0 - 2026-01-11 - Fixed: floating promises + type signatures
  *   1.0.0 - 2026-01-10 18:30:00 - TASK 2.5: Zahlungshistorie Dialog vollständig implementiert (Final)
  *   0.8.0 - 2026-01-10 15:42:37 - Inline-Style für Monospace-Font im Betrag entfernt (Task 2.4.1)
  *   0.7.0 - 2026-01-10 00:30:15 - Hardcodes für Fälligkeit, Notiz und Monospace-Font entfernt (Phase 2.3.3)
@@ -29,7 +30,7 @@ import { Badge } from '@/components/ui/Badge';
 import { useApi } from '@/hooks/useApi';
 import { formatCurrency, formatDate } from '@/utils/format';
 import { appConfig } from '@/config';
-import { HandCoins, Pencil, Trash2, DollarSign } from 'lucide-react';
+import { HandCoins, Pencil, Trash2, DollarSign, Plus } from 'lucide-react';
 import type { Glaeubiger, CreateGlaeubigerRequest, UpdateGlaeubigerRequest, ZahlungRequest } from '@/types';
 
 export function GlaeubigerPage() {
@@ -45,7 +46,7 @@ export function GlaeubigerPage() {
   const [zahlungDialogOpen, setZahlungDialogOpen] = useState(false);
   const [historieDialogOpen, setHistorieDialogOpen] = useState(false);
   const [selectedGlaeubiger, setSelectedGlaeubiger] = useState<Glaeubiger | null>(null);
-  const [zahlungsHistorie, setZahlungsHistorie] = useState<any[]>([]);
+  const [zahlungsHistorie, setZahlungsHistorie] = useState<unknown[]>([]);
 
   // Form States
   const [formData, setFormData] = useState<CreateGlaeubigerRequest>({
@@ -58,7 +59,7 @@ export function GlaeubigerPage() {
   const [zahlungbetrag, setZahlungbetrag] = useState<number>(0);
 
   // Load Gläubiger
-  const loadGlaeubiger = async () => {
+  const loadGlaeubiger = async (): Promise<void> => {
     setLoading(true);
     setError(null);
     try {
@@ -76,11 +77,11 @@ export function GlaeubigerPage() {
   };
 
   useEffect(() => {
-    loadGlaeubiger();
+    void loadGlaeubiger();
   }, []);
 
   // Create Gläubiger
-  const handleCreate = async () => {
+  const handleCreate = async (): Promise<void> => {
     try {
       const result = await api.fetch('/api/glaeubiger', {
         method: 'POST',
@@ -99,7 +100,7 @@ export function GlaeubigerPage() {
   };
 
   // Update Gläubiger
-  const handleUpdate = async () => {
+  const handleUpdate = async (): Promise<void> => {
     if (!selectedGlaeubiger) return;
     try {
       const updateData: UpdateGlaeubigerRequest = {
@@ -124,7 +125,7 @@ export function GlaeubigerPage() {
   };
 
   // Delete Gläubiger
-  const handleDelete = async () => {
+  const handleDelete = async (): Promise<void> => {
     if (!selectedGlaeubiger) return;
     try {
       const result = await api.fetch(`/api/glaeubiger/${selectedGlaeubiger.id}`, {
@@ -143,7 +144,7 @@ export function GlaeubigerPage() {
   };
 
   // Zahlung verbuchen
-  const handleZahlung = async () => {
+  const handleZahlung = async (): Promise<void> => {
     if (!selectedGlaeubiger) return;
     try {
       const zahlungData: ZahlungRequest = { betrag: zahlungbetrag };
@@ -199,11 +200,11 @@ export function GlaeubigerPage() {
   };
 
   // Load Zahlungshistorie
-  const loadZahlungsHistorie = async (glaeubigerId: number) => {
+  const loadZahlungsHistorie = async (glaeubigerId: number): Promise<void> => {
     try {
       const result = await api.fetch(`/api/glaeubiger/${glaeubigerId}/zahlungen`);
       if (result.success && result.data) {
-        setZahlungsHistorie(result.data as any[]);
+        setZahlungsHistorie(result.data as unknown[]);
       } else {
         setZahlungsHistorie([]);
       }
@@ -260,31 +261,16 @@ export function GlaeubigerPage() {
       render: (g: Glaeubiger) => (
         <div className="flex gap-2">
           {g.offen > 0 && (
-            <Button
-              icon={<DollarSign />}
-              iconOnly
-              size="icon"
-              variant="success"
-              onClick={() => openZahlungDialog(g)}
-              title={appConfig.ui.tooltips.payment}
-            />
+            <Button kind="icon" onClick={() => openZahlungDialog(g)}>
+              <DollarSign />
+            </Button>
           )}
-          <Button
-            icon={<Pencil />}
-            iconOnly
-            size="icon"
-            variant="secondary"
-            onClick={() => openEditDialog(g)}
-            title={appConfig.ui.tooltips.edit}
-          />
-          <Button
-            icon={<Trash2 />}
-            iconOnly
-            size="icon"
-            variant="danger"
-            onClick={() => openDeleteDialog(g)}
-            title={appConfig.ui.tooltips.delete}
-          />
+          <Button kind="icon" onClick={() => openEditDialog(g)}>
+            <Pencil />
+          </Button>
+          <Button kind="icon" onClick={() => openDeleteDialog(g)}>
+            <Trash2 />
+          </Button>
         </div>
       )
     }
@@ -294,14 +280,21 @@ export function GlaeubigerPage() {
     <PageLayout
       title={appConfig.ui.page_titles.creditors}
       actions={
-        <Button
-          icon={<HandCoins />}
-          iconOnly
-          variant="transparent"
-          size="btn"
-          onClick={() => setCreateDialogOpen(true)}
-          title={appConfig.ui.dialog_titles.new_creditor}
-        />
+        <Button kind="icon" onClick={() => setCreateDialogOpen(true)}>
+          <div style={{ position: 'relative', display: 'inline-flex' }}>
+            <HandCoins style={{ transform: 'rotate(180deg) scaleX(-1)' }} />
+            <Plus
+              style={{
+                position: 'absolute',
+                bottom: '-4px',
+                right: '-8px',
+                width: '12px',
+                height: '12px'
+              }}
+              strokeWidth={3}
+            />
+          </div>
+        </Button>
       }
     >
       <div className="space-y-4">
@@ -328,7 +321,7 @@ export function GlaeubigerPage() {
           actions={
             <>
               <Button
-                variant="secondary"
+                kind="rect"
                 onClick={() => {
                   setCreateDialogOpen(false);
                   resetForm();
@@ -385,7 +378,7 @@ export function GlaeubigerPage() {
           actions={
             <>
               <Button
-                variant="secondary"
+                kind="rect"
                 onClick={() => {
                   setEditDialogOpen(false);
                   setSelectedGlaeubiger(null);
@@ -442,7 +435,7 @@ export function GlaeubigerPage() {
           actions={
             <>
               <Button
-                variant="secondary"
+                kind="rect"
                 onClick={() => {
                   setDeleteDialogOpen(false);
                   setSelectedGlaeubiger(null);
@@ -450,7 +443,7 @@ export function GlaeubigerPage() {
               >
                 {appConfig.ui.buttons.cancel}
               </Button>
-              <Button variant="danger" onClick={handleDelete}>
+              <Button kind="rect" onClick={handleDelete}>
                 {appConfig.ui.buttons.delete}
               </Button>
             </>
@@ -473,7 +466,7 @@ export function GlaeubigerPage() {
           actions={
             <>
               <Button
-                variant="secondary"
+                kind="rect"
                 onClick={() => {
                   setZahlungDialogOpen(false);
                   setSelectedGlaeubiger(null);
@@ -528,31 +521,34 @@ export function GlaeubigerPage() {
         >
           {zahlungsHistorie.length > 0 ? (
             <div className="space-y-2 max-h-[60vh] overflow-y-auto">
-              {zahlungsHistorie.map((item, idx) => (
-                <div key={idx} className="p-3 bg-neutral-800 rounded border border-neutral-700">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <p className="text-sm text-neutral-400">{formatDate(item.datum)}</p>
-                      <p className="text-lg font-semibold text-neutral-50">{formatCurrency(item.betrag)}</p>
+              {zahlungsHistorie.map((item: unknown, idx: number) => {
+                const payment = item as Record<string, unknown>;
+                return (
+                  <div key={idx} className="p-3 bg-neutral-800 rounded border border-neutral-700">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <p className="text-sm text-neutral-400">{formatDate(String(payment.datum))}</p>
+                        <p className="text-lg font-semibold text-neutral-50">{formatCurrency(Number(payment.betrag))}</p>
+                      </div>
+                      <Badge
+                        variant={
+                          payment.status === 'bezahlt'
+                            ? 'success'
+                            : payment.status === 'teilbezahlt'
+                              ? 'warning'
+                              : 'error'
+                        }
+                      >
+                        {payment.status === 'bezahlt'
+                          ? appConfig.ui.status.paid
+                          : payment.status === 'teilbezahlt'
+                            ? appConfig.ui.status.partial
+                            : appConfig.ui.status.open}
+                      </Badge>
                     </div>
-                    <Badge
-                      variant={
-                        item.status === 'bezahlt'
-                          ? 'success'
-                          : item.status === 'teilbezahlt'
-                            ? 'warning'
-                            : 'error'
-                      }
-                    >
-                      {item.status === 'bezahlt'
-                        ? appConfig.ui.status.paid
-                        : item.status === 'teilbezahlt'
-                          ? appConfig.ui.status.partial
-                          : appConfig.ui.status.open}
-                    </Badge>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <p className="text-neutral-400 text-sm text-center py-4">{appConfig.ui.empty_states.no_history}</p>

@@ -1,22 +1,25 @@
 /**
  * @file        SettingsPage.tsx
  * @description Einstellungen Seite mit Admin User Management
- * @version     1.2.0
+ * @version     1.4.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-10 16:32:47 CET
+ * @updated     2026-01-11 03:06:28 CET
  * @author      Akki Scholze
  *
  * @changelog
- *   1.2.0 - 2026-01-10 - Inline-Styles entfernt, Tailwind mit theme.colors
+ *   1.4.0 - 2026-01-11 - Fixed: floating promises + type signatures
+ *   1.3.0 - 2026-01-11 - P1: useApi Hook integriert, window.fetch entfernt
  *   1.1.0 - 2026-01-10 - UI-Components (Button, Select) statt Hardcoded Tailwind
  *   1.0.0 - 2026-01-08 - Admin User Management implementiert
  *   0.1.0 - 2026-01-07 - Initial placeholder
  */
 
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
+import { useApi } from '@/hooks';
 
 interface User {
   id: string;
@@ -34,6 +37,8 @@ interface Kunde {
 }
 
 export function SettingsPage() {
+  const api = useApi();
+  const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
   const [kunden, setKunden] = useState<Kunde[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,18 +47,23 @@ export function SettingsPage() {
 
   // Load users and kunden
   useEffect(() => {
-    Promise.all([fetch('/api/admin/users').then((r) => r.json()), fetch('/api/kunden').then((r) => r.json())])
-      .then(([usersData, kundenData]) => {
-        setUsers(usersData);
-        setKunden(kundenData);
-      })
-      .catch((err) => {
-        setMessage({ text: `Fehler beim Laden: ${err.message}`, type: 'error' });
-      })
-      .finally(() => setLoading(false));
-  }, []);
+    const load = async (): Promise<void> => {
+      const [usersResult, kundenResult] = await Promise.all([api.fetch<User[]>('/api/admin/users'), api.fetch<Kunde[]>('/api/kunden')]);
+      if (usersResult.success && usersResult.data) {
+        setUsers(usersResult.data);
+      }
+      if (kundenResult.success && kundenResult.data) {
+        setKunden(kundenResult.data);
+      }
+      setLoading(false);
+    };
+    load().catch((err: unknown) => {
+      setMessage({ text: `Fehler beim Laden: ${err instanceof Error ? err.message : 'Unknown error'}`, type: 'error' });
+      setLoading(false);
+    });
+  }, [api]);
 
-  const handleApprove = async (userId: string) => {
+  const handleApprove = async (userId: string): Promise<void> => {
     const kundeId = selectedKunde[userId];
     if (!kundeId) {
       setMessage({ text: 'Bitte Kunde auswählen', type: 'error' });
@@ -61,13 +71,12 @@ export function SettingsPage() {
     }
 
     try {
-      const res = await fetch(`/api/admin/users/${userId}/approve`, {
+      const result = await api.fetch(`/api/admin/users/${userId}/approve`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ kunde_id: kundeId })
       });
 
-      if (!res.ok) throw new Error(await res.text());
+      if (!result.success) throw new Error(result.error || 'Approval failed');
 
       setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, status: 'active', kunde_id: kundeId } : u)));
       setMessage({ text: 'User aktiviert', type: 'success' });
@@ -76,12 +85,12 @@ export function SettingsPage() {
     }
   };
 
-  const handleDisable = async (userId: string) => {
+  const handleDisable = async (userId: string): Promise<void> => {
     if (!confirm('User wirklich deaktivieren?')) return;
 
     try {
-      const res = await fetch(`/api/admin/users/${userId}/disable`, { method: 'POST' });
-      if (!res.ok) throw new Error(await res.text());
+      const result = await api.fetch(`/api/admin/users/${userId}/disable`, { method: 'POST' });
+      if (!result.success) throw new Error(result.error || 'Disable failed');
 
       setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, status: 'disabled' } : u)));
       setMessage({ text: 'User deaktiviert', type: 'success' });
@@ -110,9 +119,7 @@ export function SettingsPage() {
         {message && (
           <div
             className={`p-4 rounded-md ${
-              message.type === 'error'
-                ? 'bg-red-100 text-red-900'
-                : 'bg-green-100 text-green-900'
+              message.type === 'error' ? 'bg-red-100 text-red-900' : 'bg-green-100 text-green-900'
             }`}
           >
             {message.text}
@@ -147,10 +154,7 @@ export function SettingsPage() {
                       ]}
                       className="flex-1"
                     />
-                    <Button
-                      onClick={() => handleApprove(user.id)}
-                      variant="success"
-                    >
+                    <Button kind="rect" intent="save" onClick={() => handleApprove(user.id)}>
                       Freischalten
                     </Button>
                   </div>
@@ -178,10 +182,7 @@ export function SettingsPage() {
                       </p>
                     </div>
                     {user.role !== 'admin' && (
-                      <Button
-                        onClick={() => handleDisable(user.id)}
-                        variant="danger"
-                      >
+                      <Button kind="rect" onClick={() => handleDisable(user.id)}>
                         Deaktivieren
                       </Button>
                     )}
@@ -206,6 +207,15 @@ export function SettingsPage() {
             </div>
           </section>
         )}
+
+        {/* Setup Section */}
+        <section>
+          <h2 className="text-xl font-bold mb-4">Admin Setup</h2>
+          <p className="text-neutral-600 mb-4">Zugang zur initialen System-Konfiguration</p>
+          <Button kind="rect" onClick={() => navigate('/setup')}>
+            Zur Setup-Seite
+          </Button>
+        </section>
       </div>
     </PageLayout>
   );

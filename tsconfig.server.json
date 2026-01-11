@@ -1,9 +1,10 @@
 {
   "_meta": {
-    "version": "0.3.0",
+    "version": "0.4.0",
     "created": "2026-01-06 19:14:38 CET",
-    "updated": "2026-01-08 00:12:00 CET",
+    "updated": "2026-01-11 14:45:00 CET",
     "changelog": [
+      "0.4.0 - 2026-01-11 - src/config removed (strict backend/frontend separation, use server/config)",
       "0.3.0 - 2026-01-08 - src/config wieder added (server baut src/config mit), @/* paths",
       "0.2.0 - 2026-01-08 - Server verwendet kompilierte src/config (nicht selbst kompilieren)",
       "0.1.2 - 2026-01-07 - baseUrl + paths added (für @/* imports)",
@@ -25,5 +26,5 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["server", "src/config", "src/types"]
+  "include": ["server/**/*.ts", "src/types"]
 }

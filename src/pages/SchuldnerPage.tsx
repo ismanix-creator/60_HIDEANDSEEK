@@ -1,12 +1,13 @@
 /**
  * @file        SchuldnerPage.tsx
  * @description Schuldner-Verwaltung Seite
- * @version     1.0.0
+ * @version     1.1.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-10 18:30:00 CET
+ * @updated     2026-01-11 03:06:28 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   1.1.0 - 2026-01-11 - Fixed: floating promises + type signatures
  *   1.0.0 - 2026-01-10 18:30:00 - TASK 2.5: Zahlungshistorie Dialog vollständig implementiert (Final)
  *   0.8.1 - 2026-01-10 04:26:18 - TASK 2.4.2: Header-Update (keine inline-styles vorhanden, bereits bereinigt in 0.7.1)
  *   0.7.1 - 2026-01-10 02:15:23 - TASK 2.4.2: Inline Monospace-Style entfernt (betrag Spalte)
@@ -29,7 +30,7 @@ import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { useApi } from '@/hooks/useApi';
 import { formatCurrency, formatDate } from '@/utils/format';
-import { Wallet, Pencil, Trash2, DollarSign } from 'lucide-react';
+import { HandCoins, Pencil, Trash2, DollarSign, Plus } from 'lucide-react';
 import type { Schuldner, CreateSchuldnerRequest, UpdateSchuldnerRequest, ZahlungRequest } from '@/types';
 import { appConfig } from '@/config';
 
@@ -46,7 +47,7 @@ export function SchuldnerPage() {
   const [zahlungDialogOpen, setZahlungDialogOpen] = useState(false);
   const [historieDialogOpen, setHistorieDialogOpen] = useState(false);
   const [selectedSchuldner, setSelectedSchuldner] = useState<Schuldner | null>(null);
-  const [zahlungsHistorie, setZahlungsHistorie] = useState<any[]>([]);
+  const [zahlungsHistorie, setZahlungsHistorie] = useState<unknown[]>([]);
 
   // Form States
   const [formData, setFormData] = useState<CreateSchuldnerRequest>({
@@ -59,7 +60,7 @@ export function SchuldnerPage() {
   const [zahlungbetrag, setZahlungbetrag] = useState<number>(0);
 
   // Load Schuldner
-  const loadSchuldner = async () => {
+  const loadSchuldner = async (): Promise<void> => {
     setLoading(true);
     setError(null);
     try {
@@ -77,11 +78,11 @@ export function SchuldnerPage() {
   };
 
   useEffect(() => {
-    loadSchuldner();
+    void loadSchuldner();
   }, []);
 
   // Create Schuldner
-  const handleCreate = async () => {
+  const handleCreate = async (): Promise<void> => {
     try {
       const result = await api.fetch('/api/schuldner', {
         method: 'POST',
@@ -100,7 +101,7 @@ export function SchuldnerPage() {
   };
 
   // Update Schuldner
-  const handleUpdate = async () => {
+  const handleUpdate = async (): Promise<void> => {
     if (!selectedSchuldner) return;
     try {
       const updateData: UpdateSchuldnerRequest = {
@@ -125,7 +126,7 @@ export function SchuldnerPage() {
   };
 
   // Delete Schuldner
-  const handleDelete = async () => {
+  const handleDelete = async (): Promise<void> => {
     if (!selectedSchuldner) return;
     try {
       const result = await api.fetch(`/api/schuldner/${selectedSchuldner.id}`, {
@@ -144,7 +145,7 @@ export function SchuldnerPage() {
   };
 
   // Zahlung verbuchen
-  const handleZahlung = async () => {
+  const handleZahlung = async (): Promise<void> => {
     if (!selectedSchuldner) return;
     try {
       const zahlungData: ZahlungRequest = { betrag: zahlungbetrag };
@@ -200,11 +201,11 @@ export function SchuldnerPage() {
   };
 
   // Load Zahlungshistorie
-  const loadZahlungsHistorie = async (schuldnerId: number) => {
+  const loadZahlungsHistorie = async (schuldnerId: number): Promise<void> => {
     try {
       const result = await api.fetch(`/api/schuldner/${schuldnerId}/zahlungen`);
       if (result.success && result.data) {
-        setZahlungsHistorie(result.data as any[]);
+        setZahlungsHistorie(result.data as unknown[]);
       } else {
         setZahlungsHistorie([]);
       }
@@ -261,31 +262,16 @@ export function SchuldnerPage() {
       render: (s: Schuldner) => (
         <div className="flex gap-2">
           {s.offen > 0 && (
-            <Button
-              icon={<DollarSign />}
-              iconOnly
-              size="icon"
-              variant="success"
-              onClick={() => openZahlungDialog(s)}
-              title={appConfig.ui.tooltips.record}
-            />
+            <Button kind="icon" onClick={() => openZahlungDialog(s)}>
+              <DollarSign />
+            </Button>
           )}
-          <Button
-            icon={<Pencil />}
-            iconOnly
-            size="icon"
-            variant="secondary"
-            onClick={() => openEditDialog(s)}
-            title={appConfig.ui.tooltips.edit}
-          />
-          <Button
-            icon={<Trash2 />}
-            iconOnly
-            size="icon"
-            variant="danger"
-            onClick={() => openDeleteDialog(s)}
-            title={appConfig.ui.tooltips.delete}
-          />
+          <Button kind="icon" onClick={() => openEditDialog(s)}>
+            <Pencil />
+          </Button>
+          <Button kind="icon" onClick={() => openDeleteDialog(s)}>
+            <Trash2 />
+          </Button>
         </div>
       )
     }
@@ -295,14 +281,21 @@ export function SchuldnerPage() {
     <PageLayout
       title={appConfig.ui.page_titles.debtors}
       actions={
-        <Button
-          icon={<Wallet />}
-          iconOnly
-          variant="transparent"
-          size="btn"
-          onClick={() => setCreateDialogOpen(true)}
-          title={appConfig.ui.tooltips.create}
-        />
+        <Button kind="icon" onClick={() => setCreateDialogOpen(true)}>
+          <div style={{ position: 'relative', display: 'inline-flex' }}>
+            <HandCoins />
+            <Plus
+              style={{
+                position: 'absolute',
+                bottom: '-4px',
+                right: '-8px',
+                width: '12px',
+                height: '12px'
+              }}
+              strokeWidth={3}
+            />
+          </div>
+        </Button>
       }
     >
       <div className="space-y-4">
@@ -329,7 +322,7 @@ export function SchuldnerPage() {
           actions={
             <>
               <Button
-                variant="secondary"
+                kind="rect"
                 onClick={() => {
                   setCreateDialogOpen(false);
                   resetForm();
@@ -386,7 +379,7 @@ export function SchuldnerPage() {
           actions={
             <>
               <Button
-                variant="secondary"
+                kind="rect"
                 onClick={() => {
                   setEditDialogOpen(false);
                   setSelectedSchuldner(null);
@@ -443,7 +436,7 @@ export function SchuldnerPage() {
           actions={
             <>
               <Button
-                variant="secondary"
+                kind="rect"
                 onClick={() => {
                   setDeleteDialogOpen(false);
                   setSelectedSchuldner(null);
@@ -451,7 +444,7 @@ export function SchuldnerPage() {
               >
                 {appConfig.ui.buttons.cancel}
               </Button>
-              <Button variant="danger" onClick={handleDelete}>
+              <Button kind="rect" onClick={handleDelete}>
                 {appConfig.ui.buttons.delete}
               </Button>
             </>
@@ -474,7 +467,7 @@ export function SchuldnerPage() {
           actions={
             <>
               <Button
-                variant="secondary"
+                kind="rect"
                 onClick={() => {
                   setZahlungDialogOpen(false);
                   setSelectedSchuldner(null);
@@ -529,31 +522,34 @@ export function SchuldnerPage() {
         >
           {zahlungsHistorie.length > 0 ? (
             <div className="space-y-2 max-h-[60vh] overflow-y-auto">
-              {zahlungsHistorie.map((item, idx) => (
-                <div key={idx} className="p-3 bg-neutral-800 rounded border border-neutral-700">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <p className="text-sm text-neutral-400">{formatDate(item.datum)}</p>
-                      <p className="text-lg font-semibold text-neutral-50">{formatCurrency(item.betrag)}</p>
+              {zahlungsHistorie.map((item: unknown, idx: number) => {
+                const payment = item as Record<string, unknown>;
+                return (
+                  <div key={idx} className="p-3 bg-neutral-800 rounded border border-neutral-700">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <p className="text-sm text-neutral-400">{formatDate(String(payment.datum))}</p>
+                        <p className="text-lg font-semibold text-neutral-50">{formatCurrency(Number(payment.betrag))}</p>
+                      </div>
+                      <Badge
+                        variant={
+                          payment.status === 'bezahlt'
+                            ? 'success'
+                            : payment.status === 'teilbezahlt'
+                              ? 'warning'
+                              : 'error'
+                        }
+                      >
+                        {payment.status === 'bezahlt'
+                          ? appConfig.ui.status.paid
+                          : payment.status === 'teilbezahlt'
+                            ? appConfig.ui.status.partial
+                            : appConfig.ui.status.open}
+                      </Badge>
                     </div>
-                    <Badge
-                      variant={
-                        item.status === 'bezahlt'
-                          ? 'success'
-                          : item.status === 'teilbezahlt'
-                            ? 'warning'
-                            : 'error'
-                      }
-                    >
-                      {item.status === 'bezahlt'
-                        ? appConfig.ui.status.paid
-                        : item.status === 'teilbezahlt'
-                          ? appConfig.ui.status.partial
-                          : appConfig.ui.status.open}
-                    </Badge>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <p className="text-neutral-400 text-sm text-center py-4">{appConfig.ui.empty_states.no_history}</p>

@@ -1,12 +1,13 @@
 /**
  * @file        KundenPage.tsx
  * @description Kunden-Verwaltung mit Übersicht und Detail-Ansicht
- * @version     0.6.0
+ * @version     0.7.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-10 12:45:00 CET
+ * @updated     2026-01-11 03:06:28 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.7.0 - 2026-01-11 - Fixed: floating promises + unsafe-any errors
  *   0.6.0 - 2026-01-10 12:45:00 - Alle verbleibenden Hardcodes durch appConfig.ui.* ersetzt (Phase 2.3.2 Final)
  *   0.5.0 - 2026-01-09 21:51:40 - 3 verbleibende Hardcodes durch appConfig.ui.labels.* ersetzt (Phase 2.3.B)
  *   0.4.0 - 2026-01-09 21:00:20 - 38 UI-Text-Hardcodes entfernt (Phase 2.3.2)
@@ -89,7 +90,7 @@ export function KundenPage() {
   const [selectedPosten, setSelectedPosten] = useState<KundenPostenMat | KundenPostenNoMat | null>(null);
 
   // Load Kunden Overview
-  const loadKunden = async () => {
+  const loadKunden = async (): Promise<void> => {
     setLoading(true);
     setError(null);
     try {
@@ -136,7 +137,7 @@ export function KundenPage() {
   };
 
   // Load Kunde Detail
-  const loadKundeDetail = async (kundeId: number) => {
+  const loadKundeDetail = async (kundeId: number): Promise<void> => {
     setDetailLoading(true);
     setError(null);
     try {
@@ -163,12 +164,12 @@ export function KundenPage() {
   };
 
   useEffect(() => {
-    loadKunden();
+    void loadKunden();
   }, []);
 
   useEffect(() => {
     if (view === 'detail' && selectedKunde) {
-      loadKundeDetail(selectedKunde.id);
+      void loadKundeDetail(selectedKunde.id);
     }
   }, [view, selectedKunde]);
 
@@ -187,7 +188,7 @@ export function KundenPage() {
   };
 
   // Create Kunde
-  const handleCreateKunde = async () => {
+  const handleCreateKunde = async (): Promise<void> => {
     try {
       const result = await api.fetch('/api/kunden', {
         method: 'POST',
@@ -206,7 +207,7 @@ export function KundenPage() {
   };
 
   // Update Kunde
-  const handleUpdateKunde = async () => {
+  const handleUpdateKunde = async (): Promise<void> => {
     if (!selectedKunde) return;
     try {
       const updateData: UpdateKundeRequest = {
@@ -233,7 +234,7 @@ export function KundenPage() {
   };
 
   // Delete Kunde
-  const handleDeleteKunde = async () => {
+  const handleDeleteKunde = async (): Promise<void> => {
     if (!selectedKunde) return;
     try {
       const result = await api.fetch(`/api/kunden/${selectedKunde.id}`, {
@@ -255,7 +256,7 @@ export function KundenPage() {
   };
 
   // Create Posten Mat
-  const handleCreatePostenMat = async () => {
+  const handleCreatePostenMat = async (): Promise<void> => {
     if (!selectedKunde) return;
     try {
       const data = { ...postenMatFormData, kunde_id: selectedKunde.id };
@@ -276,7 +277,7 @@ export function KundenPage() {
   };
 
   // Create Posten NoMat
-  const handleCreatePostenNoMat = async () => {
+  const handleCreatePostenNoMat = async (): Promise<void> => {
     if (!selectedKunde) return;
     try {
       const data = { ...postenNoMatFormData, kunde_id: selectedKunde.id };
@@ -297,7 +298,7 @@ export function KundenPage() {
   };
 
   // Zahlung verbuchen
-  const handleZahlung = async () => {
+  const handleZahlung = async (): Promise<void> => {
     if (!selectedPosten) return;
     try {
       const zahlungData: ZahlungRequest = { betrag: zahlungbetrag };
@@ -380,30 +381,26 @@ export function KundenPage() {
       render: (k: KundeWithSummary) => (
         <div className="flex gap-2">
           <Button
-            icon={<Pencil />}
-            iconOnly
-            size="icon"
-            variant="secondary"
+            kind="icon"
             onClick={() => {
               setView('detail');
               setSelectedKunde(k);
               setKundeFormData({ name: k.name });
               setEditKundeDialogOpen(true);
             }}
-            title={appConfig.ui.tooltips.edit}
-          />
+          >
+            <Pencil />
+          </Button>
           <Button
-            icon={<Trash2 />}
-            iconOnly
-            size="icon"
-            variant="danger"
+            kind="icon"
             onClick={() => {
               setView('detail');
               setSelectedKunde(k);
               setDeleteKundeDialogOpen(true);
             }}
-            title={appConfig.ui.tooltips.delete}
-          />
+          >
+            <Trash2 />
+          </Button>
         </div>
       )
     }
@@ -443,14 +440,9 @@ export function KundenPage() {
       render: (p: KundenPostenMat) => (
         <div className="flex gap-2">
           {p.offen > 0 && (
-            <Button
-              icon={<DollarSign />}
-              iconOnly
-              size="icon"
-              variant="success"
-              onClick={() => openZahlungDialog(p, 'mat')}
-              title={appConfig.ui.tooltips.payment}
-            />
+            <Button kind="icon" onClick={() => openZahlungDialog(p, 'mat')}>
+              <DollarSign />
+            </Button>
           )}
         </div>
       )
@@ -482,14 +474,9 @@ export function KundenPage() {
       render: (p: KundenPostenNoMat) => (
         <div className="flex gap-2">
           {p.offen > 0 && (
-            <Button
-              icon={<DollarSign />}
-              iconOnly
-              size="icon"
-              variant="success"
-              onClick={() => openZahlungDialog(p, 'nomat')}
-              title={appConfig.ui.tooltips.payment}
-            />
+            <Button kind="icon" onClick={() => openZahlungDialog(p, 'nomat')}>
+              <DollarSign />
+            </Button>
           )}
         </div>
       )
@@ -502,14 +489,9 @@ export function KundenPage() {
       <PageLayout
         title={appConfig.ui.page_titles.customers}
         actions={
-          <Button
-            icon={<UserPlus />}
-            iconOnly
-            variant="transparent"
-            size="btn"
-            onClick={() => setCreateKundeDialogOpen(true)}
-            title={appConfig.ui.dialog_titles.new_customer}
-          />
+          <Button kind="icon" onClick={() => setCreateKundeDialogOpen(true)}>
+            <UserPlus />
+          </Button>
         }
       >
         <div className="space-y-4">
@@ -536,7 +518,7 @@ export function KundenPage() {
             actions={
               <>
                 <Button
-                  variant="secondary"
+                  kind="rect"
                   onClick={() => {
                     setCreateKundeDialogOpen(false);
                     setKundeFormData({ name: '' });
@@ -566,14 +548,14 @@ export function KundenPage() {
         {/* Header */}
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <Button variant="secondary" onClick={handleBackToOverview}>
+            <Button kind="rect" onClick={handleBackToOverview}>
               ← {appConfig.ui.buttons.cancel}
             </Button>
             <h2 className="text-2xl font-semibold text-neutral-50">{selectedKunde?.name}</h2>
           </div>
           <div className="flex gap-2">
             <Button
-              variant="secondary"
+              kind="rect"
               onClick={() => {
                 if (selectedKunde) {
                   setKundeFormData({ name: selectedKunde.name });
@@ -583,7 +565,7 @@ export function KundenPage() {
             >
               {appConfig.ui.buttons.edit}
             </Button>
-            <Button variant="danger" onClick={() => setDeleteKundeDialogOpen(true)}>
+            <Button kind="rect" onClick={() => setDeleteKundeDialogOpen(true)}>
               {appConfig.ui.buttons.delete}
             </Button>
           </div>
@@ -638,7 +620,7 @@ export function KundenPage() {
           actions={
             <>
               <Button
-                variant="secondary"
+                kind="rect"
                 onClick={() => {
                   setEditKundeDialogOpen(false);
                   setKundeFormData({ name: '' });
@@ -664,10 +646,10 @@ export function KundenPage() {
           title={appConfig.ui.dialog_titles.delete_customer}
           actions={
             <>
-              <Button variant="secondary" onClick={() => setDeleteKundeDialogOpen(false)}>
+              <Button kind="rect" onClick={() => setDeleteKundeDialogOpen(false)}>
                 {appConfig.ui.buttons.cancel}
               </Button>
-              <Button variant="danger" onClick={handleDeleteKunde}>
+              <Button kind="rect" onClick={handleDeleteKunde}>
                 {appConfig.ui.buttons.delete}
               </Button>
             </>
@@ -689,7 +671,7 @@ export function KundenPage() {
           actions={
             <>
               <Button
-                variant="secondary"
+                kind="rect"
                 onClick={() => {
                   setCreatePostenMatDialogOpen(false);
                   resetPostenMatForm();
@@ -747,7 +729,7 @@ export function KundenPage() {
           actions={
             <>
               <Button
-                variant="secondary"
+                kind="rect"
                 onClick={() => {
                   setCreatePostenNoMatDialogOpen(false);
                   resetPostenNoMatForm();
@@ -800,7 +782,7 @@ export function KundenPage() {
           actions={
             <>
               <Button
-                variant="secondary"
+                kind="rect"
                 onClick={() => {
                   setZahlungDialogOpen(false);
                   setSelectedPosten(null);

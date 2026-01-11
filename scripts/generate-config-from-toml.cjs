@@ -1,12 +1,13 @@
 /**
  * @file        generate-config-from-toml.cjs
  * @description Generiert config-from-toml.ts aus config.toml
- * @version     0.1.0
+ * @version     0.2.0
  * @created     2026-01-06 19:14:38 CET
- * @updated     2026-01-06 19:14:38 CET
+ * @updated     2026-01-11 14:35:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.2.0 - 2026-01-11 14:35:00 CET - Updated header comments to reflect config.schema.ts 2.0.0 changes (removed nested objects)
  *   0.1.0 - 2026-01-06 - Initial scaffold
  */
 
@@ -20,7 +21,18 @@ const outputPath = path.resolve(__dirname, '..', 'src', 'config', 'generated', '
 const raw = fs.readFileSync(configPath, 'utf-8');
 const parsed = toml.parse(raw);
 
-const header = `/**\n * @file        config-from-toml.ts\n * @description Generated config from config.toml (do not edit)\n * @version     0.1.0\n * @created     2026-01-06 19:14:38 CET\n * @updated     2026-01-06 19:14:38 CET\n * @author      Akki Scholze\n */\n\n`;
+// Dynamische Zeitstempel
+const now = new Date();
+const timestamp = now.toISOString().replace('T', ' ').split('.')[0] + ' CET';
+
+const header = `/**
+ * @file        config-from-toml.ts
+ * @description Generated config from config.toml (do not edit)
+ * @version     2.5.0
+ * @created     2026-01-06 19:14:38 CET
+ * @updated     ${timestamp}
+ * @author      Akki Scholze
+ */\n\n`;
 
 const body = `export const configFromToml = ${JSON.stringify(parsed, null, 2)} as const;\n`;
 

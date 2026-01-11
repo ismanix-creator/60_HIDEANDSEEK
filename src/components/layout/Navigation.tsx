@@ -1,12 +1,14 @@
 /**
  * @file        Navigation.tsx
  * @description Haupt-Navigation - Responsive (ohne Auth)
- * @version     0.10.0
+ * @version     0.10.2
  * @created     2025-12-11 01:05:00 CET
- * @updated     2026-01-07 01:36:51 CET
+ * @updated     2026-01-11 13:30:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.10.2 - 2026-01-11 - Fix: async onClick handlers → wrap in arrow function
+ *   0.10.1 - 2026-01-11 - Fix: colorsConfig.primary undefined → blue[600]
  *   0.10.0 - 2026-01-07 - Ohne Auth: useAuth entfernt, alle Nav-Items sichtbar
  *   0.9.0 - 2025-12-14 - Auth-Integration: Logout-Button, Settings-Link, rollenbasierte Navigation
  *   0.8.0 - 2025-12-14 - Responsive: Top-Bar (Desktop) / Bottom-Bar (Mobile)
@@ -24,7 +26,7 @@
 // ═══════════════════════════════════════════════════════
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Package, Users, ArrowDownCircle, ArrowUpCircle, Settings, UserCog, LogIn, LogOut } from 'lucide-react';
+import { Package, Users, HandCoins, Settings, UserCog, LogIn, LogOut } from 'lucide-react';
 import type { NavItem } from '@/types/ui.types';
 import { appConfig, navigationConfig } from '@/config';
 import { useResponsive } from '@/hooks/useResponsive';
@@ -39,8 +41,7 @@ const iconsConfig = appConfig.theme.icons;
 const iconMap: Record<string, React.ElementType> = {
   package: Package,
   users: Users,
-  'arrow-down-circle': ArrowDownCircle,
-  'arrow-up-circle': ArrowUpCircle,
+  'hand-coins': HandCoins,
   settings: Settings,
   'user-cog': UserCog,
   'log-in': LogIn,
@@ -124,7 +125,7 @@ export function Navigation() {
     padding: isMobile ? appConfig.theme.spacing.xs : appConfig.theme.spacing.sm,
     textDecoration: 'none',
     transition: 'background-color 0.15s ease, transform 0.15s ease',
-    backgroundColor: isHovered ? colorsConfig.neutral[200] : 'transparent',
+    backgroundColor: isHovered ? colorsConfig.gray[200] : 'transparent',
     color: isActive ? colorsConfig.text.primary : colorsConfig.text.secondary,
     transform: !isMobile && isHovered ? 'scale(1.05)' : 'scale(1)',
     minHeight: isMobile ? `${appConfig.theme.responsive.touchMinSize}px` : undefined,
@@ -135,7 +136,7 @@ export function Navigation() {
   const getIconContainerStyle = (isActive: boolean): React.CSSProperties => ({
     padding: isMobile ? appConfig.theme.spacing.xs : appConfig.theme.spacing.sm,
     borderRadius: appConfig.theme.spacing.sm,
-    backgroundColor: isActive ? colorsConfig.primary[600] : 'transparent',
+    backgroundColor: isActive ? colorsConfig.blue[600] : 'transparent',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'
@@ -161,7 +162,7 @@ export function Navigation() {
               return (
                 <button
                   key={item.key}
-                  onClick={handleLogout}
+                  onClick={() => void handleLogout()}
                   title={item.label}
                   style={getNavLinkStyle(false, isHovered)}
                 >
@@ -181,7 +182,15 @@ export function Navigation() {
               >
                 {({ isActive }) => (
                   <div style={getIconContainerStyle(isActive)}>
-                    {Icon && <Icon style={{ height: iconSize, width: iconSize }} />}
+                    {Icon && (
+                      <Icon
+                        style={{
+                          height: iconSize,
+                          width: iconSize,
+                          transform: item.key === 'glaeubiger' ? 'rotate(180deg) scaleX(-1)' : undefined
+                        }}
+                      />
+                    )}
                   </div>
                 )}
               </NavLink>
@@ -208,7 +217,7 @@ export function Navigation() {
             return (
               <button
                 key={item.key}
-                onClick={handleLogout}
+                onClick={() => void handleLogout()}
                 title={item.label}
                 style={getNavLinkStyle(false, isHovered)}
                 onMouseEnter={() => setHoveredKey(item.key)}
@@ -232,7 +241,15 @@ export function Navigation() {
             >
               {({ isActive }) => (
                 <div style={getIconContainerStyle(isActive)}>
-                  {Icon && <Icon style={{ height: iconSize, width: iconSize }} />}
+                  {Icon && (
+                    <Icon
+                      style={{
+                        height: iconSize,
+                        width: iconSize,
+                        transform: item.key === 'glaeubiger' ? 'rotate(180deg) scaleX(-1)' : undefined
+                      }}
+                    />
+                  )}
                 </div>
               )}
             </NavLink>

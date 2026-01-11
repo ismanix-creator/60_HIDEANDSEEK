@@ -52,7 +52,7 @@ describe('Dialog Component', () => {
           <div>Dialog Content</div>
         </Dialog>
       );
-      
+
       expect(screen.getByText('Test Dialog')).toBeInTheDocument();
       expect(screen.getByText('Dialog Content')).toBeInTheDocument();
     });
@@ -64,7 +64,7 @@ describe('Dialog Component', () => {
           <div>Dialog Content</div>
         </Dialog>
       );
-      
+
       expect(screen.queryByText('Test Dialog')).not.toBeInTheDocument();
       expect(screen.queryByText('Dialog Content')).not.toBeInTheDocument();
     });
@@ -76,7 +76,7 @@ describe('Dialog Component', () => {
           <div>Content</div>
         </Dialog>
       );
-      
+
       expect(screen.getByText('Custom Title')).toBeInTheDocument();
     });
 
@@ -88,7 +88,7 @@ describe('Dialog Component', () => {
           <div>Child Content 2</div>
         </Dialog>
       );
-      
+
       expect(screen.getByText('Child Content 1')).toBeInTheDocument();
       expect(screen.getByText('Child Content 2')).toBeInTheDocument();
     });
@@ -100,10 +100,10 @@ describe('Dialog Component', () => {
           <div>Content</div>
         </Dialog>
       );
-      
+
       // Close button has X icon
-      const closeButton = container.querySelector('button[aria-label="Schließen"]') || 
-                          container.querySelector('button svg');
+      const closeButton =
+        container.querySelector('button[aria-label="Schließen"]') || container.querySelector('button svg');
       expect(closeButton).toBeInTheDocument();
     });
 
@@ -114,7 +114,7 @@ describe('Dialog Component', () => {
           <div>Content</div>
         </Dialog>
       );
-      
+
       // Dialog container should have custom class
       expect(container.querySelector('.custom-dialog')).toBeInTheDocument();
     });
@@ -128,14 +128,14 @@ describe('Dialog Component', () => {
           <div>Content</div>
         </Dialog>
       );
-      
+
       // Find and click close button (X icon)
       const closeButtons = container.querySelectorAll('button');
-      const closeButton = Array.from(closeButtons).find(btn => 
-        btn.querySelector('svg') && btn.getAttribute('aria-label') === 'Schließen' ||
-        btn.querySelector('svg')
+      const closeButton = Array.from(closeButtons).find(
+        (btn) =>
+          (btn.querySelector('svg') && btn.getAttribute('aria-label') === 'Schließen') || btn.querySelector('svg')
       );
-      
+
       if (closeButton) {
         fireEvent.click(closeButton);
         expect(handleClose).toHaveBeenCalledTimes(1);
@@ -151,10 +151,10 @@ describe('Dialog Component', () => {
           <div>Content</div>
         </Dialog>
       );
-      
+
       // Simulate Escape key
       fireEvent.keyDown(document, { key: 'Escape', code: 'Escape' });
-      
+
       expect(handleClose).toHaveBeenCalled();
     });
 
@@ -165,10 +165,10 @@ describe('Dialog Component', () => {
           <div>Content</div>
         </Dialog>
       );
-      
+
       const content = screen.getByText('Content');
       fireEvent.click(content);
-      
+
       // Should not close when clicking content
       expect(handleClose).not.toHaveBeenCalled();
     });
@@ -178,11 +178,11 @@ describe('Dialog Component', () => {
     it('should render action buttons when provided', () => {
       const handleClose = vi.fn();
       const handleSave = vi.fn();
-      
+
       render(
-        <Dialog 
-          open={true} 
-          onClose={handleClose} 
+        <Dialog
+          open={true}
+          onClose={handleClose}
           title="Test"
           actions={
             <>
@@ -194,7 +194,7 @@ describe('Dialog Component', () => {
           <div>Content</div>
         </Dialog>
       );
-      
+
       expect(screen.getByText('Speichern')).toBeInTheDocument();
       expect(screen.getByText('Abbrechen')).toBeInTheDocument();
     });
@@ -202,11 +202,11 @@ describe('Dialog Component', () => {
     it('should call action handlers when action buttons are clicked', () => {
       const handleClose = vi.fn();
       const handleSave = vi.fn();
-      
+
       render(
-        <Dialog 
-          open={true} 
-          onClose={handleClose} 
+        <Dialog
+          open={true}
+          onClose={handleClose}
           title="Test"
           actions={
             <>
@@ -218,10 +218,10 @@ describe('Dialog Component', () => {
           <div>Content</div>
         </Dialog>
       );
-      
+
       fireEvent.click(screen.getByText('Speichern'));
       expect(handleSave).toHaveBeenCalledTimes(1);
-      
+
       fireEvent.click(screen.getByText('Abbrechen'));
       expect(handleClose).toHaveBeenCalledTimes(1);
     });
@@ -237,7 +237,7 @@ describe('Dialog Component', () => {
           <div>Content</div>
         </Dialog>
       );
-      
+
       // Dialog container should apply config styles
       const dialogContainer = screen.getByText('Test').closest('div');
       expect(dialogContainer).toBeTruthy();
@@ -252,7 +252,7 @@ describe('Dialog Component', () => {
           <div>Content</div>
         </Dialog>
       );
-      
+
       expect(document.body.style.overflow).toBe('hidden');
     });
 
@@ -263,15 +263,15 @@ describe('Dialog Component', () => {
           <div>Content</div>
         </Dialog>
       );
-      
+
       expect(document.body.style.overflow).toBe('hidden');
-      
+
       rerender(
         <Dialog open={false} onClose={handleClose} title="Test">
           <div>Content</div>
         </Dialog>
       );
-      
+
       // Body scroll should be restored
       expect(document.body.style.overflow).toBe('');
     });

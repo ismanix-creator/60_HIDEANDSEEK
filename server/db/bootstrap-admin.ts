@@ -1,23 +1,25 @@
 /**
  * @file        bootstrap-admin.ts
  * @description Bootstrap admin user seeding (idempotent)
- * @version     1.0.0
+ * @version     1.1.1
  * @created     2026-01-08 01:35:00 CET
- * @updated     2026-01-08 01:35:00 CET
+ * @updated     2026-01-11 15:30:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   1.1.1 - 2026-01-11 - Fixed tsconfig to recognize all server files
+ *   1.1.0 - 2026-01-11 - Removed src/config import (use backendConfig)
  *   1.0.0 - 2026-01-08 - Initial bootstrap seed
  */
 
 import type { Database } from 'better-sqlite3';
-import { appConfig } from '../../src/config/index.js';
+import { backendConfig } from '../config/app.config.js';
 
 /**
  * Ensure bootstrap admin user exists (idempotent)
  */
 export function ensureBootstrapAdmin(db: Database): void {
-  const bootstrapId = appConfig.auth.admin_bootstrap_user_id;
+  const bootstrapId = backendConfig.auth.admin_bootstrap_user_id;
 
   // Check if already exists
   const stmt = db.prepare('SELECT id FROM users WHERE id = ?');

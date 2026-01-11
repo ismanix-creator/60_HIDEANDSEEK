@@ -1,15 +1,16 @@
 /**
  * @file        index.css
  * @description Globale CSS-Styles mit Tailwind-Directives (SEASIDE Dark Theme)
- * @version     0.2.0
+ * @version     0.3.0
  * @created     2025-12-11 00:57:02 CET
- * @updated     2025-12-15 22:27:01 CET
+ * @updated     2026-01-11 16:45:00 CET
  * @author      Akki Scholze
  *
  * @note
  *   Dark Theme basierend auf 99_SEASIDE_WERBETECHNIK
  *
  * @changelog
+ *   0.3.0 - 2026-01-11 16:45:00 CET - Added CSS-based button hover/active states via CSS Custom Properties
  *   0.2.0 - 2025-12-11 - SEASIDE Dark Theme integriert
  *   0.1.0 - 2025-12-11 - Initial version
  */
@@ -192,3 +193,13 @@ button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* CSS-based hover/active states via CSS Custom Properties */
+button:not(:disabled):hover {
+  background-color: var(--button-hover-bg, inherit);
+}
+
+button:not(:disabled):active {
+  background-color: var(--button-active-bg, inherit);
+}
+

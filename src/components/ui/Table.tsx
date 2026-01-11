@@ -1,9 +1,9 @@
 /**
  * @file        Table.tsx
  * @description Wiederverwendbare Table-Komponente (SEASIDE Dark Theme) - Responsive
- * @version     0.9.0
+ * @version     0.10.0
  * @created     2025-12-11 01:05:00 CET
- * @updated     2026-01-10 20:18:00 CET
+ * @updated     2026-01-11 03:06:28 CET
  * @author      Akki Scholze
  *
  * @props
@@ -14,6 +14,7 @@
  *   emptyMessage - Nachricht bei leerer Tabelle
  *
  * @changelog
+ *   0.10.0 - 2026-01-11 - Fixed: unused parameter warning in formatCellValue (renamed column to _column)
  *   0.9.0 - 2026-01-10 - Row-Click auf Aktions-Spalte (letzte) ausgeschlossen (Task 2.4.3)
  *   0.8.0 - 2026-01-09 - Direct appConfig.theme.* access (spacingConfig eliminiert)
  *   0.7.0 - 2026-01-09 - Import auf appConfig.components.table umgestellt (Phase 2.2.7)
@@ -87,14 +88,14 @@ function toDisplayString(value: unknown): string {
   return '';
 }
 
-function formatCellValue<T>(item: T, column: TableColumn<T>): React.ReactNode {
-  if (column.render) {
-    return column.render(item);
+function formatCellValue<T>(item: T, _column: TableColumn<T>): React.ReactNode {
+  if (_column.render) {
+    return _column.render(item);
   }
 
-  const value = getCellValue(item, column.key);
+  const value = getCellValue(item, _column.key);
 
-  switch (column.type) {
+  switch (_column.type) {
     case 'currency':
       return formatCurrency(value as number);
     case 'date':
@@ -147,12 +148,12 @@ function getAlign<T>(_column: TableColumn<T>): CSSProperties['textAlign'] {
   return 'center';
 }
 
-function getFontFamily<T>(column: TableColumn<T>): string {
-  const typeConfig = column.type ? tableConfig.cellTypes[column.type as keyof typeof tableConfig.cellTypes] : undefined;
-  const base = tableConfig.cell.fontFamily;
-  const fontFamilyOverride = typeConfig && 'fontFamily' in typeConfig ? typeConfig.fontFamily : undefined;
-  const chosen: string = fontFamilyOverride || (base as string | undefined) || 'inherit';
-  if (chosen === 'mono') return "'JetBrains Mono', monospace";
+function getFontFamily<T>(_column: TableColumn<T>): string {
+  // Use global font family from table config (no type-specific cellTypes config)
+  const base = tableConfig.cellFontFamily;
+  const chosen: string = (base as string | undefined) || 'inherit';
+  if (chosen === 'base') return appConfig.theme.typography.fontFamily.base;
+  if (chosen === 'mono') return appConfig.theme.typography.fontFamily.mono;
   return chosen;
 }
 
@@ -175,7 +176,7 @@ export function Table<T>({
     // Fallback: loading nicht in config.toml definiert
     const loadingPaddingY = '2rem';
     const spinnerSize = 32;
-    const spinnerColor = colorsConfig.primary?.['500'] || '#3b82f6';
+    const spinnerColor = colorsConfig.blue?.[500] || '#3b82f6';
 
     return (
       <div
@@ -204,7 +205,7 @@ export function Table<T>({
   if (data.length === 0) {
     // Fallback: empty nicht in config.toml definiert
     const emptyPaddingY = '2rem';
-    const emptyColor = colorsConfig.neutral?.['500'] || '#6b7280';
+    const emptyColor = colorsConfig.gray?.[500] || '#6b7280';
     const emptyText = 'Keine Daten vorhanden';
 
     return (
@@ -222,12 +223,12 @@ export function Table<T>({
   }
 
   const lastColumnIndex = columns.length - 1;
-  const headerPaddingY = spacingBase(tableConfig.header.paddingY);
-  const headerPaddingX = spacingBase(tableConfig.header.paddingX);
-  const headerEdgePadding = getEdgePadding(tableConfig.header.paddingX);
-  const cellPaddingY = spacingBase(tableConfig.cell.paddingY);
-  const cellPaddingX = spacingBase(tableConfig.cell.paddingX);
-  const cellEdgePadding = getEdgePadding(tableConfig.cell.paddingX);
+  const headerPaddingY = spacingBase(tableConfig.cellPaddingY);
+  const headerPaddingX = spacingBase(tableConfig.cellPaddingX);
+  const headerEdgePadding = getEdgePadding(tableConfig.cellPaddingX);
+  const cellPaddingY = spacingBase(tableConfig.cellPaddingY);
+  const cellPaddingX = spacingBase(tableConfig.cellPaddingX);
+  const cellEdgePadding = getEdgePadding(tableConfig.cellPaddingX);
 
   // ═══════════════════════════════════════════════════════
   // RESPONSIVE STYLES
@@ -239,10 +240,10 @@ export function Table<T>({
     overflowY: 'hidden', // Border-Farbe konsistent an borderRadius-Ecken
     // Mobile: Smooth Scroll für iOS
     WebkitOverflowScrolling: isMobile ? 'touch' : undefined,
-    backgroundColor: getColorValue(tableConfig.wrapper.bg),
-    borderRadius: tableConfig.wrapper.borderRadius,
-    border: `2px solid ${getColorValue(tableConfig.wrapper.border)}`,
-    boxShadow: tableConfig.wrapper.shadow || 'none'
+    backgroundColor: getColorValue(tableConfig.wrapperBg),
+    borderRadius: tableConfig.wrapperBorderRadius,
+    border: `2px solid ${getColorValue(tableConfig.wrapperBorder)}`,
+    boxShadow: appConfig.theme.shadows[tableConfig.wrapperShadow as keyof typeof appConfig.theme.shadows] || 'none'
   };
 
   // Table Style
@@ -260,7 +261,7 @@ export function Table<T>({
         <thead>
           <tr
             style={{
-              backgroundColor: getColorValue(tableConfig.header.bg)
+              backgroundColor: getColorValue(tableConfig.headerBg)
             }}
           >
             {columns.map((column, columnIndex) => {
@@ -279,13 +280,13 @@ export function Table<T>({
                     paddingRight: isLast ? headerEdgePadding : headerPaddingX,
                     textAlign: getAlign(column),
                     fontSize:
-                      typographyConfig.fontSize[tableConfig.header.fontSize as keyof typeof typographyConfig.fontSize],
+                      typographyConfig.fontSize[tableConfig.headerFontSize as keyof typeof typographyConfig.fontSize],
                     fontWeight:
                       typographyConfig.fontWeight[
-                        tableConfig.header.fontWeight as keyof typeof typographyConfig.fontWeight
+                        tableConfig.headerFontWeight as keyof typeof typographyConfig.fontWeight
                       ],
-                    color: getColorValue(tableConfig.header.text),
-                    borderBottom: `2px solid ${getColorValue(tableConfig.row.borderBottom)}`
+                    color: getColorValue(tableConfig.headerText),
+                    borderBottom: `2px solid ${getColorValue(tableConfig.rowBorderBottom)}`
                   }}
                 >
                   {column.label}
@@ -302,22 +303,22 @@ export function Table<T>({
                 key={rowKey}
                 style={{
                   backgroundColor:
-                    rowIndex % 2 === 0 ? getColorValue(tableConfig.row.bgOdd) : getColorValue(tableConfig.row.bgEven),
+                    rowIndex % 2 === 0 ? getColorValue(tableConfig.rowBgOdd) : getColorValue(tableConfig.rowBgEven),
                   cursor: onRowClick ? 'pointer' : 'default',
-                  borderBottom: `2px solid ${getColorValue(tableConfig.row.borderBottom)}`,
+                  borderBottom: `2px solid ${getColorValue(tableConfig.rowBorderBottom)}`,
                   ...(rowStyle ? rowStyle(item) : undefined)
                 }}
                 onMouseEnter={(e) => {
                   // Hover nur auf Desktop
                   if (onRowClick && !isMobile) {
-                    e.currentTarget.style.backgroundColor = getColorValue(tableConfig.row.bgHover);
+                    e.currentTarget.style.backgroundColor = getColorValue(tableConfig.rowBgHover);
                   }
                 }}
                 onMouseLeave={(e) => {
                   // Hover nur auf Desktop
                   if (!isMobile) {
                     e.currentTarget.style.backgroundColor =
-                      rowIndex % 2 === 0 ? getColorValue(tableConfig.row.bgOdd) : getColorValue(tableConfig.row.bgEven);
+                      rowIndex % 2 === 0 ? getColorValue(tableConfig.rowBgOdd) : getColorValue(tableConfig.rowBgEven);
                   }
                 }}
               >
@@ -343,10 +344,8 @@ export function Table<T>({
                         paddingRight: isLast ? cellEdgePadding : cellPaddingX,
                         textAlign: getAlign(column),
                         fontSize:
-                          typographyConfig.fontSize[
-                            tableConfig.cell.fontSize as keyof typeof typographyConfig.fontSize
-                          ],
-                        color: getColorValue(tableConfig.cell.text),
+                          typographyConfig.fontSize[tableConfig.cellFontSize as keyof typeof typographyConfig.fontSize],
+                        color: getColorValue(tableConfig.cellText),
                         fontFamily: getFontFamily(column)
                       }}
                     >

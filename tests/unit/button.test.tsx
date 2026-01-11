@@ -1,12 +1,14 @@
 /**
  * @file        tests/unit/button.test.tsx
  * @description Unit-Tests für Button-Komponente (Config-Loading + Rendering)
- * @version     1.0.0
+ * @version     1.1.0
  * @created     2026-01-10 01:15:00 CET
- * @updated     2026-01-10 01:15:00 CET
+ * @updated     2026-01-11 03:20:00 CET
  * @author      Akki Scholze (QA-Test-Entwickler)
  *
  * @changelog
+ *   1.1.0 - 2026-01-11 03:20:00 CET - Updated for new Button API (kind | intent, no variant/size)
+ *   1.0.1 - 2026-01-11 01:58:38 CET - Updated for 'sizes.btn' → 'sizes.rect' rename
  *   1.0.0 - 2026-01-10 - Initial test suite (Phase 4.1)
  */
 
@@ -19,63 +21,61 @@ describe('Button Component', () => {
   describe('Config Loading', () => {
     it('should load button config from appConfig', () => {
       expect(appConfig.components.button).toBeDefined();
-      expect(appConfig.components.button.variants).toBeDefined();
+      expect(appConfig.components.button.variant).toBeDefined();
       expect(appConfig.components.button.sizes).toBeDefined();
     });
 
-    it('should have all required variants in config', () => {
-      const variants = ['primary', 'secondary', 'outline', 'ghost', 'danger', 'success', 'warning', 'transparent'];
-      variants.forEach((variant) => {
-        expect(appConfig.components.button.variants).toHaveProperty(variant);
+    it('should have all required variant kinds in config', () => {
+      const kinds = ['rect', 'icon'];
+      kinds.forEach((kind) => {
+        expect(appConfig.components.button.variant).toHaveProperty(kind);
       });
     });
 
     it('should have all required sizes in config', () => {
-      const sizes = ['xs', 'sm', 'md', 'lg', 'xl'];
+      const sizes = ['rect', 'icon'];
       sizes.forEach((size) => {
         expect(appConfig.components.button.sizes).toHaveProperty(size);
       });
     });
 
     it('should have variant-specific styles in config', () => {
-      const primaryVariant = appConfig.components.button.variants.primary;
-      expect(primaryVariant.bg).toBeDefined();
-      expect(primaryVariant.text).toBeDefined();
-      expect(primaryVariant.hover).toBeDefined();
+      const rectVariant = appConfig.components.button.variant.rect;
+      expect(rectVariant.bg).toBeDefined();
+      expect(rectVariant.text).toBeDefined();
+      expect(rectVariant.hoverBg).toBeDefined();
+      expect(rectVariant.saveBg).toBeDefined();
+      expect(rectVariant.saveHoverBg).toBeDefined();
     });
 
     it('should have size-specific styles in config', () => {
-      const mdSize = appConfig.components.button.sizes.md;
-      expect(mdSize.height).toBeDefined();
-      expect(mdSize.padding).toBeDefined();
-      expect(mdSize.fontSize).toBeDefined();
+      const rectSize = appConfig.components.button.sizes.rect;
+      expect(rectSize.height).toBeDefined();
+      expect(rectSize.padding).toBeDefined();
+      expect(rectSize.fontSize).toBeDefined();
     });
   });
 
   describe('Rendering', () => {
-    it('should render with default variant (primary)', () => {
+    it('should render with default kind="rect" and intent="default"', () => {
       render(<Button>Test Button</Button>);
       expect(screen.getByRole('button', { name: 'Test Button' })).toBeInTheDocument();
     });
 
-    it('should render secondary variant', () => {
-      render(<Button variant="secondary">Secondary</Button>);
-      const button = screen.getByRole('button', { name: 'Secondary' });
+    it('should render with kind="rect" and intent="save"', () => {
+      render(
+        <Button kind="rect" intent="save">
+          Save
+        </Button>
+      );
+      const button = screen.getByRole('button', { name: 'Save' });
       expect(button).toBeInTheDocument();
     });
 
-    it('should render danger variant', () => {
-      render(<Button variant="danger">Danger</Button>);
-      const button = screen.getByRole('button', { name: 'Danger' });
+    it('should render with kind="icon"', () => {
+      render(<Button kind="icon">📦</Button>);
+      const button = screen.getByRole('button', { name: '📦' });
       expect(button).toBeInTheDocument();
-    });
-
-    it('should render with different sizes', () => {
-      const { rerender } = render(<Button size="sm">Small</Button>);
-      expect(screen.getByRole('button', { name: 'Small' })).toBeInTheDocument();
-
-      rerender(<Button size="lg">Large</Button>);
-      expect(screen.getByRole('button', { name: 'Large' })).toBeInTheDocument();
     });
 
     it('should apply custom className', () => {
@@ -83,32 +83,40 @@ describe('Button Component', () => {
       const button = screen.getByRole('button', { name: 'Test' });
       expect(button).toHaveClass('custom-class');
     });
-
-    it('should apply custom title attribute', () => {
-      render(<Button title="Custom Title">Test</Button>);
-      const button = screen.getByRole('button', { name: 'Test' });
-      expect(button).toHaveAttribute('title', 'Custom Title');
-    });
   });
 
   describe('Interactivity', () => {
     it('should call onClick handler when clicked', () => {
       const handleClick = vi.fn();
       render(<Button onClick={handleClick}>Click Me</Button>);
-      
+
       const button = screen.getByRole('button', { name: 'Click Me' });
       fireEvent.click(button);
-      
+
       expect(handleClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('should pass MouseEvent to onClick handler', () => {
+      const handleClick = vi.fn();
+      render(<Button onClick={handleClick}>Click Me</Button>);
+
+      const button = screen.getByRole('button', { name: 'Click Me' });
+      fireEvent.click(button);
+
+      expect(handleClick).toHaveBeenCalledWith(expect.any(Object));
     });
 
     it('should not call onClick when disabled', () => {
       const handleClick = vi.fn();
-      render(<Button onClick={handleClick} disabled>Disabled</Button>);
-      
+      render(
+        <Button onClick={handleClick} disabled>
+          Disabled
+        </Button>
+      );
+
       const button = screen.getByRole('button', { name: 'Disabled' });
       fireEvent.click(button);
-      
+
       expect(handleClick).not.toHaveBeenCalled();
     });
 
@@ -126,42 +134,69 @@ describe('Button Component', () => {
   });
 
   describe('States', () => {
-    it('should show loading state', () => {
+    it('should show loading state with spinner', () => {
       const { container } = render(<Button loading>Loading</Button>);
-      // Loading indicator (Loader2 icon) should be present as SVG
+      // Loading indicator (SVG spinner) should be present
       const loadingIcon = container.querySelector('svg');
       expect(loadingIcon).not.toBeNull();
     });
   });
 
   describe('Styling', () => {
-    it('should apply config-driven height for size', () => {
-      const { container } = render(<Button size="md">Test</Button>);
+    it('should apply config-driven height for rect kind', () => {
+      const { container } = render(<Button kind="rect">Test</Button>);
       const button = container.firstChild as HTMLElement;
-      const expectedHeight = appConfig.components.button.sizes.md.height;
+      const expectedHeight = appConfig.components.button.sizes.rect.height;
       expect(button.style.height).toBe(expectedHeight);
     });
 
-    it('should apply variant-specific background color', () => {
-      const { container } = render(<Button variant="primary">Test</Button>);
+    it('should apply intent-specific colors (save)', () => {
+      const { container } = render(<Button intent="save">Save</Button>);
       const button = container.firstChild as HTMLElement;
-      // Config-driven color should be applied
+      // save intent should use saveBg color
       expect(button.style.backgroundColor).toBeTruthy();
     });
-  });
 
-  describe('Icon Support', () => {
-    it('should render icon-only button', () => {
-      render(<Button iconOnly>Icon</Button>);
-      
-      const button = screen.getByRole('button', { name: 'Icon' });
-      expect(button).toBeInTheDocument();
-    });
-
-    it('should render button with fullWidth style', () => {
+    it('should apply fullWidth style', () => {
       const { container } = render(<Button fullWidth>Full Width</Button>);
       const button = container.firstChild as HTMLElement;
       expect(button.style.width).toBe('100%');
+    });
+  });
+
+  describe('Icon Kind', () => {
+    it('should render icon-only button without text padding', () => {
+      render(<Button kind="icon">📦</Button>);
+      const button = screen.getByRole('button', { name: '📦' });
+      expect(button).toBeInTheDocument();
+    });
+
+    it('should have appropriate icon size from config', () => {
+      const { container } = render(<Button kind="icon">📦</Button>);
+      const button = container.firstChild as HTMLElement;
+      // Icon buttons should have width/height set from config
+      expect(button.style.width).toBeTruthy();
+      expect(button.style.height).toBeTruthy();
+    });
+  });
+
+  describe('Type Attribute', () => {
+    it('should default to type="button"', () => {
+      render(<Button>Test</Button>);
+      const button = screen.getByRole('button', { name: 'Test' });
+      expect(button).toHaveAttribute('type', 'button');
+    });
+
+    it('should support type="submit"', () => {
+      render(<Button type="submit">Submit</Button>);
+      const button = screen.getByRole('button', { name: 'Submit' });
+      expect(button).toHaveAttribute('type', 'submit');
+    });
+
+    it('should support type="reset"', () => {
+      render(<Button type="reset">Reset</Button>);
+      const button = screen.getByRole('button', { name: 'Reset' });
+      expect(button).toHaveAttribute('type', 'reset');
     });
   });
 });

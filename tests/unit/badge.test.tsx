@@ -74,7 +74,11 @@ describe('Badge Component', () => {
     });
 
     it('should render without icon when showIcon is false', () => {
-      const { container } = render(<Badge variant="success" showIcon={false}>No Icon</Badge>);
+      const { container } = render(
+        <Badge variant="success" showIcon={false}>
+          No Icon
+        </Badge>
+      );
       const icon = container.querySelector('svg');
       expect(icon).not.toBeInTheDocument();
     });

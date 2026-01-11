@@ -1,15 +1,16 @@
 /**
  * @file        AuthContext.tsx
  * @description Auth Context für localStorage-basierte Session
- * @version     0.2.0
+ * @version     0.3.0
  * @created     2026-01-07 01:18:02 CET
- * @updated     2026-01-08 02:10:00 CET
+ * @updated     2026-01-11 03:06:28 CET
  * @author      Akki Scholze
  *
  * @note        Auth ist implementiert aber standardmäßig deaktiviert (auth.enabled=false)
  *              Login/Logout über localStorage persistence
  *
  * @changelog
+ *   0.3.0 - 2026-01-11 - Fixed: unsafe-argument error in setUser (type annotation added)
  *   0.2.0 - 2026-01-08 - localStorage-basierte Auth implementiert (TODOs entfernt)
  *   0.1.0 - 2026-01-07 - Dummy implementation (kein Login aktiv)
  */
@@ -52,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const login = async (username: string, password: string) => {
+  const login = async (username: string, password: string): Promise<void> => {
     const res = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -63,19 +64,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error(await res.text());
     }
 
-    const data = await res.json();
+    const data = (await res.json()) as Record<string, unknown>;
+    const role: 'admin' | 'user' = data.role === 'admin' || data.role === 'user' ? data.role : 'user';
     const sessionUser: User = {
-      id: data.userId,
-      username: data.username,
-      role: data.role,
-      kundeId: data.kundeId
+      id: String(data.userId),
+      username: String(data.username),
+      role,
+      kundeId: data.kundeId as number | null
     };
 
     setUser(sessionUser);
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(sessionUser));
   };
 
-  const logout = async () => {
+  const logout = (): void => {
     setUser(null);
     localStorage.removeItem(AUTH_STORAGE_KEY);
   };

@@ -44,6 +44,29 @@ export interface TableProps<T = unknown> {
 // BUTTON TYPES
 // ═══════════════════════════════════════════════════════
 
+export type ButtonKind = 'rect' | 'icon';
+export type ButtonIntent = 'default' | 'save' | 'danger';
+
+/**
+ * New Button API (v0.13.0+)
+ *
+ * Legacy props (variant, size, iconOnly, icon, activeBorder, style, title) are intentionally
+ * NOT included in ButtonProps to enforce TypeScript errors on old usage.
+ * This ensures migration to new API.
+ */
+export interface ButtonProps {
+  kind?: ButtonKind; // Default: 'rect'
+  intent?: ButtonIntent; // Default: 'default' (only for kind='rect')
+  disabled?: boolean;
+  loading?: boolean;
+  fullWidth?: boolean;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  children?: ReactNode;
+  className?: string;
+  type?: 'button' | 'submit' | 'reset';
+}
+
+// Legacy type aliases (for reference, will be deprecated)
 export type ButtonVariant =
   | 'primary'
   | 'secondary'
@@ -53,25 +76,7 @@ export type ButtonVariant =
   | 'success'
   | 'warning'
   | 'transparent';
-
 export type ButtonSize = 'btn' | 'icon';
-
-export interface ButtonProps {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  disabled?: boolean;
-  loading?: boolean;
-  fullWidth?: boolean;
-  activeBorder?: boolean;
-  onClick?: () => void;
-  children?: ReactNode;
-  className?: string;
-  type?: 'button' | 'submit' | 'reset';
-  style?: CSSProperties;
-  title?: string;
-  icon?: ReactNode;
-  iconOnly?: boolean;
-}
 
 // ═══════════════════════════════════════════════════════
 // BADGE TYPES

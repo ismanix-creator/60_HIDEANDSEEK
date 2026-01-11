@@ -1,9 +1,9 @@
 /**
  * @file        Input.tsx
  * @description Wiederverwendbare Input-Komponente (SEASIDE Dark Theme) - Responsive
- * @version     0.6.0
+ * @version     0.7.0
  * @created     2025-12-11 01:05:00 CET
- * @updated     2026-01-09 23:18:50 CET
+ * @updated     2026-01-11 00:35:00 CET
  * @author      Akki Scholze
  *
  * @props
@@ -15,6 +15,7 @@
  *   disabled - Deaktiviert das Input
  *
  * @changelog
+ *   0.7.0 - 2026-01-11 - Fixed for new config structure: token resolver for color references
  *   0.6.0 - 2026-01-09 - Direct appConfig.theme.* access (breakpointsConfig eliminiert)
  *   0.5.0 - 2026-01-09 - Import auf appConfig.components.input umgestellt (Phase 2.2.6)
  *   0.4.0 - 2025-12-14 - Responsive: Touch-Targets 44px, fontSize 16px für iOS Zoom
@@ -47,6 +48,26 @@ function isColorLookup(value: unknown): value is ColorLookup {
 }
 
 function getColorValue(colorPath: string): string {
+  // Token-Refs: {blue.500}, {red.500} etc. sind STRINGS
+  if (colorPath.startsWith('{') && colorPath.endsWith('}')) {
+    const tokenPath = colorPath.slice(1, -1); // Remove { }
+    const parts = tokenPath.split('.');
+    if (parts.length === 2) {
+      const [category, shade] = parts;
+      const entry = Object.entries(colorsConfig).find(([key]) => key === category);
+      if (entry) {
+        const colorCategory: unknown = entry[1];
+        if (isColorLookup(colorCategory)) {
+          const shadeValue = colorCategory[shade];
+          if (typeof shadeValue === 'string') {
+            return shadeValue;
+          }
+        }
+      }
+    }
+    return colorPath;
+  }
+
   const parts = colorPath.split('.');
   if (parts.length === 2) {
     const [category, shade] = parts;
@@ -87,14 +108,12 @@ export function Input({
   const { isMobile } = useResponsive();
 
   // Password type is handled separately (not in config, but valid HTML input type)
-  // Other types are looked up in config, defaulting to 'text' if not found
-  const configType = type === 'password' ? 'text' : type;
-  const typeConfig = inputConfig.types[configType] || inputConfig.types.text;
+  // Use base config for all input types (no type-specific config)
   const state = error ? 'error' : disabled ? 'disabled' : 'default';
   const stateStyles = inputConfig.states[state];
 
   // Determine actual HTML input type
-  const inputType = type === 'currency' ? 'number' : type === 'password' ? 'password' : typeConfig.type;
+  const inputType = type === 'currency' ? 'number' : type === 'password' ? 'password' : type;
 
   // Touch-Target Minimum (44px) auf Mobile
   const minTouchTarget = `${appConfig.theme.responsive.touchMinSize}px`;
@@ -117,7 +136,7 @@ export function Input({
           }}
         >
           {label}
-          {required && <span style={{ color: colorsConfig.error[500], marginLeft: '0.25rem' }}>*</span>}
+          {required && <span style={{ color: colorsConfig.red[500], marginLeft: '0.25rem' }}>*</span>}
         </label>
       )}
       <input
@@ -153,14 +172,14 @@ export function Input({
           borderStyle: 'solid',
           borderColor: getColorValue(stateStyles.border || 'ui.border'),
           backgroundColor: getColorValue(stateStyles.bg || inputConfig.base.bg),
-          color: colorsConfig.text.primary,
+          color: getColorValue(stateStyles.text || inputConfig.base.text),
           // Mobile: fontSize 16px verhindert iOS Auto-Zoom
           fontSize: fontSize,
           // Touch-freundlich
           WebkitTapHighlightColor: isMobile ? 'transparent' : undefined
         }}
       />
-      {error && <span style={{ fontSize: '0.75rem', color: colorsConfig.error[500] }}>{error}</span>}
+      {error && <span style={{ fontSize: '0.75rem', color: colorsConfig.red[500] }}>{error}</span>}
     </div>
   );
 }

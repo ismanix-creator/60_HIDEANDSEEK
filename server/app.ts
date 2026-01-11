@@ -1,12 +1,14 @@
 /**
  * @file        app.ts
  * @description Hono App Setup
- * @version     0.2.2
+ * @version     0.3.1
  * @created     2026-01-06 22:20:42 CET
- * @updated     2026-01-08 16:55:00 CET
+ * @updated     2026-01-11 15:30:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.3.1 - 2026-01-11 - Fixed any-type assertion in error handler
+ *   0.3.0 - 2026-01-11 - Removed src/config import (strict backend/frontend separation, use backendConfig)
  *   0.2.2 - 2026-01-08 - CORS Allowed Origins aus config.toml (inkl. ngrok) abgeleitet
  *   0.2.1 - 2026-01-08 - CORS middleware hinzugefügt
  *   0.2.0 - 2026-01-08 - Auth/Admin routes added
@@ -19,7 +21,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import type Database from 'better-sqlite3';
 import type { AppEnv } from './types.js';
-import { appConfig } from '../src/config/index.js';
+import { backendConfig } from './config/app.config.js';
 import { materialRoutes } from './routes/material.routes.js';
 import { kundenRoutes } from './routes/kunden.routes.js';
 import { kundenPostenMatRoutes } from './routes/kunden-posten-mat.routes.js';
@@ -34,24 +36,24 @@ import { toErrorResponse } from './errors.js';
 export function createApp(db: Database.Database) {
   const app = new Hono<AppEnv>();
 
-  // CORS: aus config.toml abgeleitete erlaubte Origins (Dev + ngrok)
+  // CORS: erlaubte Origins (localhost + ngrok)
   const allowedOrigins = (() => {
     const origins = new Set<string>();
-    const { client, server } = appConfig;
-    if (client?.port) {
-      origins.add(`http://localhost:${client.port}`);
-      origins.add(`http://127.0.0.1:${client.port}`);
+    const { backendPort, appBaseUrl } = backendConfig.runtime;
+
+    // Localhost mit verschiedenen Ports
+    origins.add(`http://localhost:${backendPort}`);
+    origins.add(`http://127.0.0.1:${backendPort}`);
+
+    // Frontend port (hardcoded, da meist 5173 für Vite)
+    origins.add('http://localhost:5173');
+    origins.add('http://127.0.0.1:5173');
+
+    // App Base URL (falls ngrok oder ähnlich gesetzt)
+    if (appBaseUrl) {
+      origins.add(appBaseUrl);
     }
-    if (client?.apiUrl) {
-      const url = new URL(client.apiUrl);
-      origins.add(`${url.protocol}//${url.host}`);
-    }
-    if (client?.ngrokUrl) {
-      origins.add(client.ngrokUrl);
-    }
-    if (server?.port && server?.host) {
-      origins.add(`http://${server.host}:${server.port}`);
-    }
+
     return Array.from(origins);
   })();
 
