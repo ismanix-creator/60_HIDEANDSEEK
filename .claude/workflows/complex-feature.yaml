@@ -1,0 +1,187 @@
+name: complex-feature
+version: 1.0.0
+description: Workflow für Complex Features mit Breaking-Changes (> 4h, 6-8 Agents)
+
+workflow:
+  complexity: Complex
+  estimated_effort: "> 4h"
+  agents_required: 6-8
+
+steps:
+  - step: 1
+    agent: orchestrator
+    action: analyze_task
+    output: |
+      - Breaking-Change-Risk eingeschätzt
+      - Complexity-Level: Complex
+      - Full-Agent-Chain geplant
+
+  - step: 2
+    agent: architect
+    action: architecture_design
+    input:
+      - User-Anforderung
+      - Codebase-Analysis (via serena)
+      - Breaking-Change-Impact (via find_referencing_symbols)
+    output:
+      - Architecture-Design-Doc (min. 20 Seiten)
+      - Migration-Strategy (Database + Code)
+      - API-Contract-Changes
+      - Config-Schema-Changes
+      - Handoff-Dokumente für alle Agents
+
+  - step: 3
+    agent: orchestrator
+    action: design_review_extended
+    quality_gate: true
+    user_approval: required
+    criteria:
+      - Specs vollständig
+      - Breaking-Changes dokumentiert + justified
+      - Migration-Strategy detailliert
+      - Rollback-Plan vorhanden
+    output:
+      - Design-Review: PASS/FAIL
+      - User-Approval: YES/NO
+
+  - step: 4
+    agent: database_specialist
+    action: schema_migration
+    depends_on: step_3
+    input:
+      - Architect-Handoff
+      - Schema-Changes
+    output:
+      - Migration-Script (scripts/migrate-*.ts)
+      - Rollback-Script
+      - Seed-Data aktualisiert
+      - Migration-Dry-Run: SUCCESS
+
+  - step: 5
+    agent: orchestrator
+    action: migration_dry_run_review
+    quality_gate: true
+    criteria:
+      - Migration erfolgreich auf Test-DB
+      - Rollback getestet
+      - Data-Integrity gesichert
+    output:
+      - Migration-Review: PASS/FAIL
+
+  - step: 6a
+    agent: backend_specialist
+    action: implement_backend
+    parallel_with: step_6b
+    depends_on: step_5
+    input:
+      - Architect-Handoff
+      - Database-Schema (updated)
+    output:
+      - API-Routes (Breaking-Changes)
+      - Service-Layer (Breaking-Changes)
+      - Middleware (neu/geändert)
+
+  - step: 6b
+    agent: frontend_specialist
+    action: implement_frontend
+    parallel_with: step_6a
+    depends_on: step_5
+    input:
+      - Architect-Handoff
+      - API-Contracts
+    output:
+      - Components (Breaking-Changes)
+      - State-Management (Context/Hooks)
+      - Config-Integration
+
+  - step: 7
+    agent: orchestrator
+    action: integration_test
+    quality_gate: true
+    depends_on: [step_6a, step_6b]
+    criteria:
+      - Backend + Frontend integriert
+      - API-Calls funktionieren
+      - Database-Queries korrekt
+    output:
+      - Integration-Test: PASS/FAIL
+
+  - step: 8
+    agent: testing_specialist
+    action: comprehensive_testing
+    depends_on: step_7
+    input:
+      - All Changed-Files
+      - Breaking-Change-Scenarios
+    output:
+      - Unit-Tests (Coverage ≥ 85%)
+      - Integration-Tests (alle API-Endpoints)
+      - E2E-Tests (Happy-Path + Error-Paths + Breaking-Change-Scenarios)
+      - Property-Based-Tests (falls komplexe Business-Logic)
+
+  - step: 9
+    agent: documentation_specialist
+    action: comprehensive_documentation
+    depends_on: step_8
+    input:
+      - Breaking-Changes
+      - Migration-Strategy
+      - Changed-Files
+    output:
+      - Migration-Guide (Schritt-für-Schritt)
+      - README.md (Breaking-Changes-Section)
+      - AGENTS.md (Pattern-Updates)
+      - Changelog (CHANGELOG.md)
+      - JSDoc-Header (alle geänderten Files)
+
+  - step: 10
+    agent: devops_specialist
+    action: deployment_preparation
+    depends_on: step_9
+    input:
+      - Migration-Scripts
+      - Breaking-Changes
+    output:
+      - Deployment-Strategy
+      - Rollback-Plan
+      - Environment-Config (.env.example)
+      - Production-Build getestet
+
+  - step: 11
+    agent: qa_specialist
+    action: security_audit_and_full_review
+    quality_gate: true
+    depends_on: step_10
+    criteria:
+      - All Automated-Checks: PASS
+      - Security-Audit: PASS (JWT-Validation, SQL-Injection-Prevention)
+      - Performance-Test: No Regressions
+      - Test-Coverage ≥ 85%
+      - Documentation: Complete
+      - Migration-Guide: Complete
+    output:
+      - QA-Security-Audit-Report
+
+  - step: 12
+    agent: orchestrator
+    action: final_report_extended
+    output: |
+      - User-Notification: Complex-Feature complete
+      - Breaking-Changes: {Liste}
+      - Migration-Required: YES
+      - Migration-Guide: {Path}
+      - Files changed: {Anzahl}
+      - Tests: {Anzahl} added, all passing
+      - Coverage: {Prozent}%
+      - Quality-Gates: {Anzahl}/{Anzahl} PASS
+      - Deployment-Ready: YES/NO
+
+example_tasks:
+  - "Multi-Tenant-Support mit User-Segmentation"
+  - "Komplettes Authentifizierungs-System"
+  - "Datenbankschema-Migration v1 → v2"
+  - "Microservices-Architektur-Umstellung"
+
+anti_patterns:
+  - "CSV-Export" # → Nutze medium-feature.yaml
+  - "Button-Color-Fix" # → Nutze simple-fix.yaml

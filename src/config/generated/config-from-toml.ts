@@ -3,7 +3,7 @@
  * @description Generated config from config.toml (do not edit)
  * @version     2.5.0
  * @created     2026-01-06 19:14:38 CET
- * @updated     2026-01-11 18:07:19 CET
+ * @updated     2026-01-11 23:51:51 CET
  * @author      Akki Scholze
  */
 
@@ -447,8 +447,8 @@ export const configFromToml = {
       "tertiary": "{gray.500}"
     },
     "ui": {
-      "background": "{black.800}",
-      "backgroundAlt": "{gray.800}",
+      "background": "{gray.800}",
+      "backgroundAlt": "{black.800}",
       "backgroundCard": "{gray.900}",
       "border": "{gray.700}"
     },
@@ -603,7 +603,7 @@ export const configFromToml = {
   "pageHeader": {
     "button": {
       "className": "page-header-button",
-      "fontSize": "32px",
+      "fontSize": "2rem",
       "fontWeight": 700
     }
   },
@@ -644,25 +644,29 @@ export const configFromToml = {
   "layout": {
     "areas": {
       "navigation": {
-        "bg": "{black.900}",
+        "bg": "{ui.background}",
         "border": "{gray.700}",
         "borderWidth": "1px"
       },
       "header": {
-        "bg": "{ui.background}",
+        "bg": "{ui.backgroundAlt}",
         "border": "{ui.border}",
         "borderWidth": "1px"
       },
       "content": {
-        "bg": "{ui.backgroundAlt}",
+        "bg": "{ui.background}",
         "border": "transparent",
         "borderWidth": "0"
       },
       "footer": {
-        "bg": "{black.800}",
-        "border": "{gray.700}",
+        "bg": "{ui.backgroundAlt}",
+        "border": "{ui.border}",
         "borderWidth": "1px",
-        "borderRadius": "0.5rem"
+        "borderRadius": "0.5rem",
+        "height": "auto",
+        "padding": "1rem",
+        "gap": "0.75rem",
+        "gridColumns": 3
       }
     }
   },

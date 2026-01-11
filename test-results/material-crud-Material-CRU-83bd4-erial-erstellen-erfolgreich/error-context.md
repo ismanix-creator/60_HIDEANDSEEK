@@ -2,49 +2,44 @@
 
 ```yaml
 - generic [ref=e3]:
-  - main [ref=e4]:
-    - generic [ref=e6]:
-      - generic [ref=e7]:
-        - generic [ref=e8]:
-          - 'heading "You are about to visit: liana-unrowdy-silva.ngrok-free.dev" [level=3] [ref=e9]':
-            - paragraph [ref=e10]: "You are about to visit:"
-            - paragraph [ref=e11]: liana-unrowdy-silva.ngrok-free.dev
-          - paragraph [ref=e12]: "Website IP: 2a02:8108:4906:b700:6eac:7669:c379:b40a"
-        - list [ref=e13]:
-          - listitem [ref=e14]:
-            - text: This website is served for free through
-            - link "ngrok.com" [ref=e15] [cursor=pointer]:
-              - /url: https://ngrok.com
-            - text: .
-          - listitem [ref=e16]: You should only visit this website if you trust whoever sent the link to you.
-          - listitem [ref=e17]: Be careful about disclosing personal or financial information like passwords, phone numbers, or credit cards.
-        - button "Visit Site" [ref=e20] [cursor=pointer]
-      - generic [ref=e21]:
-        - heading "Are you the developer?" [level=2] [ref=e22]
-        - paragraph [ref=e23]: We display this page to prevent abuse. Visitors to your site will only see it once.
-        - heading "To remove this page:" [level=2] [ref=e24]
-        - list [ref=e25]:
-          - listitem [ref=e26]:
-            - text: Set and send an
-            - code [ref=e27]: ngrok-skip-browser-warning
-            - text: request header with any value.
-          - listitem [ref=e28]:
-            - text: Or, set and send a custom/non-standard browser
-            - code [ref=e29]: User-Agent
-            - text: request header.
-          - listitem [ref=e30]:
-            - text: Or, please
-            - link "upgrade" [ref=e31] [cursor=pointer]:
-              - /url: https://dashboard.ngrok.com/billing
-            - text: to any paid ngrok account.
-        - paragraph [ref=e32]:
-          - img [ref=e33]
-          - text: Learn how ngrok
-          - link "fights abuse" [ref=e39] [cursor=pointer]:
-            - /url: https://ngrok.com/abuse
-  - contentinfo [ref=e40]:
-    - generic [ref=e42]:
-      - text: Powered by
-      - link "ngrok" [ref=e43] [cursor=pointer]:
-        - /url: https://ngrok.com
+  - navigation [ref=e4]:
+    - generic [ref=e5]:
+      - link "Material" [ref=e6] [cursor=pointer]:
+        - /url: /material
+        - img [ref=e8]
+      - link "Kunden" [ref=e12] [cursor=pointer]:
+        - /url: /kunden
+        - img [ref=e14]
+      - link "Schuldner" [ref=e19] [cursor=pointer]:
+        - /url: /schuldner
+        - img [ref=e21]
+      - link "Gläubiger" [ref=e27] [cursor=pointer]:
+        - /url: /glaeubiger
+        - img [ref=e29]
+      - link "Einstellungen" [ref=e35] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e37]
+  - banner [ref=e40]:
+    - heading "Material" [level=1] [ref=e41]
+    - button [ref=e43] [cursor=pointer]:
+      - img [ref=e44]
+  - main [ref=e48]:
+    - table [ref=e51]:
+      - rowgroup [ref=e52]:
+        - row "Datum Bezeichnung Notiz EK/Stück EK Gesamt VK/Stück Menge Bestand Einnahmen Aussenstände Theor. Einnahmen Gewinn Status Aktionen" [ref=e53]:
+          - columnheader "Datum" [ref=e54]
+          - columnheader "Bezeichnung" [ref=e55]
+          - columnheader "Notiz" [ref=e56]
+          - columnheader "EK/Stück" [ref=e57]
+          - columnheader "EK Gesamt" [ref=e58]
+          - columnheader "VK/Stück" [ref=e59]
+          - columnheader "Menge" [ref=e60]
+          - columnheader "Bestand" [ref=e61]
+          - columnheader "Einnahmen" [ref=e62]
+          - columnheader "Aussenstände" [ref=e63]
+          - columnheader "Theor. Einnahmen" [ref=e64]
+          - columnheader "Gewinn" [ref=e65]
+          - columnheader "Status" [ref=e66]
+          - columnheader "Aktionen" [ref=e67]
+      - rowgroup
 ```

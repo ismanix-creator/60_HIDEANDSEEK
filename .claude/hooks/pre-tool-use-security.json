@@ -1,0 +1,38 @@
+{
+  "name": "pre-tool-use-security",
+  "description": "Security-Check und Config-Validation vor Tool-Nutzung",
+  "event": "PreToolUse",
+  "enabled": true,
+  "patterns": [
+    {
+      "name": "hardcoded-values",
+      "pattern": "(const|let)\\s+\\w+\\s*=\\s*['\"](?!import|export|use|from)[^'\"]{10,}['\"]",
+      "action": "warn",
+      "message": "⚠️ Hardcoded Value detected! Use config files instead."
+    },
+    {
+      "name": "sql-injection-risk",
+      "pattern": "\\$\\{.*\\}.*SELECT|INSERT.*\\$\\{",
+      "action": "block",
+      "message": "🛑 SQL-Injection-Risk! Use Prisma/Drizzle instead of raw SQL."
+    },
+    {
+      "name": "console-log",
+      "pattern": "console\\.log\\(",
+      "action": "warn",
+      "message": "⚠️ console.log detected. Use proper logging (winston/pino) for production."
+    },
+    {
+      "name": "any-type",
+      "pattern": ":\\s*any\\b",
+      "action": "warn",
+      "message": "⚠️ TypeScript 'any' type detected. Use specific types for type-safety."
+    },
+    {
+      "name": "todo-comment",
+      "pattern": "//\\s*TODO|//\\s*FIXME",
+      "action": "warn",
+      "message": "⚠️ TODO/FIXME comment detected. Track in TODO.md instead."
+    }
+  ]
+}

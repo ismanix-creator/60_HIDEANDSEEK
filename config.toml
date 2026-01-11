@@ -498,8 +498,8 @@ secondary = "{gray.400}"
 tertiary = "{gray.500}"
 
 [colors.ui]
-background = "{black.800}"
-backgroundAlt = "{gray.800}"
+background = "{gray.800}"
+backgroundAlt = "{black.800}"
 backgroundCard = "{gray.900}"
 border = "{gray.700}"
 
@@ -660,7 +660,7 @@ outline = "none"
 
 [pageHeader.button]
 className = "page-header-button"
-fontSize = "80px"
+fontSize = "2rem"
 fontWeight = 700
 
 # ========================================
@@ -715,28 +715,32 @@ xxl = "1.5rem"
 
 # Navigation Bereich (managed by Navigation.tsx)
 [layout.areas.navigation]
-bg = "{black.900}"
+bg = "{ui.background}"
 border = "{gray.700}"
 borderWidth = "1px"
 
 # Header Bereich (Titel + Actions)
 [layout.areas.header]
-bg = "{ui.background}"
+bg = "{ui.backgroundAlt}"
 border = "{ui.border}"
 borderWidth = "1px"
 
 # Content Bereich (Tabelle, Hauptinhalt)
 [layout.areas.content]
-bg = "{ui.backgroundAlt}"
+bg = "{ui.background}"
 border = "transparent"
 borderWidth = "0"
 
 # Footer Bereich (Infobox unter Tabelle)
 [layout.areas.footer]
-bg = "{black.800}"
-border = "{gray.700}"
+bg = "{ui.backgroundAlt}"
+border = "{ui.border}"
 borderWidth = "1px"
 borderRadius = "0.5rem"
+height = "auto"
+padding = "1rem"
+gap = "0.75rem"
+gridColumns = 3
 
 # ========================================
 # TABLE

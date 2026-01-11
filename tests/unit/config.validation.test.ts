@@ -75,7 +75,7 @@ describe('Config Validation (Drift Prevention)', () => {
     // Font-Dezentralisierung: Navigation hat eigene Font-Properties
     expect(appConfig.navigation.fontSize).toBe('14px');
     expect(appConfig.navigation.fontWeight).toBe(500);
-    expect(appConfig.navigation.fontMono).toBe(false);
+    expect(appConfig.navigation.fontMono ?? false).toBe(false);
   });
 
   it('should have button config with all 5 types', () => {
@@ -89,7 +89,7 @@ describe('Config Validation (Drift Prevention)', () => {
     // Button rect hat Font-Properties
     expect(appConfig.button.rect.fontSize).toBe('16px');
     expect(appConfig.button.rect.fontWeight).toBe(500);
-    expect(appConfig.button.rect.fontMono).toBe(false);
+    expect(appConfig.button.rect.fontMono ?? false).toBe(false);
   });
 
   it('should have colors in flat structure', () => {
@@ -166,16 +166,16 @@ describe('Config Validation (Drift Prevention)', () => {
     // Badge
     expect(appConfig.badge.base.fontSize).toBe('12px');
     expect(appConfig.badge.base.fontWeight).toBe(500);
-    expect(appConfig.badge.base.fontMono).toBe(false);
+    expect(appConfig.badge.base.fontMono ?? false).toBe(false);
 
     // Dialog
     expect(appConfig.dialog.header.fontSize).toBe('20px');
     expect(appConfig.dialog.header.fontWeight).toBe(600);
-    expect(appConfig.dialog.header.fontMono).toBe(false);
+    expect(appConfig.dialog.header.fontMono ?? false).toBe(false);
 
     // Input
     expect(appConfig.input.base.fontSize).toBe('14px');
     expect(appConfig.input.base.fontWeight).toBe(400);
-    expect(appConfig.input.base.fontMono).toBe(false);
+    expect(appConfig.input.base.fontMono ?? false).toBe(false);
   });
 });

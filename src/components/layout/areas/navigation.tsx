@@ -1,25 +1,22 @@
 /**
- * @file        Navigation.tsx
- * @description Haupt-Navigation - Responsive (ohne Auth)
- * @version     0.12.0
- * @created     2025-12-11 01:05:00 CET
- * @updated     2026-01-14 23:45:00 CET
+ * @file        navigation.tsx
+ * @description Navigationsbereich fuer PageLayout (Startpage-ready), rendert Nav-Items inkl. Logout
+ * @version     0.2.0
+ * @created     2026-01-11 16:20:00 CET
+ * @updated     2026-01-11 23:59:00 CET
  * @author      Akki Scholze
  *
  * @changelog
- *   0.12.0 - 2026-01-14 - Migration: Flache Config-Struktur (appConfig.colors, appConfig.button, etc.)
- *   0.11.0 - 2026-01-11 - Code-Cleanup: Redundanzen entfernt, Rendering-Logik konsolidiert
- *   0.10.2 - 2026-01-11 - Fix: async onClick handlers → wrap in arrow function
- *   0.10.1 - 2026-01-11 - Fix: colorsConfig.primary undefined → blue[600]
- *   0.10.0 - 2026-01-07 - Ohne Auth: useAuth entfernt, alle Nav-Items sichtbar
+ *   0.2.0 - 2026-01-11 - Desktop: 6-Spalten-Grid, Padding/Gap/Höhe aus layout.areas.navigation
+ *   0.1.0 - 2026-01-11 - Extraktion aus PageLayout, Navigation-Logik gekapselt
  */
 
+import type { CSSProperties } from 'react';
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Package, Users, HandCoins, Settings, UserCog, LogIn, LogOut } from 'lucide-react';
 import type { NavItem } from '@/types/ui.types';
 import { appConfig, navigationConfig } from '@/config';
-import { useResponsive } from '@/hooks/useResponsive';
 import { useAuth } from '@/context/AuthContext';
 
 const colorsConfig = appConfig.colors;
@@ -35,9 +32,20 @@ const iconMap: Record<string, React.ElementType> = {
   'log-out': LogOut
 };
 
-export function Navigation() {
+export interface NavigationAreaProps {
+  style: CSSProperties;
+  isMobile: boolean;
+}
+
+type NavigationAreaConfig = {
+  padding?: string;
+  gap?: string;
+  height?: string;
+  minHeight?: string;
+};
+
+export function NavigationArea({ style, isMobile }: NavigationAreaProps) {
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
-  const { isMobile } = useResponsive();
   const { isAuthenticated, logout } = useAuth();
 
   const navItems = navigationConfig.items as ReadonlyArray<NavItem>;
@@ -48,48 +56,33 @@ export function Navigation() {
     return true;
   });
 
-  const handleLogout = async () => {
-    await logout();
-    window.location.href = '/';
+  const layoutNavigation = appConfig.layout?.areas?.navigation as NavigationAreaConfig;
+  const navPadding =
+    layoutNavigation?.padding ??
+    (isMobile ? `${appConfig.spacing.xs} 0` : `${appConfig.spacing.sm} ${appConfig.spacing.md}`);
+  const navGap = layoutNavigation?.gap ?? (isMobile ? appConfig.spacing.xs : appConfig.spacing.md);
+  const navHeight = layoutNavigation?.height;
+  const navMinHeight = layoutNavigation?.minHeight;
+
+  const mergedNavStyle: CSSProperties = {
+    ...style,
+    padding: style.padding ?? navPadding,
+    height: style.height ?? navHeight,
+    minHeight: style.minHeight ?? navMinHeight
   };
 
-  // Styles
-  const navContainerStyle: React.CSSProperties = isMobile
-    ? {
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: appConfig.responsive.bottomNavHeight,
-        backgroundColor: colorsConfig.ui.backgroundAlt,
-        borderTop: `${appConfig.navigation.borderWidth} solid ${colorsConfig.ui.border}`,
-        zIndex: appConfig.navigation.zIndex,
-        padding: `${appConfig.spacing.xs} 0`
-      }
-    : {
-        backgroundColor: colorsConfig.ui.backgroundAlt,
-        borderBottom: `${appConfig.navigation.borderWidth} solid ${colorsConfig.ui.border}`,
-        padding: `${appConfig.spacing.sm} ${appConfig.spacing.md}`,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-      };
+  const navGridColumns = isMobile ? Math.max(filteredItems.length, 1) : 6;
 
-  const containerStyle: React.CSSProperties = isMobile
-    ? {
-        display: 'grid',
-        gridTemplateColumns: `repeat(${filteredItems.length}, 1fr)`,
-        width: '100%',
-        height: '100%'
-      }
-    : {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-evenly',
-        flex: 1
-      };
+  const navItemsContainerStyle: CSSProperties = {
+    display: 'grid',
+    gridTemplateColumns: `repeat(${navGridColumns}, 1fr)`,
+    width: '100%',
+    height: '100%',
+    gap: navGap,
+    alignItems: 'center'
+  };
 
-  const getNavLinkStyle = (isActive: boolean, isHovered: boolean): React.CSSProperties => ({
+  const getNavLinkStyle = (isActive: boolean, isHovered: boolean): CSSProperties => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -97,7 +90,7 @@ export function Navigation() {
     padding: isMobile ? appConfig.spacing.xs : appConfig.spacing.sm,
     textDecoration: 'none',
     transition: appConfig.navigation.transition,
-    backgroundColor: isHovered ? colorsConfig.black[700] : 'transparent',
+    backgroundColor: isHovered ? colorsConfig.black['700'] : 'transparent',
     color: isActive ? colorsConfig.text.primary : colorsConfig.text.secondary,
     transform:
       !isMobile && isHovered
@@ -107,20 +100,25 @@ export function Navigation() {
     borderRadius: isMobile ? undefined : appConfig.spacing.sm
   });
 
-  const getIconContainerStyle = (isActive: boolean): React.CSSProperties => ({
+  const getIconContainerStyle = (isActive: boolean): CSSProperties => ({
     padding: isMobile ? appConfig.spacing.xs : appConfig.spacing.sm,
     borderRadius: appConfig.spacing.sm,
-    backgroundColor: isActive ? colorsConfig.green[500] : 'transparent',
+    backgroundColor: isActive ? colorsConfig.green['500'] : 'transparent',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'
   });
 
-  const getIconStyle = (itemKey: string): React.CSSProperties => ({
+  const getIconStyle = (itemKey: string): CSSProperties => ({
     height: buttonConfig.nav.iconSize,
     width: buttonConfig.nav.iconSize,
     transform: itemKey === 'glaeubiger' ? appConfig.navigation.icon.rotateGlaeubiger : undefined
   });
+
+  const handleLogout = async () => {
+    await logout();
+    window.location.href = '/';
+  };
 
   const renderNavItem = (item: NavItem) => {
     const Icon = iconMap[item.icon];
@@ -158,8 +156,8 @@ export function Navigation() {
   };
 
   return (
-    <nav style={navContainerStyle}>
-      <div style={containerStyle}>{filteredItems.map(renderNavItem)}</div>
+    <nav style={mergedNavStyle}>
+      <div style={navItemsContainerStyle}>{filteredItems.map(renderNavItem)}</div>
     </nav>
   );
 }

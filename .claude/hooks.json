@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0",
+  "hooks": [
+    {
+      "name": "session-start",
+      "event": "SessionStart",
+      "enabled": true,
+      "config": ".claude/hooks/session-start.json",
+      "script": ".claude/hooks/session-start.sh",
+      "description": "Lädt Projekt-Context beim Session-Start"
+    },
+    {
+      "name": "pre-tool-use-security",
+      "event": "PreToolUse",
+      "enabled": true,
+      "config": ".claude/hooks/pre-tool-use-security.json",
+      "description": "Security-Checks vor Tool-Nutzung"
+    },
+    {
+      "name": "post-edit-quality",
+      "event": "PostEdit",
+      "enabled": true,
+      "config": ".claude/hooks/post-edit-quality.json",
+      "script": ".claude/hooks/post-edit.sh",
+      "description": "Quality-Checks nach File-Edits"
+    }
+  ]
+}

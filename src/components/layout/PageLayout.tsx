@@ -1,9 +1,9 @@
 /**
  * @file        PageLayout.tsx
  * @description Seiten-Layout mit Titel und Actions (SEASIDE Dark Theme) - Responsive
- * @version     0.10.0
+ * @version     0.11.1
  * @created     2025-12-11 01:05:00 CET
- * @updated     2026-01-11 14:47:00 CET
+ * @updated     2026-01-12 10:55:00 CET
  * @author      Akki Scholze
  *
  * @props
@@ -14,6 +14,9 @@
  *   footer - Optionale Infobox unter dem Content
  *
  * @changelog
+ *   0.11.1 - 2026-01-12 - Fix: Typisierungen für optionale Layout-Keys, FooterArea integriert
+ *   0.11.0 - 2026-01-12 - Refactor: Layout auf Area-Komponenten (Navigation/Header/Content/Footer) umgestellt, Grid-Layouts (6/2/Content/Footer)
+ *   0.10.1 - 2026-01-11 - FIX: fontSize von pageHeader.button Config (80px statt 1.5rem)
  *   0.10.0 - 2026-01-11 14:47:00 CET - Migration: layout.areas.* Config für navigation/header/content/footer (config.toml v2.9.0)
  *   0.9.1 - 2026-01-11 23:45:00 CET - Optimized spacing: Compact header, content starts directly below (no top padding)
  *   0.9.0 - 2026-01-11 23:30:00 CET - Added footer prop, sections for header/content/footer with config-driven styles
@@ -30,18 +33,16 @@
 // ═══════════════════════════════════════════════════════
 // IMPORTS
 // ═══════════════════════════════════════════════════════
-import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import type { CSSProperties } from 'react';
 import type { PageLayoutProps } from '@/types/ui.types';
-import type { NavItem } from '@/types/ui.types';
-import { Package, Users, HandCoins, Settings, UserCog, LogIn, LogOut } from 'lucide-react';
-import { appConfig, navigationConfig } from '@/config';
+import { appConfig } from '@/config';
 import { useResponsive } from '@/hooks/useResponsive';
-import { useAuth } from '@/context/AuthContext';
+import { NavigationArea } from './areas/navigation';
+import { HeaderArea } from './areas/header';
+import { ContentArea } from './areas/content';
+import { FooterArea } from './areas/footer.tsx';
 
 const colorsConfig = appConfig.colors;
-const typographyConfig = appConfig.typography;
-const buttonConfig = appConfig.button;
 const layoutAreas = appConfig.layout.areas;
 
 // ═══════════════════════════════════════════════════════
@@ -86,147 +87,30 @@ function getColorValue(colorPath: string): string {
 // ═══════════════════════════════════════════════════════
 // ICON MAP
 // ═══════════════════════════════════════════════════════
-const iconMap: Record<string, React.ElementType> = {
-  package: Package,
-  users: Users,
-  'hand-coins': HandCoins,
-  settings: Settings,
-  'user-cog': UserCog,
-  'log-in': LogIn,
-  'log-out': LogOut
+type LayoutAreaExtended = {
+  bg: string;
+  border: string;
+  borderWidth: string;
+  borderRadius?: string;
+  height?: string;
+  minHeight?: string;
+  padding?: string;
+  gridColumns?: number;
+  gap?: string;
 };
 
-// ═══════════════════════════════════════════════════════
-// COMPONENT
-// ═══════════════════════════════════════════════════════
-export function PageLayout({ title, icon, actions, children, footer }: PageLayoutProps) {
-  const [hoveredKey, setHoveredKey] = useState<string | null>(null);
+export function PageLayout({ title, icon, actions, children, footer, footerColumns }: PageLayoutProps) {
   const { isMobile } = useResponsive();
-  const { isAuthenticated, logout } = useAuth();
 
-  const navItems = navigationConfig.items as ReadonlyArray<NavItem>;
-
-  const filteredItems = navItems.filter((item) => {
-    if (item.key === 'login' && isAuthenticated) return false;
-    if (item.key === 'logout' && !isAuthenticated) return false;
-    return true;
-  });
-
-  const handleLogout = async () => {
-    await logout();
-    window.location.href = '/';
-  };
+  const navigationArea = layoutAreas.navigation as LayoutAreaExtended;
+  const headerArea = layoutAreas.header as LayoutAreaExtended;
+  const contentArea = layoutAreas.content as LayoutAreaExtended;
+  const footerArea = layoutAreas.footer as LayoutAreaExtended;
 
   // ═══════════════════════════════════════════════════════
   // NAVIGATION STYLES (Config: layout.areas.navigation)
   // ═══════════════════════════════════════════════════════
-  const navContainerStyle: React.CSSProperties = isMobile
-    ? {
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: appConfig.responsive.bottomNavHeight,
-        backgroundColor: getColorValue(layoutAreas.navigation.bg),
-        borderTop: `${layoutAreas.navigation.borderWidth} solid ${getColorValue(layoutAreas.navigation.border)}`,
-        zIndex: appConfig.navigation.zIndex,
-        padding: `${appConfig.spacing.xs} 0`
-      }
-    : {
-        backgroundColor: getColorValue(layoutAreas.navigation.bg),
-        borderBottom: `${layoutAreas.navigation.borderWidth} solid ${getColorValue(layoutAreas.navigation.border)}`,
-        padding: `${appConfig.spacing.sm} ${appConfig.spacing.md}`,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-      };
-
-  const navItemsContainerStyle: React.CSSProperties = isMobile
-    ? {
-        display: 'grid',
-        gridTemplateColumns: `repeat(${filteredItems.length}, 1fr)`,
-        width: '100%',
-        height: '100%'
-      }
-    : {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-evenly',
-        flex: 1
-      };
-
-  const getNavLinkStyle = (isActive: boolean, isHovered: boolean): React.CSSProperties => ({
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: isMobile ? appConfig.spacing.xs : appConfig.spacing.sm,
-    textDecoration: 'none',
-    transition: appConfig.navigation.transition,
-    backgroundColor: isHovered ? colorsConfig.black['700'] : 'transparent',
-    color: isActive ? colorsConfig.text.primary : colorsConfig.text.secondary,
-    transform:
-      !isMobile && isHovered
-        ? `scale(${appConfig.navigation.hoverScale})`
-        : `scale(${appConfig.navigation.normalScale})`,
-    minHeight: isMobile ? `${appConfig.responsive.touchMinSize}px` : undefined,
-    borderRadius: isMobile ? undefined : appConfig.spacing.sm
-  });
-
-  const getIconContainerStyle = (isActive: boolean): React.CSSProperties => ({
-    padding: isMobile ? appConfig.spacing.xs : appConfig.spacing.sm,
-    borderRadius: appConfig.spacing.sm,
-    backgroundColor: isActive ? colorsConfig.green['500'] : 'transparent',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  });
-
-  const getIconStyle = (itemKey: string): React.CSSProperties => ({
-    height: buttonConfig.nav.iconSize,
-    width: buttonConfig.nav.iconSize,
-    transform: itemKey === 'glaeubiger' ? appConfig.navigation.icon.rotateGlaeubiger : undefined
-  });
-
-  const renderNavItem = (item: NavItem) => {
-    const Icon = iconMap[item.icon];
-    const isHovered = hoveredKey === item.key;
-
-    if (item.key === 'logout') {
-      return (
-        <button
-          key={item.key}
-          onClick={() => void handleLogout()}
-          title={item.label}
-          style={getNavLinkStyle(false, isHovered)}
-          onMouseEnter={!isMobile ? () => setHoveredKey(item.key) : undefined}
-          onMouseLeave={!isMobile ? () => setHoveredKey(null) : undefined}
-        >
-          <div style={getIconContainerStyle(false)}>{Icon && <Icon style={getIconStyle(item.key)} />}</div>
-        </button>
-      );
-    }
-
-    return (
-      <NavLink
-        key={item.key}
-        to={item.path}
-        title={item.label}
-        style={({ isActive }) => getNavLinkStyle(isActive, isHovered)}
-        onMouseEnter={!isMobile ? () => setHoveredKey(item.key) : undefined}
-        onMouseLeave={!isMobile ? () => setHoveredKey(null) : undefined}
-      >
-        {({ isActive }) => (
-          <div style={getIconContainerStyle(isActive)}>{Icon && <Icon style={getIconStyle(item.key)} />}</div>
-        )}
-      </NavLink>
-    );
-  };
-
-  // ═══════════════════════════════════════════════════════
-  // PAGE STYLES (Config: layout.areas.*)
-  // ═══════════════════════════════════════════════════════
-  const pageContainerStyle: React.CSSProperties = {
+  const pageContainerStyle: CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
     minHeight: '100vh',
@@ -234,74 +118,74 @@ export function PageLayout({ title, icon, actions, children, footer }: PageLayou
     paddingBottom: isMobile ? appConfig.responsive.bottomNavPadding : undefined
   };
 
-  const headerBarStyle: React.CSSProperties = {
-    backgroundColor: getColorValue(layoutAreas.header.bg),
-    borderBottom: `${layoutAreas.header.borderWidth} solid ${getColorValue(layoutAreas.header.border)}`,
-    padding: isMobile ? appConfig.spacing.mobile.md : appConfig.spacing.md,
-    display: 'flex',
+  const navContainerStyle: CSSProperties = isMobile
+    ? {
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: navigationArea.height || appConfig.responsive.bottomNavHeight,
+        backgroundColor: getColorValue(navigationArea.bg),
+        borderTop: `${navigationArea.borderWidth} solid ${getColorValue(navigationArea.border)}`,
+        zIndex: appConfig.navigation.zIndex,
+        padding: navigationArea.padding || `${appConfig.spacing.xs} 0`
+      }
+    : {
+        backgroundColor: getColorValue(navigationArea.bg),
+        borderBottom: `${navigationArea.borderWidth} solid ${getColorValue(navigationArea.border)}`,
+        padding: navigationArea.padding || `${appConfig.spacing.sm} ${appConfig.spacing.md}`
+      };
+
+  const headerStyle: CSSProperties = {
+    backgroundColor: getColorValue(headerArea.bg),
+    borderBottom: `${headerArea.borderWidth} solid ${getColorValue(headerArea.border)}`,
+    padding: isMobile ? appConfig.spacing.mobile.md : headerArea.padding || appConfig.spacing.xl,
+    display: 'grid',
+    gridTemplateColumns: headerArea.gridColumns ? `repeat(${headerArea.gridColumns}, minmax(0, 1fr))` : '1fr auto',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: appConfig.spacing.md
+    gap: headerArea.gap || appConfig.spacing.md,
+    height: headerArea.height
   };
 
-  const titleStyle: React.CSSProperties = {
-    fontSize: isMobile ? typographyConfig.fontSize.lg : typographyConfig.fontSize.xl,
-    fontWeight: typographyConfig.fontWeight.bold,
-    fontFamily: typographyConfig.fontFamily.base,
-    color: colorsConfig.text.primary,
-    margin: 0,
-    display: 'flex',
-    alignItems: 'center',
-    gap: appConfig.spacing.sm
-  };
-
-  const contentStyle: React.CSSProperties = {
+  const contentStyle: CSSProperties = {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden',
-    padding: isMobile ? appConfig.spacing.mobile.md : appConfig.spacing.md,
-    backgroundColor: getColorValue(layoutAreas.content.bg)
+    padding: isMobile ? appConfig.spacing.mobile.md : contentArea.padding || appConfig.spacing.md,
+    backgroundColor: getColorValue(contentArea.bg),
+    minHeight: contentArea.minHeight,
+    height: contentArea.height,
+    borderRadius: contentArea.borderRadius,
+    border: contentArea.borderWidth
+      ? `${contentArea.borderWidth} solid ${getColorValue(contentArea.border)}`
+      : undefined
   };
 
-  const footerStyle: React.CSSProperties = {
-    backgroundColor: getColorValue(layoutAreas.footer.bg),
-    borderTop: `${layoutAreas.footer.borderWidth} solid ${getColorValue(layoutAreas.footer.border)}`,
-    borderRadius: layoutAreas.footer.borderRadius,
-    padding: isMobile ? appConfig.spacing.mobile.md : appConfig.spacing.md
-  };
+  const resolvedFooterColumns: number = Number(footerColumns ?? footerArea.gridColumns ?? 3);
 
-  // Helper: Render Icon
-  const renderIcon = () => {
-    if (!icon) return null;
-    if (typeof icon === 'string') {
-      const IconComponent = iconMap[icon];
-      return IconComponent ? <IconComponent size={24} /> : null;
-    }
-    return icon;
+  const footerStyle: CSSProperties = {
+    backgroundColor: getColorValue(footerArea.bg),
+    borderTop: `${footerArea.borderWidth} solid ${getColorValue(footerArea.border)}`,
+    borderRadius: footerArea.borderRadius,
+    padding: isMobile ? footerArea.padding || appConfig.spacing.mobile.md : footerArea.padding || appConfig.spacing.md,
+    height: footerArea.height,
+    gap: footerArea.gap
   };
 
   return (
     <div style={pageContainerStyle}>
-      {/* 1. Navigation */}
-      <nav style={navContainerStyle}>
-        <div style={navItemsContainerStyle}>{filteredItems.map(renderNavItem)}</div>
-      </nav>
+      <NavigationArea style={navContainerStyle} isMobile={isMobile} />
 
-      {/* 2. Header Bar mit Titel und Neu-Button */}
-      <header style={headerBarStyle}>
-        <h1 style={titleStyle}>
-          {renderIcon()}
-          {title}
-        </h1>
-        {actions && <div style={{ display: 'flex', gap: appConfig.spacing.sm }}>{actions}</div>}
-      </header>
+      <HeaderArea style={headerStyle} title={title} icon={icon} actions={actions} isMobile={isMobile} />
 
-      {/* 3. Content (Tabelle) */}
-      <main style={contentStyle}>{children}</main>
+      <ContentArea style={contentStyle}>{children}</ContentArea>
 
-      {/* 4. Footer (Infobox) */}
-      {footer && <footer style={footerStyle}>{footer}</footer>}
+      {footer && (
+        <FooterArea style={footerStyle} columns={resolvedFooterColumns}>
+          {footer}
+        </FooterArea>
+      )}
     </div>
   );
 }

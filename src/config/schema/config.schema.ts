@@ -1,12 +1,13 @@
 /**
  * @file        config.schema.ts
  * @description Zod Schema für config.toml Validation (STRICT)
- * @version     2.13.0
+ * @version     2.13.1
  * @created     2026-01-07 19:45:00 CET
  * @updated     2026-01-11 23:56:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   2.13.1 - 2026-01-12 - LayoutAreaSchema: optional height/minHeight/padding/gap/gridColumns
  *   2.13.0 - 2026-01-11 23:56:00 CET - FINAL SYNC: Removed obsolete FortschrittColorsSchema, migrated all table fortschritt.colors to TableProgressColorsSchema (6 tables)
  *   2.12.0 - 2026-01-11 23:50:00 CET - Sync with config.toml v2.10.0: Added table.progress.colors schema (11 fields), removed colors.yellow, removed badge.base.padding (kept paddingX/Y)
  *   2.11.0 - 2026-01-11 15:00:40 CET - Fixed app.version schema: Accept number (config.toml has version=123), not SemVer string
@@ -809,7 +810,12 @@ const LayoutAreaSchema = z
     bg: z.string(),
     border: z.string(),
     borderWidth: z.string(),
-    borderRadius: z.string().optional()
+    borderRadius: z.string().optional(),
+    height: z.string().optional(),
+    minHeight: z.string().optional(),
+    padding: z.string().optional(),
+    gap: z.string().optional(),
+    gridColumns: z.number().optional()
   })
   .strict();
 

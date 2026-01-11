@@ -1,0 +1,120 @@
+name: medium-feature
+version: 1.0.0
+description: Workflow für Medium Features (1-4h, 3-6 Agents)
+
+workflow:
+  complexity: Medium
+  estimated_effort: 1-4h
+  agents_required: 3-6
+
+steps:
+  - step: 1
+    agent: orchestrator
+    action: analyze_task
+    output: |
+      - Feature-Scope bestimmt
+      - Complexity-Level: Medium
+      - Agent-Chain geplant
+
+  - step: 2
+    agent: architect
+    action: design_phase
+    input:
+      - User-Anforderung
+      - Bestehende Patterns (via serena)
+    output:
+      - Architecture-Design-Doc
+      - Handoff-Dokumente für Implementation-Agents
+      - API-Contracts (falls Backend-Änderung)
+      - Config-Changes (config.toml-Diff)
+
+  - step: 3
+    agent: orchestrator
+    action: design_review
+    quality_gate: true
+    criteria:
+      - Specs vollständig
+      - Breaking-Changes dokumentiert
+      - Migration-Strategy definiert
+    output:
+      - Design-Review: PASS/FAIL
+
+  - step: 4a
+    agent: backend_specialist
+    action: implement_backend
+    parallel_with: step_4b
+    condition: if API-Changes
+    input:
+      - Architect-Handoff-Dokument
+    output:
+      - API-Routes implementiert
+      - Service-Layer implementiert
+      - Zod-Validation implementiert
+
+  - step: 4b
+    agent: frontend_specialist
+    action: implement_frontend
+    parallel_with: step_4a
+    condition: if UI-Changes
+    input:
+      - Architect-Handoff-Dokument
+    output:
+      - Components implementiert
+      - Config-Integration (config.toml ergänzt)
+      - Responsive-Design
+
+  - step: 5
+    agent: testing_specialist
+    action: write_tests
+    depends_on: [step_4a, step_4b]
+    input:
+      - Changed-Files von Implementation-Agents
+    output:
+      - Unit-Tests
+      - Integration-Tests (falls Backend)
+      - E2E-Tests (falls Frontend)
+      - Coverage-Report (≥ 80%)
+
+  - step: 6
+    agent: documentation_specialist
+    action: update_docs
+    depends_on: step_5
+    input:
+      - Changed-Files
+      - Feature-Description
+    output:
+      - README.md aktualisiert
+      - JSDoc-Header aktualisiert
+      - AGENTS.md aktualisiert (falls Pattern-Changes)
+
+  - step: 7
+    agent: qa_specialist
+    action: full_code_review
+    quality_gate: true
+    criteria:
+      - All Automated-Checks: PASS
+      - Config-Compliance: PASS
+      - Test-Coverage ≥ 80%
+      - Documentation: Complete
+    output:
+      - QA-Review-Report
+
+  - step: 8
+    agent: orchestrator
+    action: final_report
+    output: |
+      - User-Notification: Feature complete
+      - Files changed: {Anzahl}
+      - Tests: {Anzahl} added, all passing
+      - Coverage: {Prozent}%
+      - Quality-Gates: {Anzahl}/{Anzahl} PASS
+
+example_tasks:
+  - "CSV-Export für Material-Tabelle"
+  - "Filter-Funktion für Kunden-Liste"
+  - "Neue Zahlungs-Status-Badges"
+  - "Material-Duplikat-Erkennung"
+
+anti_patterns:
+  - "Typo-Fix" # → Nutze simple-fix.yaml
+  - "Multi-Tenant-Support" # → Nutze complex-feature.yaml (Breaking-Change)

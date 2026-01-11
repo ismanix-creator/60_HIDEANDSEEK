@@ -1,0 +1,59 @@
+name: simple-fix
+version: 1.0.0
+description: Workflow für Simple Bug-Fixes oder kleine Änderungen (< 1h, 1-2 Agents)
+
+workflow:
+  complexity: Simple
+  estimated_effort: "< 1h"
+  agents_required: 1-2
+
+steps:
+  - step: 1
+    agent: orchestrator
+    action: analyze_task
+    output: |
+      - Task-Type identifiziert (Frontend|Backend|Database|Docs)
+      - Betroffene Files identifiziert
+      - Complexity-Level bestätigt: Simple
+
+  - step: 2
+    agent: "{frontend_specialist|backend_specialist|database_specialist}"
+    action: implement_fix
+    input:
+      - Task-Description von orchestrator
+      - Betroffene Files
+    output:
+      - Fix implementiert
+      - Config aktualisiert (falls nötig)
+      - JSDoc-Header aktualisiert
+
+  - step: 3
+    agent: qa_specialist
+    action: code_review
+    quality_gate: true
+    criteria:
+      - ESLint: PASS
+      - Prettier: PASS
+      - TypeScript: PASS
+      - Config-Drift: PASS
+    output:
+      - Review-Report
+
+  - step: 4
+    agent: orchestrator
+    action: final_report
+    output: |
+      - User-Notification: Fix complete
+      - Changed-Files: {Liste}
+      - Quality-Gates: PASS
+
+example_tasks:
+  - "Fix Button-Color in MaterialPage"
+  - "Korrigiere Typo in README.md"
+  - "Behebe Validation-Fehler in KundenForm"
+  - "Optimiere SQL-Query in MaterialService"
+
+anti_patterns:
+  - "Neues Feature" # → Nutze medium-feature.yaml
+  - "Breaking-Change" # → Nutze complex-feature.yaml
+  - "Multi-File-Refactoring" # → Nutze medium-feature.yaml

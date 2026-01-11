@@ -1,0 +1,7 @@
+{
+  "name": "session-start",
+  "description": "Lädt Projekt-Context und Plugin-Awareness beim Session-Start",
+  "event": "SessionStart",
+  "enabled": true,
+  "script": ".claude/hooks/session-start.sh"
+}

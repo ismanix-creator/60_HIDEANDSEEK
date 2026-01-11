@@ -1,12 +1,13 @@
 /**
  * @file        ui.types.ts
  * @description TypeScript Type Definitions für UI-Komponenten
- * @version     0.4.0
+ * @version     0.5.1
  * @created     2026-01-07 01:18:02 CET
- * @updated     2026-01-11 23:30:00 CET
+ * @updated     2026-01-12 10:45:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.5.1 - 2026-01-12 - PageLayoutProps: Added optional footerColumns (Footer Grid)
  *   0.4.0 - 2026-01-11 23:30:00 CET - PageLayoutProps: Added optional footer prop
  *   0.3.0 - 2026-01-11 18:00:00 CET - Button types refactored: nav/new/act/rect/tab (replaced icon kind)
  *   0.2.0 - 2026-01-09 - CellType um 'input' erweitert für Monospace User-Input Spalten
@@ -191,6 +192,7 @@ export interface PageLayoutProps {
   actions?: ReactNode;
   children: ReactNode;
   footer?: ReactNode;
+  footerColumns?: number;
 }
 
 export interface NavItem {

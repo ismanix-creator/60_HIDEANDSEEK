@@ -1,0 +1,7 @@
+{
+  "name": "post-edit-quality",
+  "description": "Quality-Checks nach File-Edits (TypeScript, ESLint, Tests)",
+  "event": "PostEdit",
+  "enabled": true,
+  "script": ".claude/hooks/post-edit.sh"
+}
