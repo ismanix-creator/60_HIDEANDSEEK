@@ -1,12 +1,15 @@
 /**
  * @file        MaterialPage.tsx
  * @description Material-Verwaltung mit Bar/Kombi-Buchungen und Historie
- * @version     1.4.0
+ * @version     1.6.1
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-11 22:35:00 CET
+ * @updated     2026-01-12 17:30:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   1.6.1 - 2026-01-12 17:30:00 - Material-Tabelle: Fortschrittsbalken sichtbar gemacht (kontrastierter Track + Border)
+ *   1.6.0 - 2026-01-12 16:05:00 - Material-Tabelle: Truncate-Formate + Bestands-Fortschrittsbalken
+ *   1.5.0 - 2026-01-12 13:25:00 - UI: Monats-Navigation (zentrierte Buttons) über der Tabelle
  *   1.4.0 - 2026-01-11 22:35:00 - Feature: Action Buttons mit disabled-State für Empty Rows
  *   1.3.0 - 2026-01-11 18:35:00 - Fixed: Config-Zugriff appConfig.* → appConfig.* (validation/errors/labels/buttons/etc., Config-Struktur-Migration)
  *   1.2.0 - 2026-01-11 03:41:48 - Fixed: floating promises in onClick handlers (void wrapper)
@@ -28,7 +31,7 @@
  *   0.1.0 - 2026-01-07 - Initial implementation mit BAR/KOMBI-Dialogen
  */
 
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { Table, isEmptyRow } from '@/components/ui/Table';
 import { Button } from '@/components/ui/Button';
@@ -37,9 +40,9 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Infobox } from '@/components/ui/Infobox';
 import { useApi } from '@/hooks/useApi';
-import { formatCurrency, formatDate } from '@/utils/format';
+import { formatCurrency, formatCurrencyTruncate, formatDate, formatNumberTruncate } from '@/utils/format';
 import { appConfig } from '@/config';
-import { PackagePlus, Banknote, FileText, Pencil, Trash2 } from 'lucide-react';
+import { PackagePlus, Banknote, FileText, Pencil, Trash2, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import type {
   Material,
   Kunde,
@@ -49,6 +52,72 @@ import type {
   CreateBarBewegungRequest,
   CreateKombiBewegungRequest
 } from '@/types';
+
+// Progress-Konfiguration aus config.toml (gradientStops-basiert)
+const progressConfig = appConfig.components.table.base.progress;
+const gradientStops = progressConfig.gradientStops;
+
+const resolveColorToken = (colorPath: string): string => {
+  if (colorPath === 'none' || colorPath === 'transparent' || colorPath === 'white') {
+    return colorPath === 'none' ? 'transparent' : colorPath;
+  }
+
+  // Token-Syntax: "{category.shade}" → Farbe aus Theme auflösen
+  const tokenMatch = colorPath.match(/^\{(.+)\}$/);
+  if (tokenMatch) {
+    const innerPath = tokenMatch[1];
+    const parts = innerPath.split('.');
+    if (parts.length === 2) {
+      const [category, shade] = parts;
+      const palette = appConfig.theme.colors as Record<string, Record<string, string>>;
+      const colorCategory = palette[category];
+      if (colorCategory && typeof colorCategory === 'object') {
+        return colorCategory[shade] || colorPath;
+      }
+    }
+  }
+
+  // Fallback: Direkte Farbangabe (z.B. "gray.600" ohne Klammern)
+  const parts = colorPath.split('.');
+  if (parts.length === 2) {
+    const [category, shade] = parts;
+    const palette = appConfig.theme.colors as Record<string, Record<string, string>>;
+    const colorCategory = palette[category];
+    if (colorCategory && typeof colorCategory === 'object') {
+      return colorCategory[shade] || colorPath;
+    }
+  }
+  return colorPath;
+};
+
+const clampPercent = (value: number): number => Math.max(0, Math.min(100, value));
+
+/**
+ * Ermittelt die Farbe basierend auf gradientStops aus config.toml
+ * gradientStops ist sortiert nach p (Prozent), wir finden den passenden Stop
+ */
+const getProgressColor = (percent: number): string => {
+  const p = clampPercent(percent);
+
+  // Finde den höchsten Stop, der <= p ist
+  let matchedColor = gradientStops[0]?.c || '{gray.600}';
+  for (const stop of gradientStops) {
+    if (p >= stop.p) {
+      matchedColor = stop.c;
+    } else {
+      break;
+    }
+  }
+  return resolveColorToken(matchedColor);
+};
+
+const progressTextColor = resolveColorToken(progressConfig.textColor);
+const progressTrackColor = resolveColorToken(progressConfig.trackBg);
+const progressTrackBorderColor = resolveColorToken(progressConfig.trackBorder);
+
+const formatInteger = (value: number): string => formatNumberTruncate(value, 0);
+const formatCurrencyInt = (value: number): string => formatCurrencyTruncate(value, 0);
+const formatCurrencyTwo = (value: number): string => formatCurrencyTruncate(value, 2);
 
 export function MaterialPage() {
   const api = useApi();
@@ -108,6 +177,97 @@ export function MaterialPage() {
   const [preisMode, setPreisMode] = useState<'stueck' | 'gesamt'>('stueck');
   const calcEkStueckAusGesamt = (gesamt: number, menge: number) => (menge > 0 ? gesamt / menge : 0);
 
+  const [selectedMonth, setSelectedMonth] = useState<string>(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  });
+  const [monthPickerOpen, setMonthPickerOpen] = useState(false);
+
+  const monthFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat('de-DE', {
+        month: 'long',
+        year: 'numeric'
+      }),
+    []
+  );
+
+  const relativeMonthFormatter = useMemo(
+    () =>
+      new Intl.RelativeTimeFormat('de-DE', {
+        numeric: 'auto'
+      }),
+    []
+  );
+
+  const toMonthKeyFromString = (value: string | null | undefined): string | null => {
+    if (!value) return null;
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return null;
+    return `${parsed.getFullYear()}-${String(parsed.getMonth() + 1).padStart(2, '0')}`;
+  };
+
+  const formatMonthLabel = (monthKey: string): string => {
+    const [yearStr, monthStr] = monthKey.split('-');
+    const year = Number(yearStr);
+    const month = Number(monthStr);
+
+    if (!Number.isFinite(year) || !Number.isFinite(month)) {
+      return monthKey;
+    }
+
+    return monthFormatter.format(new Date(year, month - 1, 1));
+  };
+
+  const shiftMonth = (monthKey: string, delta: number): string => {
+    const [yearStr, monthStr] = monthKey.split('-');
+    const year = Number(yearStr);
+    const month = Number(monthStr);
+
+    const baseDate = Number.isFinite(year) && Number.isFinite(month) ? new Date(year, month - 1, 1) : new Date();
+    baseDate.setMonth(baseDate.getMonth() + delta);
+    return `${baseDate.getFullYear()}-${String(baseDate.getMonth() + 1).padStart(2, '0')}`;
+  };
+
+  const availableMonths = useMemo(() => {
+    const unique = new Set<string>();
+
+    materialien.forEach((item) => {
+      const key = toMonthKeyFromString(item.datum);
+      if (key) {
+        unique.add(key);
+      }
+    });
+
+    return Array.from(unique).sort((a, b) => (a > b ? -1 : 1));
+  }, [materialien]);
+
+  const fallbackMonth = availableMonths[0] ?? selectedMonth;
+
+  useEffect(() => {
+    if (!availableMonths.includes(selectedMonth)) {
+      setSelectedMonth(fallbackMonth);
+    }
+  }, [availableMonths, fallbackMonth, selectedMonth]);
+
+  const handleMonthStep = (delta: number) => {
+    setSelectedMonth((current) => shiftMonth(current || fallbackMonth, delta));
+    setMonthPickerOpen(false);
+  };
+
+  const handleMonthSelect = (monthKey: string) => {
+    setSelectedMonth(monthKey);
+    setMonthPickerOpen(false);
+  };
+
+  const filteredMaterialien = useMemo(
+    () => materialien.filter((m) => toMonthKeyFromString(m.datum) === selectedMonth),
+    [materialien, selectedMonth]
+  );
+
+  const previousMonthLabel = relativeMonthFormatter.format(-1, 'month');
+  const nextMonthLabel = relativeMonthFormatter.format(1, 'month');
+
   // Load Material
   const loadMaterial = async () => {
     setLoading(true);
@@ -121,7 +281,7 @@ export function MaterialPage() {
       if (matResult.success && matResult.data) {
         setMaterialien(matResult.data);
       } else {
-        setError(matResult.error || appConfig.errors.load_failed);
+        setError(matResult.error || 'Fehler beim Laden der Materialien');
       }
 
       if (kundenResult.success && kundenResult.data) {
@@ -495,19 +655,65 @@ export function MaterialPage() {
       case 'datum':
         return (m: Material) => formatDate(m.datum);
       case 'menge':
-        return (m: Material) => m.menge.toFixed(2);
+        return (m: Material) => formatInteger(m.menge);
       case 'ek_stueck':
-        return (m: Material) => formatCurrency(m.ek_stueck);
+        return (m: Material) => formatCurrencyTwo(m.ek_stueck);
       case 'ek_gesamt':
-        return (m: Material) => formatCurrency(m.ek_gesamt);
+        return (m: Material) => formatCurrencyInt(m.ek_gesamt);
       case 'vk_stueck':
-        return (m: Material) => formatCurrency(m.vk_stueck);
+        return (m: Material) => formatCurrencyTwo(m.vk_stueck);
       case 'bestand':
-        return (m: Material) => m.bestand.toFixed(2);
+        return (m: Material) => {
+          const start = m.menge || 0;
+          const current = m.bestand || 0;
+          const percentRaw = start > 0 ? (current / start) * 100 : 0;
+          const percent = clampPercent(percentRaw);
+          const barColor = getProgressColor(percent);
+
+          return (
+            <div className="w-full" style={{ color: progressTextColor }}>
+              <div
+                className="relative w-full h-3 rounded-full overflow-hidden"
+                style={{
+                  backgroundColor: progressTrackColor,
+                  border: `1px solid ${progressTrackBorderColor}`
+                }}
+                aria-label={`Bestand ${formatInteger(current)} von ${formatInteger(start)}`}
+              >
+                <div
+                  style={{
+                    width: `${percent}%`,
+                    height: '100%',
+                    backgroundColor: barColor,
+                    transition: 'width 0.2s ease'
+                  }}
+                />
+                <div
+                  className="absolute inset-0 flex items-center justify-center text-[11px] font-semibold"
+                  style={{ color: progressTextColor }}
+                >
+                  {formatInteger(current)}
+                </div>
+              </div>
+            </div>
+          );
+        };
       case 'einnahmen':
-        return (m: Material) => formatCurrency(m.einnahmen_bar + m.einnahmen_kombi);
+        return (m: Material) => formatCurrencyInt(m.einnahmen_bar + m.einnahmen_kombi);
+      case 'aussenstaende':
+        return (m: Material) => {
+          // Placeholder bis echte Kunden-Offenstände (Summe offen aus Kunden-Posten) vorhanden sind
+          return formatCurrencyInt(0);
+        };
+      case 'theor_einnahmen':
+        return (m: Material) => formatCurrencyInt(m.vk_stueck * m.menge);
+      case 'gewinn':
       case 'gewinn_aktuell':
-        return (m: Material) => formatCurrency(m.gewinn_aktuell);
+        return (m: Material) => {
+          const earned = (m.einnahmen_bar || 0) + (m.einnahmen_kombi || 0);
+          const profit = earned - (m.ek_gesamt || 0);
+          return formatCurrencyInt(profit);
+        };
       case 'actions':
         return (m: Material) => {
           const empty = isEmptyRow(m);
@@ -533,7 +739,7 @@ export function MaterialPage() {
     }
   };
 
-  const columns = appConfig.table.material.columns.map((col) => ({
+  const columns = appConfig.pages.material.table.columns.map((col) => ({
     key: col.key,
     label: col.label,
     type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
@@ -543,6 +749,7 @@ export function MaterialPage() {
   return (
     <PageLayout
       title={appConfig.page_titles.material}
+      showBackButton={true}
       actions={
         <Button kind="new" onClick={() => setCreateDialogOpen(true)}>
           <PackagePlus />
@@ -553,9 +760,60 @@ export function MaterialPage() {
         {/* Error */}
         {error && <div className="p-4 bg-red-500/10 border border-red-500 rounded text-red-400">{error}</div>}
 
+        {/* Monats-Navigation */}
+        <div className="flex items-center justify-center gap-3">
+          <Button kind="rect" onClick={() => handleMonthStep(-1)} aria-label={previousMonthLabel}>
+            <ChevronLeft />
+          </Button>
+
+          <div className="relative">
+            <Button
+              kind="rect"
+              aria-expanded={monthPickerOpen}
+              aria-haspopup="listbox"
+              onClick={() => setMonthPickerOpen((open) => !open)}
+            >
+              <Calendar />
+              <span className="capitalize">{formatMonthLabel(selectedMonth)}</span>
+            </Button>
+
+            {monthPickerOpen && (
+              <div className="absolute left-1/2 z-10 mt-2 -translate-x-1/2 min-w-56 rounded-lg border border-neutral-700 bg-neutral-900/90 p-2 shadow-lg backdrop-blur">
+                <div className="max-h-56 overflow-y-auto">
+                  {availableMonths.map((monthKey) => (
+                    <button
+                      key={monthKey}
+                      type="button"
+                      onClick={() => handleMonthSelect(monthKey)}
+                      className={`flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm ${
+                        monthKey === selectedMonth ? 'bg-neutral-700 text-white' : 'text-neutral-200 hover:bg-neutral-800'
+                      }`}
+                      role="option"
+                      aria-selected={monthKey === selectedMonth}
+                    >
+                      <span className="capitalize">{formatMonthLabel(monthKey)}</span>
+                      <span className="text-xs text-neutral-400">{monthKey}</span>
+                    </button>
+                  ))}
+
+                  {availableMonths.length === 0 && (
+                    <div className="px-3 py-2 text-center text-sm text-neutral-300 capitalize">
+                      {formatMonthLabel(selectedMonth)}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <Button kind="rect" onClick={() => handleMonthStep(1)} aria-label={nextMonthLabel}>
+            <ChevronRight />
+          </Button>
+        </div>
+
         {/* Table - VOLLE BREITE */}
         <Table
-          data={materialien}
+          data={filteredMaterialien}
           columns={columns}
           loading={loading}
           emptyMessage={appConfig.empty_states.no_material_posts}
@@ -570,7 +828,7 @@ export function MaterialPage() {
             setError(null);
             resetForm();
           }}
-          title={appConfig.dialog_titles.new_material}
+          title={appConfig.components.dialog_titles.new_material}
           actions={
             <>
               <Button
@@ -581,9 +839,9 @@ export function MaterialPage() {
                   resetForm();
                 }}
               >
-                {appConfig.buttons.cancel}
+                {appConfig.components.buttons.cancel}
               </Button>
-              <Button onClick={() => void handleCreate()}>{appConfig.buttons.create}</Button>
+              <Button onClick={() => void handleCreate()}>{appConfig.components.buttons.create}</Button>
             </>
           }
         >
@@ -665,7 +923,7 @@ export function MaterialPage() {
             setSelectedMaterial(null);
             resetForm();
           }}
-          title={appConfig.dialog_titles.edit_material}
+          title={appConfig.components.dialog_titles.edit_material}
           actions={
             <>
               <Button
@@ -676,9 +934,9 @@ export function MaterialPage() {
                   resetForm();
                 }}
               >
-                {appConfig.buttons.cancel}
+                {appConfig.components.buttons.cancel}
               </Button>
-              <Button onClick={() => void handleUpdate()}>{appConfig.buttons.save}</Button>
+              <Button onClick={() => void handleUpdate()}>{appConfig.components.buttons.save}</Button>
             </>
           }
         >
@@ -756,7 +1014,7 @@ export function MaterialPage() {
             setDeleteDialogOpen(false);
             setSelectedMaterial(null);
           }}
-          title={appConfig.dialog_titles.delete_material}
+          title={appConfig.components.dialog_titles.delete_material}
           actions={
             <>
               <Button
@@ -766,10 +1024,10 @@ export function MaterialPage() {
                   setSelectedMaterial(null);
                 }}
               >
-                {appConfig.buttons.cancel}
+                {appConfig.components.buttons.cancel}
               </Button>
               <Button kind="rect" onClick={() => void handleDelete()}>
-                {appConfig.buttons.delete}
+                {appConfig.components.buttons.delete}
               </Button>
             </>
           }
@@ -798,10 +1056,10 @@ export function MaterialPage() {
                   resetBarForm();
                 }}
               >
-                {appConfig.buttons.cancel}
+                {appConfig.components.buttons.cancel}
               </Button>
               <Button kind="rect" onClick={() => void handleBarBewegung()}>
-                {appConfig.buttons.record}
+                {appConfig.components.buttons.record}
               </Button>
             </>
           }
@@ -878,10 +1136,10 @@ export function MaterialPage() {
                   resetKombiForm();
                 }}
               >
-                {appConfig.buttons.cancel}
+                {appConfig.components.buttons.cancel}
               </Button>
               <Button kind="rect" onClick={() => void handleKombiBewegung()}>
-                {appConfig.buttons.record}
+                {appConfig.components.buttons.record}
               </Button>
             </>
           }
@@ -950,8 +1208,8 @@ export function MaterialPage() {
           }}
           title={
             selectedMaterial
-              ? `${appConfig.dialog_titles.history}: ${selectedMaterial.bezeichnung}`
-              : appConfig.dialog_titles.history
+              ? `${appConfig.components.dialog_titles.history}: ${selectedMaterial.bezeichnung}`
+              : appConfig.components.dialog_titles.history
           }
           actions={
             <Button
@@ -961,7 +1219,7 @@ export function MaterialPage() {
                 setHistorie([]);
               }}
             >
-              {appConfig.buttons.close}
+              {appConfig.components.buttons.close}
             </Button>
           }
         >

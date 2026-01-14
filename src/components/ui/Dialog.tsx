@@ -15,7 +15,7 @@
  *   footer - Optionaler Footer-Bereich (deprecated, use actions)
  *
  * @changelog
- *   0.7.0 - 2026-01-11 18:35:00 CET - Fixed: Config-Zugriff auf appConfig.dialog statt appConfig.components.dialog (Config-Struktur-Migration)
+ *   0.7.0 - 2026-01-11 18:35:00 CET - Fixed: Config-Zugriff auf appConfig.components.dialog statt appConfig.components.dialog (Config-Struktur-Migration)
  *   0.6.0 - 2026-01-09 - Direct appConfig.* access (spacingConfig/breakpointsConfig eliminiert)
  *   0.4.1 - 2026-01-07 - Fix: actions Prop korrekt implementiert (war nur in Types definiert)
  *   0.4.0 - 2025-12-14 - Responsive: Fullscreen auf Mobile, Touch-freundlicher Close-Button
@@ -31,28 +31,28 @@ import { useEffect, useCallback } from 'react';
 import type { DialogProps } from '@/types/ui.types';
 import { appConfig } from '@/config';
 
-const dialogConfig = appConfig.dialog;
+const dialogConfig = appConfig.components.dialog.base;
 
-const colorsConfig = appConfig.colors;
+const colorsConfig = appConfig.theme.colors;
 import { X } from 'lucide-react';
 import { useResponsive } from '@/hooks/useResponsive';
 
-// Helper: Tailwind-Scale (0-32) auf spacing (xxs-xxl) mappen
+// Helper: Tailwind-Scale (0-32) auf spacing (semantische Namen) mappen
 const spacingBase = (key: number | string): string => {
   const keyNum = typeof key === 'number' ? key : parseInt(String(key), 10);
-  if (isNaN(keyNum)) return appConfig.spacing.md; // fallback
+  if (isNaN(keyNum)) return appConfig.theme.spacing.content_gap; // fallback
 
   // Tailwind-Scale Mapping:
-  // 0 -> xxs, 1 -> xs, 2 -> xs, 3 -> sm, 4 -> md, 5 -> md, 6 -> lg, 8 -> xl, 10+ -> xxl
-  if (keyNum <= 0) return appConfig.spacing.xxs;
-  if (keyNum === 1) return appConfig.spacing.xs;
-  if (keyNum === 2) return appConfig.spacing.xs;
-  if (keyNum === 3) return appConfig.spacing.sm;
-  if (keyNum === 4) return appConfig.spacing.md;
-  if (keyNum === 5) return appConfig.spacing.md;
-  if (keyNum === 6) return appConfig.spacing.lg;
-  if (keyNum === 8) return appConfig.spacing.xl;
-  return appConfig.spacing.xxl; // 10+
+  // 0 -> tight, 1-2 -> compact, 3 -> element_gap, 4-5 -> content_gap, 6 -> panel_padding, 8 -> section_padding, 10+ -> page_padding
+  if (keyNum <= 0) return appConfig.theme.spacing.tight;
+  if (keyNum === 1) return appConfig.theme.spacing.compact;
+  if (keyNum === 2) return appConfig.theme.spacing.compact;
+  if (keyNum === 3) return appConfig.theme.spacing.element_gap;
+  if (keyNum === 4) return appConfig.theme.spacing.content_gap;
+  if (keyNum === 5) return appConfig.theme.spacing.content_gap;
+  if (keyNum === 6) return appConfig.theme.spacing.panel_padding;
+  if (keyNum === 8) return appConfig.theme.spacing.section_padding;
+  return appConfig.theme.spacing.page_padding; // 10+
 };
 
 // ═══════════════════════════════════════════════════════
@@ -87,8 +87,8 @@ export function Dialog({ open = true, onClose, title, children, actions, footer,
     return null;
   }
 
-  // Touch-Target Minimum
-  const minTouchTarget = `${appConfig.responsive.touchMinSize}px`;
+  // Touch-Target Minimum (fallback to 44px if not in config)
+  const minTouchTarget = `${appConfig.layout.responsive?.touchMinSize || 44}px`;
 
   // ═══════════════════════════════════════════════════════
   // RESPONSIVE STYLES
@@ -106,7 +106,7 @@ export function Dialog({ open = true, onClose, title, children, actions, footer,
         zIndex: 10,
         backgroundColor: colorsConfig.ui.backgroundCard,
         borderRadius: 0,
-        padding: appConfig.spacing.mobile.lg,
+        padding: appConfig.theme.spacing.mobile_section_padding,
         overflow: 'auto',
         display: 'flex',
         flexDirection: 'column'
@@ -148,10 +148,10 @@ export function Dialog({ open = true, onClose, title, children, actions, footer,
     justifyContent: isMobile ? 'stretch' : 'center',
     flexDirection: isMobile ? 'column' : 'row',
     marginTop: isMobile ? 'auto' : dialogConfig.footer.marginTop,
-    paddingTop: isMobile ? appConfig.spacing.mobile.lg : undefined,
-    paddingLeft: isMobile ? appConfig.spacing.mobile.lg : dialogConfig.container.padding,
-    paddingRight: isMobile ? appConfig.spacing.mobile.lg : dialogConfig.container.padding,
-    gap: isMobile ? appConfig.spacing.mobile.sm : dialogConfig.footer.gap
+    paddingTop: isMobile ? appConfig.theme.spacing.mobile_section_padding : undefined,
+    paddingLeft: isMobile ? appConfig.theme.spacing.mobile_section_padding : dialogConfig.container.padding,
+    paddingRight: isMobile ? appConfig.theme.spacing.mobile_section_padding : dialogConfig.container.padding,
+    gap: isMobile ? appConfig.theme.spacing.mobile_element_gap : dialogConfig.footer.gap
   };
 
   return (
@@ -186,7 +186,7 @@ export function Dialog({ open = true, onClose, title, children, actions, footer,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            marginBottom: isMobile ? appConfig.spacing.mobile.lg : spacingBase(4)
+            marginBottom: isMobile ? appConfig.theme.spacing.mobile_section_padding : spacingBase(4)
           }}
         >
           <h2
@@ -229,7 +229,7 @@ export function Dialog({ open = true, onClose, title, children, actions, footer,
           style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: isMobile ? appConfig.spacing.mobile.lg : spacingBase(dialogConfig.body.gap),
+            gap: isMobile ? appConfig.theme.spacing.mobile_section_padding : spacingBase(dialogConfig.body.gap),
             flex: isMobile ? 1 : undefined
           }}
         >

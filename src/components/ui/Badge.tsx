@@ -12,7 +12,7 @@
  *   children - Badge-Inhalt
  *
  * @changelog
- *   0.3.0 - 2026-01-11 18:35:00 CET - Fixed: Config-Zugriff auf appConfig.badge statt appConfig.components.badge (Config-Struktur-Migration)
+ *   0.3.0 - 2026-01-11 18:35:00 CET - Fixed: Config-Zugriff auf appConfig.components.badge statt appConfig.components.badge (Config-Struktur-Migration)
  *   0.1.0 - 2025-12-11 - Initial version
  */
 
@@ -23,9 +23,9 @@ import type { BadgeProps } from '@/types/ui.types';
 import { appConfig } from '@/config';
 import { Check, X, AlertTriangle, Clock } from 'lucide-react';
 
-const badgeConfig = appConfig.badge;
+const badgeConfig = appConfig.components.badge;
 
-const colorsConfig = appConfig.colors;
+const colorsConfig = appConfig.theme.colors;
 
 // ═══════════════════════════════════════════════════════
 // HELPERS

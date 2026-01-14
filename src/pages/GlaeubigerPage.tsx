@@ -270,7 +270,7 @@ export function GlaeubigerPage() {
     }
   };
 
-  const columns = appConfig.table.glaeubiger.columns.map((col) => ({
+  const columns = appConfig.components.table.glaeubiger.columns.map((col) => ({
     key: col.key,
     label: col.label,
     type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
@@ -280,6 +280,7 @@ export function GlaeubigerPage() {
   return (
     <PageLayout
       title={appConfig.page_titles.creditors}
+      showBackButton={true}
       actions={
         <Button kind="new" onClick={() => setCreateDialogOpen(true)}>
           <div style={{ position: 'relative', display: 'inline-flex' }}>
@@ -318,7 +319,7 @@ export function GlaeubigerPage() {
             setCreateDialogOpen(false);
             resetForm();
           }}
-          title={appConfig.dialog_titles.new_creditor}
+          title={appConfig.components.dialog_titles.new_creditor}
           actions={
             <>
               <Button
@@ -328,9 +329,9 @@ export function GlaeubigerPage() {
                   resetForm();
                 }}
               >
-                {appConfig.buttons.cancel}
+                {appConfig.components.buttons.cancel}
               </Button>
-              <Button onClick={() => void handleCreate()}>{appConfig.buttons.create}</Button>
+              <Button onClick={() => void handleCreate()}>{appConfig.components.buttons.create}</Button>
             </>
           }
         >
@@ -375,7 +376,7 @@ export function GlaeubigerPage() {
             setSelectedGlaeubiger(null);
             resetForm();
           }}
-          title={appConfig.dialog_titles.edit_creditor}
+          title={appConfig.components.dialog_titles.edit_creditor}
           actions={
             <>
               <Button
@@ -386,9 +387,9 @@ export function GlaeubigerPage() {
                   resetForm();
                 }}
               >
-                {appConfig.buttons.cancel}
+                {appConfig.components.buttons.cancel}
               </Button>
-              <Button onClick={() => void handleUpdate()}>{appConfig.buttons.save}</Button>
+              <Button onClick={() => void handleUpdate()}>{appConfig.components.buttons.save}</Button>
             </>
           }
         >
@@ -432,7 +433,7 @@ export function GlaeubigerPage() {
             setDeleteDialogOpen(false);
             setSelectedGlaeubiger(null);
           }}
-          title={appConfig.dialog_titles.delete_creditor}
+          title={appConfig.components.dialog_titles.delete_creditor}
           actions={
             <>
               <Button
@@ -442,10 +443,10 @@ export function GlaeubigerPage() {
                   setSelectedGlaeubiger(null);
                 }}
               >
-                {appConfig.buttons.cancel}
+                {appConfig.components.buttons.cancel}
               </Button>
               <Button kind="rect" onClick={() => void handleDelete()}>
-                {appConfig.buttons.delete}
+                {appConfig.components.buttons.delete}
               </Button>
             </>
           }
@@ -463,7 +464,7 @@ export function GlaeubigerPage() {
             setSelectedGlaeubiger(null);
             setZahlungbetrag(0);
           }}
-          title={appConfig.dialog_titles.record_payment}
+          title={appConfig.components.dialog_titles.record_payment}
           actions={
             <>
               <Button
@@ -474,9 +475,9 @@ export function GlaeubigerPage() {
                   setZahlungbetrag(0);
                 }}
               >
-                {appConfig.buttons.cancel}
+                {appConfig.components.buttons.cancel}
               </Button>
-              <Button onClick={() => void handleZahlung()}>{appConfig.buttons.record}</Button>
+              <Button onClick={() => void handleZahlung()}>{appConfig.components.buttons.record}</Button>
             </>
           }
         >
@@ -505,8 +506,8 @@ export function GlaeubigerPage() {
           }}
           title={
             selectedGlaeubiger
-              ? `${appConfig.dialog_titles.history}: ${selectedGlaeubiger.name}`
-              : appConfig.dialog_titles.history
+              ? `${appConfig.components.dialog_titles.history}: ${selectedGlaeubiger.name}`
+              : appConfig.components.dialog_titles.history
           }
           actions={
             <Button
@@ -516,7 +517,7 @@ export function GlaeubigerPage() {
                 setZahlungsHistorie([]);
               }}
             >
-              {appConfig.buttons.close}
+              {appConfig.components.buttons.close}
             </Button>
           }
         >

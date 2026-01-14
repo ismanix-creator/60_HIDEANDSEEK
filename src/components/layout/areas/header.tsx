@@ -11,12 +11,15 @@
  */
 
 import type { CSSProperties, ReactNode } from 'react';
-import { Package, Users, HandCoins, Settings, UserCog, LogIn, LogOut } from 'lucide-react';
+import { Package, Users, HandCoins, Settings, UserCog, LogIn, LogOut, ArrowLeft, LayoutDashboard } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { appConfig } from '@/config';
 
-const colorsConfig = appConfig.colors;
-const typographyConfig = appConfig.typography;
-const pageHeaderConfig = appConfig.pageHeader;
+const { theme, components, layout } = appConfig;
+const colorsConfig = theme.colors;
+const typographyConfig = theme.typography;
+const headerConfig = layout.header;
+const buttonConfig = components.button;
 
 const iconMap: Record<string, React.ElementType> = {
   package: Package,
@@ -25,8 +28,34 @@ const iconMap: Record<string, React.ElementType> = {
   settings: Settings,
   'user-cog': UserCog,
   'log-in': LogIn,
-  'log-out': LogOut
+  'log-out': LogOut,
+  'layout-dashboard': LayoutDashboard
 };
+
+function getColorValue(colorPath: string): string {
+  if (!colorPath || colorPath === 'transparent' || colorPath === 'none') {
+    return 'transparent';
+  }
+
+  const trimmed = colorPath.trim();
+  const tokenPath = trimmed.startsWith('{') && trimmed.endsWith('}') ? trimmed.slice(1, -1) : trimmed;
+  const parts = tokenPath.split('.');
+
+  if (parts.length === 2) {
+    const [category, shade] = parts;
+    const colorCategory = colorsConfig[category as keyof typeof colorsConfig];
+
+    if (colorCategory && typeof colorCategory === 'object') {
+      const resolved = (colorCategory as Record<string, string>)[shade];
+
+      if (typeof resolved === 'string') {
+        return resolved === trimmed ? resolved : getColorValue(resolved);
+      }
+    }
+  }
+
+  return trimmed;
+}
 
 export interface HeaderAreaProps {
   style: CSSProperties;
@@ -34,6 +63,7 @@ export interface HeaderAreaProps {
   icon?: string | ReactNode;
   actions?: ReactNode;
   isMobile: boolean;
+  showBackButton?: boolean;
 }
 
 function renderIcon(icon?: string | ReactNode) {
@@ -45,29 +75,71 @@ function renderIcon(icon?: string | ReactNode) {
   return icon;
 }
 
-export function HeaderArea({ style, title, icon, actions, isMobile }: HeaderAreaProps) {
+export function HeaderArea({ style, title, icon, actions, isMobile, showBackButton }: HeaderAreaProps) {
+  const navigate = useNavigate();
+
+  const backButtonStyle: CSSProperties = {
+    backgroundColor: getColorValue(buttonConfig.back.bg),
+    color: getColorValue(buttonConfig.back.icon),
+    border: `1px solid ${getColorValue(buttonConfig.back.border)}`,
+    borderRadius: buttonConfig.borderRadius,
+    padding: headerConfig.padding,
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'all 0.2s ease',
+    outline: 'none'
+  };
+
   const titleStyle: CSSProperties = {
-    fontSize: isMobile ? typographyConfig.fontSize.lg : pageHeaderConfig.button.fontSize,
-    fontWeight: pageHeaderConfig.button.fontWeight,
+    fontSize: isMobile ? typographyConfig.fontSize.lg : headerConfig.fontSize,
+    fontWeight: headerConfig.fontWeight,
     fontFamily: typographyConfig.fontFamily.base,
-    color: colorsConfig.text.primary,
+    color: getColorValue(colorsConfig.text.primary),
     margin: 0,
     display: 'flex',
     alignItems: 'center',
-    gap: appConfig.spacing.sm
+    gap: headerConfig.gap
   };
 
   const actionsStyle: CSSProperties = {
     display: 'flex',
-    gap: appConfig.spacing.lg
+    gap: headerConfig.gap,
+    alignItems: 'center'
+  };
+
+  const handleBackClick = () => {
+    navigate('/');
+  };
+
+  const handleBackButtonHover = (e: React.MouseEvent<HTMLButtonElement>, isHover: boolean) => {
+    if (isHover) {
+      e.currentTarget.style.backgroundColor = getColorValue(buttonConfig.back.hoverBg);
+    } else {
+      e.currentTarget.style.backgroundColor = getColorValue(buttonConfig.back.bg);
+    }
   };
 
   return (
     <header style={style}>
-      <h1 style={titleStyle}>
-        {renderIcon(icon)}
-        {title}
-      </h1>
+      <div style={{ display: 'flex', alignItems: 'center', gap: headerConfig.gap }}>
+        {showBackButton && (
+          <button
+            style={backButtonStyle}
+            onClick={handleBackClick}
+            onMouseEnter={(e) => handleBackButtonHover(e, true)}
+            onMouseLeave={(e) => handleBackButtonHover(e, false)}
+            aria-label="Zurück zum Dashboard"
+          >
+            <ArrowLeft size={buttonConfig.back.iconSize} />
+          </button>
+        )}
+        <h1 style={titleStyle}>
+          {renderIcon(icon)}
+          {title}
+        </h1>
+      </div>
       {actions ? <div style={actionsStyle}>{actions}</div> : null}
     </header>
   );

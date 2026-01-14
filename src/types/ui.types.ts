@@ -193,6 +193,8 @@ export interface PageLayoutProps {
   children: ReactNode;
   footer?: ReactNode;
   footerColumns?: number;
+  showBackButton?: boolean;
+  hideNavigation?: boolean;
 }
 
 export interface NavItem {

@@ -14,15 +14,22 @@
  */
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { MaterialPage, KundenPage, GlaeubigerPage, SchuldnerPage, SettingsPage } from '@/pages';
-import { SetupPage } from '@/pages/SetupPage';
-import { LoginPage } from '@/pages/LoginPage';
+import {
+  DashboardPage,
+  MaterialPage,
+  KundenPage,
+  GlaeubigerPage,
+  SchuldnerPage,
+  SettingsPage,
+  SetupPage,
+  LoginPage
+} from '@/pages';
 
 export function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/material" replace />} />
+        <Route path="/" element={<DashboardPage />} />
         <Route path="/material" element={<MaterialPage />} />
         <Route path="/kunden" element={<KundenPage />} />
         <Route path="/glaeubiger" element={<GlaeubigerPage />} />
@@ -30,7 +37,7 @@ export function App() {
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/setup" element={<SetupPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="*" element={<Navigate to="/material" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

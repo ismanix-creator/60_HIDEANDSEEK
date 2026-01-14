@@ -23,16 +23,15 @@ describe('Config Validation', () => {
   });
 
   it('should have required top-level sections', () => {
-    // config.toml hat KEINE theme/components/ui wrapper mehr
-    // Alles ist top-level: app, auth, navigation, badge, borderRadius, breakpoints, button, colors, etc.
+    // Neue Struktur: theme, components, pages, content, navigation, layout
     expect(appConfig.app).toBeDefined();
     expect(appConfig.auth).toBeDefined();
+    expect(appConfig.theme).toBeDefined();
+    expect(appConfig.components).toBeDefined();
+    expect(appConfig.pages).toBeDefined();
+    expect(appConfig.content).toBeDefined();
     expect(appConfig.navigation).toBeDefined();
-    expect(appConfig.badge).toBeDefined();
-    expect(appConfig.borderRadius).toBeDefined();
-    expect(appConfig.breakpoints).toBeDefined();
-    expect(appConfig.button).toBeDefined();
-    expect(appConfig.colors).toBeDefined();
+    expect(appConfig.layout).toBeDefined();
   });
 
   it('should have valid app metadata', () => {
@@ -70,63 +69,63 @@ describe('Config Validation', () => {
   });
 
   it('should have valid badge config', () => {
-    expect(appConfig.badge).toBeDefined();
-    expect(appConfig.badge.base).toBeDefined();
-    expect(appConfig.badge.variants).toBeDefined();
+    expect(appConfig.components.badge).toBeDefined();
+    expect(appConfig.components.badge.base).toBeDefined();
+    expect(appConfig.components.badge.variants).toBeDefined();
     // Badge variants: success, error, warning, info, pending, neutral
-    expect(appConfig.badge.variants.success).toBeDefined();
-    expect(appConfig.badge.variants.error).toBeDefined();
-    expect(appConfig.badge.variants.warning).toBeDefined();
-    expect(appConfig.badge.variants.info).toBeDefined();
+    expect(appConfig.components.badge.variants.success).toBeDefined();
+    expect(appConfig.components.badge.variants.error).toBeDefined();
+    expect(appConfig.components.badge.variants.warning).toBeDefined();
+    expect(appConfig.components.badge.variants.info).toBeDefined();
   });
 
   it('should have valid borderRadius config', () => {
-    expect(appConfig.borderRadius).toBeDefined();
-    expect(appConfig.borderRadius.none).toBeDefined();
-    expect(appConfig.borderRadius.sm).toBeDefined();
-    expect(appConfig.borderRadius.md).toBeDefined();
-    expect(appConfig.borderRadius.lg).toBeDefined();
+    expect(appConfig.theme.border).toBeDefined();
+    expect(appConfig.theme.border.radius_none).toBeDefined();
+    expect(appConfig.theme.border.radius_sm).toBeDefined();
+    expect(appConfig.theme.border.radius_md).toBeDefined();
+    expect(appConfig.theme.border.radius_lg).toBeDefined();
   });
 
   it('should have valid breakpoints config', () => {
-    expect(appConfig.breakpoints).toBeDefined();
-    expect(appConfig.breakpoints.mobile).toBeDefined();
-    expect(appConfig.breakpoints.desktop).toBeDefined();
-    expect(typeof appConfig.breakpoints.mobile).toBe('number');
-    expect(typeof appConfig.breakpoints.desktop).toBe('number');
+    expect(appConfig.layout.rules).toBeDefined();
+    expect(appConfig.layout.rules.mobileBreakpointPx).toBeDefined();
+    expect(appConfig.layout.rules.desktopBreakpointPx).toBeDefined();
+    expect(typeof appConfig.layout.rules.mobileBreakpointPx).toBe('number');
+    expect(typeof appConfig.layout.rules.desktopBreakpointPx).toBe('number');
   });
 
   it('should have valid button config with nav/new/act/tab/rect types', () => {
-    expect(appConfig.button).toBeDefined();
-    // Button types: nav, new, act, tab, rect
-    expect(appConfig.button.nav).toBeDefined();
-    expect(appConfig.button.new).toBeDefined();
-    expect(appConfig.button.act).toBeDefined();
-    expect(appConfig.button.tab).toBeDefined();
-    expect(appConfig.button.rect).toBeDefined();
+    expect(appConfig.components.button).toBeDefined();
+    // Button types: nav, new, act, tab, rect, back
+    expect(appConfig.components.button.nav).toBeDefined();
+    expect(appConfig.components.button.new).toBeDefined();
+    expect(appConfig.components.button.act).toBeDefined();
+    expect(appConfig.components.button.tab).toBeDefined();
+    expect(appConfig.components.button.rect).toBeDefined();
+    expect(appConfig.components.button.back).toBeDefined();
     // Each button type has iconSize
-    expect(appConfig.button.nav.iconSize).toBeDefined();
-    expect(appConfig.button.new.iconSize).toBeDefined();
-    expect(appConfig.button.act.iconSize).toBeDefined();
+    expect(appConfig.components.button.nav.iconSize).toBeDefined();
+    expect(appConfig.components.button.new.iconSize).toBeDefined();
+    expect(appConfig.components.button.act.iconSize).toBeDefined();
   });
 
   it('should have valid colors config', () => {
-    expect(appConfig.colors).toBeDefined();
+    expect(appConfig.theme.colors).toBeDefined();
     // Core color palettes
-    expect(appConfig.colors.black).toBeDefined();
-    expect(appConfig.colors.white).toBeDefined();
-    expect(appConfig.colors.gray).toBeDefined();
-    expect(appConfig.colors.blue).toBeDefined();
-    expect(appConfig.colors.red).toBeDefined();
-    expect(appConfig.colors.green).toBeDefined();
+    expect(appConfig.theme.colors.black).toBeDefined();
+    expect(appConfig.theme.colors.gray).toBeDefined();
+    expect(appConfig.theme.colors.blue).toBeDefined();
+    expect(appConfig.theme.colors.red).toBeDefined();
+    expect(appConfig.theme.colors.green).toBeDefined();
     // Semantic colors
-    expect(appConfig.colors.text).toBeDefined();
-    expect(appConfig.colors.ui).toBeDefined();
-    expect(appConfig.colors.button).toBeDefined();
-    expect(appConfig.colors.status).toBeDefined();
-    expect(appConfig.colors.error).toBeDefined();
-    expect(appConfig.colors.warning).toBeDefined();
-    expect(appConfig.colors.success).toBeDefined();
-    expect(appConfig.colors.info).toBeDefined();
+    expect(appConfig.theme.colors.text).toBeDefined();
+    expect(appConfig.theme.colors.ui).toBeDefined();
+    expect(appConfig.theme.colors.button).toBeDefined();
+    expect(appConfig.theme.colors.status).toBeDefined();
+    expect(appConfig.theme.colors.error).toBeDefined();
+    expect(appConfig.theme.colors.warning).toBeDefined();
+    expect(appConfig.theme.colors.success).toBeDefined();
+    expect(appConfig.theme.colors.info).toBeDefined();
   });
 });

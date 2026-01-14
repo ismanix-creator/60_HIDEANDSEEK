@@ -1,4 +1,20 @@
-# CLAUDE.md
+# CLAUDE.md (Pointer)
+
+**Die kanonische Projektanweisung liegt im Obsidian Vault (SSoT):**
+
+`/home/akki/vault/DEV_CONTROL_VAULT/Projectdocs/60_HIDEANDSEEK/CLAUDE.md`
+
+**Kurzregel:**
+- Obsidian ist SSoT (Policies/Tasks/Decisions/Reports)
+- Serena ist Code-Wahrheit (symbolic-first)
+- Context7 injiziert P0/P1/P2
+
+**Hinweis:**
+Wenn du im Repo arbeitest, öffne die SSoT-CLAUDE.md im Vault und folge ihr.
+
+---
+
+## Legacy Commands Reference (behalten für Kompatibilität)
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 

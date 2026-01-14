@@ -15,7 +15,7 @@
  *
  * @changelog
  *   0.12.0 - 2026-01-11 22:30:00 - Feature: minRows Logic implementiert (table.behavior.minRows aus Config)
- *   0.11.0 - 2026-01-11 - Fixed: Config-Zugriff auf appConfig.table statt appConfig.components.table (Config-Struktur-Migration)
+ *   0.11.0 - 2026-01-11 - Fixed: Config-Zugriff auf appConfig.components.table statt appConfig.components.table (Config-Struktur-Migration)
  *   0.10.0 - 2026-01-11 - Fixed: unused parameter warning in formatCellValue (renamed column to _column)
  *   0.9.0 - 2026-01-10 - Row-Click auf Aktions-Spalte (letzte) ausgeschlossen (Task 2.4.3)
  *   0.8.0 - 2026-01-09 - Direct appConfig.* access (spacingConfig eliminiert)
@@ -38,10 +38,10 @@ import { appConfig } from '@/config';
 import { formatCurrency, formatDate, formatNumber } from '@/utils/format';
 import { useResponsive } from '@/hooks/useResponsive';
 
-const tableConfig = appConfig.table;
+const tableConfig = appConfig.components.table;
 
-const colorsConfig = appConfig.colors;
-const typographyConfig = appConfig.typography;
+const colorsConfig = appConfig.theme.colors;
+const typographyConfig = appConfig.theme.typography;
 
 // ═══════════════════════════════════════════════════════
 // HELPERS
@@ -113,17 +113,17 @@ function formatCellValue<T>(item: T, _column: TableColumn<T>): React.ReactNode {
 // Helper: Tailwind-Scale (0-32) auf spacing (xxs-xxl) mappen
 const spacingBase = (key: number | string): string => {
   const keyNum = typeof key === 'number' ? key : parseInt(String(key), 10);
-  if (isNaN(keyNum)) return appConfig.spacing.md; // fallback
+  if (isNaN(keyNum)) return appConfig.theme.spacing.content_gap; // fallback
 
-  if (keyNum <= 0) return appConfig.spacing.xxs;
-  if (keyNum === 1) return appConfig.spacing.xs;
-  if (keyNum === 2) return appConfig.spacing.xs;
-  if (keyNum === 3) return appConfig.spacing.sm;
-  if (keyNum === 4) return appConfig.spacing.md;
-  if (keyNum === 5) return appConfig.spacing.md;
-  if (keyNum === 6) return appConfig.spacing.lg;
-  if (keyNum === 8) return appConfig.spacing.xl;
-  return appConfig.spacing.xxl; // 10+
+  if (keyNum <= 0) return appConfig.theme.spacing.tight;
+  if (keyNum === 1) return appConfig.theme.spacing.compact;
+  if (keyNum === 2) return appConfig.theme.spacing.compact;
+  if (keyNum === 3) return appConfig.theme.spacing.element_gap;
+  if (keyNum === 4) return appConfig.theme.spacing.content_gap;
+  if (keyNum === 5) return appConfig.theme.spacing.content_gap;
+  if (keyNum === 6) return appConfig.theme.spacing.panel_padding;
+  if (keyNum === 8) return appConfig.theme.spacing.section_padding;
+  return appConfig.theme.spacing.page_padding; // 10+
 };
 
 const EDGE_PADDING_STEPS = 1;
@@ -152,8 +152,8 @@ function getAlign<T>(_column: TableColumn<T>): CSSProperties['textAlign'] {
 function getFontFamily<T>(_column: TableColumn<T>): string {
   // Use global font family from table config (cellFontMono: boolean)
   const useMono = tableConfig.cellFontMono;
-  if (useMono) return appConfig.typography.fontFamily.mono;
-  return appConfig.typography.fontFamily.base;
+  if (useMono) return appConfig.theme.typography.fontFamily.mono;
+  return appConfig.theme.typography.fontFamily.base;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -242,7 +242,7 @@ export function Table<T>({
     backgroundColor: getColorValue(tableConfig.wrapperBg),
     borderRadius: tableConfig.wrapperBorderRadius,
     border: `2px solid ${getColorValue(tableConfig.wrapperBorder)}`,
-    boxShadow: appConfig.shadows[tableConfig.wrapperShadow as keyof typeof appConfig.shadows] || 'none'
+    boxShadow: appConfig.theme.shadows[tableConfig.wrapperShadow as keyof typeof appConfig.theme.shadows] || 'none'
   };
 
   // Table Style
@@ -281,8 +281,8 @@ export function Table<T>({
                     fontSize: tableConfig.headerFontSize,
                     fontWeight: tableConfig.headerFontWeight,
                     fontFamily: tableConfig.headerFontMono
-                      ? appConfig.typography.fontFamily.mono
-                      : appConfig.typography.fontFamily.base,
+                      ? appConfig.theme.typography.fontFamily.mono
+                      : appConfig.theme.typography.fontFamily.base,
                     color: getColorValue(tableConfig.headerText),
                     borderBottom: `2px solid ${getColorValue(tableConfig.rowBorderBottom)}`
                   }}

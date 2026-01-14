@@ -20,23 +20,23 @@ import { appConfig } from '@/config';
 describe('Button Component', () => {
   describe('Config Loading', () => {
     it('should load button config from appConfig', () => {
-      expect(appConfig.button).toBeDefined();
-      expect(appConfig.button.nav).toBeDefined();
-      expect(appConfig.button.new).toBeDefined();
-      expect(appConfig.button.act).toBeDefined();
-      expect(appConfig.button.tab).toBeDefined();
-      expect(appConfig.button.rect).toBeDefined();
+      expect(appConfig.components.button).toBeDefined();
+      expect(appConfig.components.button.nav).toBeDefined();
+      expect(appConfig.components.button.new).toBeDefined();
+      expect(appConfig.components.button.act).toBeDefined();
+      expect(appConfig.components.button.tab).toBeDefined();
+      expect(appConfig.components.button.rect).toBeDefined();
     });
 
     it('should have all required button types in config', () => {
       const types = ['nav', 'new', 'act', 'tab', 'rect'];
       types.forEach((type) => {
-        expect(appConfig.button).toHaveProperty(type);
+        expect(appConfig.components.button).toHaveProperty(type);
       });
     });
 
     it('should have icon button styles in config', () => {
-      const navButton = appConfig.button.nav;
+      const navButton = appConfig.components.button.nav;
       expect(navButton.bg).toBeDefined();
       expect(navButton.icon).toBeDefined();
       expect(navButton.hoverBg).toBeDefined();
@@ -44,7 +44,7 @@ describe('Button Component', () => {
     });
 
     it('should have rect button styles in config', () => {
-      const rectButton = appConfig.button.rect;
+      const rectButton = appConfig.components.button.rect;
       expect(rectButton.bg).toBeDefined();
       expect(rectButton.text).toBeDefined();
       expect(rectButton.hoverBg).toBeDefined();
@@ -148,7 +148,7 @@ describe('Button Component', () => {
     it('should apply config-driven height for rect kind', () => {
       const { container } = render(<Button kind="rect">Test</Button>);
       const button = container.firstChild as HTMLElement;
-      const expectedHeight = appConfig.button.rect.height;
+      const expectedHeight = appConfig.components.button.rect.height;
       expect(button.style.height).toBe(expectedHeight);
     });
 

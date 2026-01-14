@@ -410,7 +410,7 @@ export function KundenPage() {
     }
   };
 
-  const overviewColumns = appConfig.table.kunden.columns.map((col) => ({
+  const overviewColumns = appConfig.components.table.kunden.columns.map((col) => ({
     key: col.key,
     label: col.label,
     type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
@@ -460,7 +460,7 @@ export function KundenPage() {
     }
   };
 
-  const postenMatColumns = appConfig.table.kunden.mat.columns.map((col) => ({
+  const postenMatColumns = appConfig.components.table.kunden.mat.columns.map((col) => ({
     key: col.key,
     label: col.label,
     type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
@@ -502,7 +502,7 @@ export function KundenPage() {
     }
   };
 
-  const postenNoMatColumns = appConfig.table.kunden.nomat.columns.map((col) => ({
+  const postenNoMatColumns = appConfig.components.table.kunden.nomat.columns.map((col) => ({
     key: col.key,
     label: col.label,
     type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
@@ -514,6 +514,7 @@ export function KundenPage() {
     return (
       <PageLayout
         title={appConfig.page_titles.customers}
+        showBackButton={true}
         actions={
           <Button kind="new" onClick={() => setCreateKundeDialogOpen(true)}>
             <UserPlus />
@@ -540,7 +541,7 @@ export function KundenPage() {
               setCreateKundeDialogOpen(false);
               setKundeFormData({ name: '' });
             }}
-            title={appConfig.dialog_titles.new_customer}
+            title={appConfig.components.dialog_titles.new_customer}
             actions={
               <>
                 <Button
@@ -550,9 +551,9 @@ export function KundenPage() {
                     setKundeFormData({ name: '' });
                   }}
                 >
-                  {appConfig.buttons.cancel}
+                  {appConfig.components.buttons.cancel}
                 </Button>
-                <Button onClick={() => void handleCreateKunde()}>{appConfig.buttons.create}</Button>
+                <Button onClick={() => void handleCreateKunde()}>{appConfig.components.buttons.create}</Button>
               </>
             }
           >
@@ -569,13 +570,13 @@ export function KundenPage() {
 
   // Render Detail
   return (
-    <PageLayout title={`Kunde: ${selectedKunde?.name || ''}`}>
+    <PageLayout title={`Kunde: ${selectedKunde?.name || ''}`} showBackButton={true}>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
             <Button kind="rect" onClick={handleBackToOverview}>
-              ← {appConfig.buttons.cancel}
+              ← {appConfig.components.buttons.cancel}
             </Button>
             <h2 className="text-2xl font-semibold text-neutral-50">{selectedKunde?.name}</h2>
           </div>
@@ -589,10 +590,10 @@ export function KundenPage() {
                 }
               }}
             >
-              {appConfig.buttons.edit}
+              {appConfig.components.buttons.edit}
             </Button>
             <Button kind="rect" onClick={() => setDeleteKundeDialogOpen(true)}>
-              {appConfig.buttons.delete}
+              {appConfig.components.buttons.delete}
             </Button>
           </div>
         </div>
@@ -605,7 +606,7 @@ export function KundenPage() {
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-semibold text-neutral-50">Material-Posten</h3>
             <Button onClick={() => setCreatePostenMatDialogOpen(true)}>
-              {appConfig.dialog_titles.new_material_post}
+              {appConfig.components.dialog_titles.new_material_post}
             </Button>
           </div>
           <Table
@@ -622,7 +623,7 @@ export function KundenPage() {
             <div className="flex justify-between items-center">
               <h3 className="text-xl font-semibold text-neutral-50">Sonstige Posten</h3>
               <Button onClick={() => setCreatePostenNoMatDialogOpen(true)}>
-                {appConfig.dialog_titles.new_other_post}
+                {appConfig.components.dialog_titles.new_other_post}
               </Button>
             </div>
             <Table
@@ -642,7 +643,7 @@ export function KundenPage() {
             setEditKundeDialogOpen(false);
             setKundeFormData({ name: '' });
           }}
-          title={appConfig.dialog_titles.edit_customer}
+          title={appConfig.components.dialog_titles.edit_customer}
           actions={
             <>
               <Button
@@ -652,9 +653,9 @@ export function KundenPage() {
                   setKundeFormData({ name: '' });
                 }}
               >
-                {appConfig.buttons.cancel}
+                {appConfig.components.buttons.cancel}
               </Button>
-              <Button onClick={() => void handleUpdateKunde()}>{appConfig.buttons.save}</Button>
+              <Button onClick={() => void handleUpdateKunde()}>{appConfig.components.buttons.save}</Button>
             </>
           }
         >
@@ -669,14 +670,14 @@ export function KundenPage() {
         <Dialog
           open={deleteKundeDialogOpen}
           onClose={() => setDeleteKundeDialogOpen(false)}
-          title={appConfig.dialog_titles.delete_customer}
+          title={appConfig.components.dialog_titles.delete_customer}
           actions={
             <>
               <Button kind="rect" onClick={() => setDeleteKundeDialogOpen(false)}>
-                {appConfig.buttons.cancel}
+                {appConfig.components.buttons.cancel}
               </Button>
               <Button kind="rect" onClick={() => void handleDeleteKunde()}>
-                {appConfig.buttons.delete}
+                {appConfig.components.buttons.delete}
               </Button>
             </>
           }
@@ -693,7 +694,7 @@ export function KundenPage() {
             setCreatePostenMatDialogOpen(false);
             resetPostenMatForm();
           }}
-          title={appConfig.dialog_titles.new_material_post}
+          title={appConfig.components.dialog_titles.new_material_post}
           actions={
             <>
               <Button
@@ -703,9 +704,9 @@ export function KundenPage() {
                   resetPostenMatForm();
                 }}
               >
-                {appConfig.buttons.cancel}
+                {appConfig.components.buttons.cancel}
               </Button>
-              <Button onClick={handleCreatePostenMat}>{appConfig.buttons.create}</Button>
+              <Button onClick={handleCreatePostenMat}>{appConfig.components.buttons.create}</Button>
             </>
           }
         >
@@ -751,7 +752,7 @@ export function KundenPage() {
             setCreatePostenNoMatDialogOpen(false);
             resetPostenNoMatForm();
           }}
-          title={appConfig.dialog_titles.new_other_post}
+          title={appConfig.components.dialog_titles.new_other_post}
           actions={
             <>
               <Button
@@ -761,9 +762,9 @@ export function KundenPage() {
                   resetPostenNoMatForm();
                 }}
               >
-                {appConfig.buttons.cancel}
+                {appConfig.components.buttons.cancel}
               </Button>
-              <Button onClick={handleCreatePostenNoMat}>{appConfig.buttons.create}</Button>
+              <Button onClick={handleCreatePostenNoMat}>{appConfig.components.buttons.create}</Button>
             </>
           }
         >
@@ -804,7 +805,7 @@ export function KundenPage() {
             setSelectedPosten(null);
             setZahlungbetrag(0);
           }}
-          title={appConfig.dialog_titles.record_payment}
+          title={appConfig.components.dialog_titles.record_payment}
           actions={
             <>
               <Button
@@ -815,9 +816,9 @@ export function KundenPage() {
                   setZahlungbetrag(0);
                 }}
               >
-                {appConfig.buttons.cancel}
+                {appConfig.components.buttons.cancel}
               </Button>
-              <Button onClick={handleZahlung}>{appConfig.buttons.record}</Button>
+              <Button onClick={handleZahlung}>{appConfig.components.buttons.record}</Button>
             </>
           }
         >

@@ -15,7 +15,7 @@
  *   disabled - Deaktiviert das Input
  *
  * @changelog
- *   0.8.0 - 2026-01-11 18:35:00 CET - Fixed: Config-Zugriff auf appConfig.input statt appConfig.components.input (Config-Struktur-Migration)
+ *   0.8.0 - 2026-01-11 18:35:00 CET - Fixed: Config-Zugriff auf appConfig.components.input statt appConfig.components.input (Config-Struktur-Migration)
  *   0.7.0 - 2026-01-11 - Fixed for new config structure: token resolver for color references
  *   0.6.0 - 2026-01-09 - Direct appConfig.* access (breakpointsConfig eliminiert)
  *   0.4.0 - 2025-12-14 - Responsive: Touch-Targets 44px, fontSize 16px für iOS Zoom
@@ -31,9 +31,9 @@ import type { InputProps } from '@/types/ui.types';
 import { appConfig } from '@/config';
 import { useResponsive } from '@/hooks/useResponsive';
 
-const inputConfig = appConfig.input;
+const inputConfig = appConfig.components.input;
 
-const colorsConfig = appConfig.colors;
+const colorsConfig = appConfig.theme.colors;
 
 // ═══════════════════════════════════════════════════════
 // HELPERS
@@ -116,7 +116,7 @@ export function Input({
   const inputType = type === 'currency' ? 'number' : type === 'password' ? 'password' : type;
 
   // Touch-Target Minimum (44px) auf Mobile
-  const minTouchTarget = `${appConfig.responsive.touchMinSize}px`;
+  const minTouchTarget = `${appConfig.layout.rules.touchMinSizePx}px`;
 
   // Mobile: fontSize 16px verhindert iOS Auto-Zoom bei Focus
   const fontSize = isMobile ? '16px' : '0.875rem';

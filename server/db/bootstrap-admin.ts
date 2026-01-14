@@ -21,12 +21,15 @@ import { backendConfig } from '../config/app.config.js';
 export function ensureBootstrapAdmin(db: Database): void {
   const bootstrapId = backendConfig.auth.admin_bootstrap_user_id;
 
-  // Check if already exists
-  const stmt = db.prepare('SELECT id FROM users WHERE id = ?');
-  const existing = stmt.get(bootstrapId);
+  // Check if already exists (by ID)
+  const existing = db.prepare('SELECT id, username, role, status FROM users WHERE id = ?').get(bootstrapId) as
+    | { id: number | string; username: string | null; role: string | null; status: string | null }
+    | undefined;
 
   if (existing) {
-    console.log(`Bootstrap admin '${bootstrapId}' already exists.`);
+    console.log(
+      `Bootstrap admin already exists (id=${existing.id}, username=${existing.username ?? 'NULL'}, role=${existing.role ?? 'NULL'}, status=${existing.status ?? 'NULL'}).`
+    );
     return;
   }
 
@@ -49,5 +52,5 @@ export function ensureBootstrapAdmin(db: Database): void {
     now
   );
 
-  console.log(`Bootstrap admin '${bootstrapId}' created with status=bootstrap`);
+  console.log(`Bootstrap admin created (id=${bootstrapId}, username=admin, status=bootstrap).`);
 }

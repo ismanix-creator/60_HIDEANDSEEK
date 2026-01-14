@@ -29,23 +29,23 @@ import { useResponsive } from '@/hooks/useResponsive';
 
 const infoboxConfig = appConfig.infobox;
 
-const colorsConfig = appConfig.colors;
-const typographyConfig = appConfig.typography;
+const colorsConfig = appConfig.theme.colors;
+const typographyConfig = appConfig.theme.typography;
 
 // Helper: Tailwind-Scale (0-32) auf spacing (xxs-xxl) mappen
 const spacingBase = (key: number | string): string => {
   const keyNum = typeof key === 'number' ? key : parseInt(String(key), 10);
-  if (isNaN(keyNum)) return appConfig.spacing.md; // fallback
+  if (isNaN(keyNum)) return appConfig.theme.spacing.content_gap; // fallback
 
-  if (keyNum <= 0) return appConfig.spacing.xxs;
-  if (keyNum === 1) return appConfig.spacing.xs;
-  if (keyNum === 2) return appConfig.spacing.xs;
-  if (keyNum === 3) return appConfig.spacing.sm;
-  if (keyNum === 4) return appConfig.spacing.md;
-  if (keyNum === 5) return appConfig.spacing.md;
-  if (keyNum === 6) return appConfig.spacing.lg;
-  if (keyNum === 8) return appConfig.spacing.xl;
-  return appConfig.spacing.xxl; // 10+
+  if (keyNum <= 0) return appConfig.theme.spacing.tight;
+  if (keyNum === 1) return appConfig.theme.spacing.compact;
+  if (keyNum === 2) return appConfig.theme.spacing.compact;
+  if (keyNum === 3) return appConfig.theme.spacing.element_gap;
+  if (keyNum === 4) return appConfig.theme.spacing.content_gap;
+  if (keyNum === 5) return appConfig.theme.spacing.content_gap;
+  if (keyNum === 6) return appConfig.theme.spacing.panel_padding;
+  if (keyNum === 8) return appConfig.theme.spacing.section_padding;
+  return appConfig.theme.spacing.page_padding; // 10+
 };
 
 // ═══════════════════════════════════════════════════════
@@ -86,13 +86,13 @@ export function Infobox({ variant = 'info', title, children, className = '' }: I
 
   const containerStyle: React.CSSProperties = {
     display: 'flex',
-    gap: isMobile ? appConfig.spacing.mobile.sm : spacingBase(3),
+    gap: isMobile ? appConfig.theme.spacing.mobile_element_gap : spacingBase(3),
     backgroundColor: getColorValue(variantStyles.bg),
     borderWidth: `${baseConfig.borderWidth}px`,
     borderStyle: 'solid',
     borderColor: getColorValue(variantStyles.border),
     borderRadius: baseConfig.borderRadius,
-    padding: isMobile ? appConfig.spacing.mobile.md : spacingBase(baseConfig.padding),
+    padding: isMobile ? appConfig.theme.spacing.mobile_container_padding : spacingBase(baseConfig.padding),
     // Mobile: Volle Breite
     width: isMobile ? '100%' : undefined
   };

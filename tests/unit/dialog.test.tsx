@@ -18,29 +18,29 @@ import { appConfig } from '@/config';
 describe('Dialog Component', () => {
   describe('Config Loading', () => {
     it('should load dialog config from appConfig', () => {
-      expect(appConfig.dialog).toBeDefined();
-      expect(appConfig.dialog.overlay).toBeDefined();
-      expect(appConfig.dialog.container).toBeDefined();
+      expect(appConfig.components.dialog).toBeDefined();
+      expect(appConfig.components.dialog.base.overlay).toBeDefined();
+      expect(appConfig.components.dialog.base.container).toBeDefined();
     });
 
     it('should have overlay styles in config', () => {
-      expect(appConfig.dialog.overlay.bg).toBeDefined();
+      expect(appConfig.components.dialog.base.overlay.bg).toBeDefined();
     });
 
     it('should have container styles in config', () => {
-      expect(appConfig.dialog.container.bg).toBeDefined();
-      expect(appConfig.dialog.container.border).toBeDefined();
-      expect(appConfig.dialog.container.shadow).toBeDefined();
+      expect(appConfig.components.dialog.base.container.bg).toBeDefined();
+      expect(appConfig.components.dialog.base.container.border).toBeDefined();
+      expect(appConfig.components.dialog.base.container.shadow).toBeDefined();
     });
 
     it('should have header styles in config', () => {
-      expect(appConfig.dialog.header).toBeDefined();
-      expect(appConfig.dialog.header.fontSize).toBeDefined();
+      expect(appConfig.components.dialog.base.header).toBeDefined();
+      expect(appConfig.components.dialog.base.header.fontSize).toBeDefined();
     });
 
     it('should have footer styles in config', () => {
-      expect(appConfig.dialog.footer).toBeDefined();
-      expect(appConfig.dialog.footer.padding).toBeDefined();
+      expect(appConfig.components.dialog.base.footer).toBeDefined();
+      expect(appConfig.components.dialog.base.footer.padding).toBeDefined();
     });
   });
 

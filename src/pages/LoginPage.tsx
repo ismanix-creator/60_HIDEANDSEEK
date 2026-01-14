@@ -76,23 +76,23 @@ export function LoginPage() {
   return (
     <div
       style={{
-        padding: appConfig.spacing.xl,
+        padding: appConfig.theme.spacing.section_padding,
         maxWidth: '400px',
-        margin: `${appConfig.spacing.xxl} auto`
+        margin: `${appConfig.theme.spacing.page_padding} auto`
       }}
     >
       <h1>Login</h1>
       <p
         style={{
-          color: appConfig.colors.gray['500'],
-          marginBottom: appConfig.spacing.xl
+          color: appConfig.theme.colors.gray['500'],
+          marginBottom: appConfig.theme.spacing.section_padding
         }}
       >
         {appConfig.auth.enabled ? 'Login erforderlich' : 'Auth deaktiviert (dev mode)'}
       </p>
 
       <form onSubmit={(e) => void handleLogin(e)}>
-        <div style={{ marginBottom: appConfig.spacing.md }}>
+        <div style={{ marginBottom: appConfig.theme.spacing.content_gap }}>
           <Input
             type="text"
             label="Username"
@@ -101,7 +101,7 @@ export function LoginPage() {
             required
           />
         </div>
-        <div style={{ marginBottom: appConfig.spacing.lg }}>
+        <div style={{ marginBottom: appConfig.theme.spacing.panel_padding }}>
           <Input
             type="password"
             label="Password"
@@ -118,10 +118,10 @@ export function LoginPage() {
       {error && (
         <div
           style={{
-            marginTop: appConfig.spacing.lg,
-            padding: appConfig.spacing.md,
-            background: appConfig.colors.red['500'],
-            color: appConfig.colors.white['50'],
+            marginTop: appConfig.theme.spacing.panel_padding,
+            padding: appConfig.theme.spacing.content_gap,
+            background: appConfig.theme.colors.red['500'],
+            color: appConfig.theme.colors.white['50'],
             borderRadius: appConfig.borderRadius.md
           }}
         >
@@ -131,14 +131,14 @@ export function LoginPage() {
 
       <div
         style={{
-          marginTop: appConfig.spacing.xl,
+          marginTop: appConfig.theme.spacing.section_padding,
           textAlign: 'center'
         }}
       >
         <a
           href="/setup"
           style={{
-            color: appConfig.colors.blue['500'],
+            color: appConfig.theme.colors.blue['500'],
             textDecoration: 'none'
           }}
         >

@@ -26,7 +26,7 @@
  *
  * @changelog
  *   0.17.0 - 2026-01-11 22:30:00 CET - Feature: Disabled-State Support für Action Buttons mit Config-Styling (cursor-not-allowed, aria-disabled)
- *   0.16.0 - 2026-01-11 18:35:00 CET - Fixed: Config-Zugriff auf appConfig.button statt appConfig.components.button (Config-Struktur-Migration)
+ *   0.16.0 - 2026-01-11 18:35:00 CET - Fixed: Config-Zugriff auf appConfig.components.button statt appConfig.components.button (Config-Struktur-Migration)
  *   0.15.0 - 2026-01-11 18:00:00 CET - Complete refactor: nav/new/act/tab/rect, iconSize in config per type
  *   0.14.0 - 2026-01-11 16:45:00 CET - Refactor: CSS-based hover/active (no React state), disabled state blocks hover/active
  *   0.13.0 - 2026-01-11 03:15:00 CET - Complete refactor: new API (kind | intent), CSS-based hover/active
@@ -38,9 +38,9 @@
 import type { ButtonProps } from '@/types/ui.types';
 import { appConfig } from '@/config';
 
-const buttonConfig = appConfig.button;
-const colorsConfig = appConfig.colors;
-const typographyConfig = appConfig.typography;
+const buttonConfig = appConfig.components.button;
+const colorsConfig = appConfig.theme.colors;
+const typographyConfig = appConfig.theme.typography;
 
 // ═══════════════════════════════════════════════════════
 // HELPERS

@@ -11,6 +11,7 @@
  *   0.1.0 - 2026-01-07 - Initial exports
  */
 
+export { DashboardPage } from './DashboardPage';
 export { MaterialPage } from './MaterialPage';
 export { KundenPage } from './KundenPage';
 export { GlaeubigerPage } from './GlaeubigerPage';

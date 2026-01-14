@@ -10,8 +10,8 @@
  *   const { isMobile, isTablet, isDesktop } = useResponsive();
  *
  * @changelog
- *   0.3.0 - 2026-01-11 18:35:00 CET - Fixed: Config-Zugriff auf appConfig.breakpoints statt appConfig.breakpoints (Config-Struktur-Migration)
- *   0.2.0 - 2026-01-09 - Direct appConfig.breakpoints access (breakpointsConfig eliminiert)
+ *   0.3.0 - 2026-01-11 18:35:00 CET - Fixed: Config-Zugriff auf appConfig.layout.breakpoints statt appConfig.layout.breakpoints (Config-Struktur-Migration)
+ *   0.2.0 - 2026-01-09 - Direct appConfig.layout.breakpoints access (breakpointsConfig eliminiert)
  *   0.1.0 - 2026-01-07 - Initial version mit Mobile/Tablet/Desktop Detection
  */
 
@@ -34,9 +34,9 @@ export function useResponsive(): ResponsiveState {
     const width = typeof window !== 'undefined' ? window.innerWidth : 1024;
     return {
       width,
-      isMobile: width < appConfig.breakpoints.mobile,
-      isTablet: width >= appConfig.breakpoints.mobile && width < appConfig.breakpoints.desktop,
-      isDesktop: width >= appConfig.breakpoints.desktop
+      isMobile: width < appConfig.layout.rules.mobileBreakpointPx,
+      isTablet: width >= appConfig.layout.rules.mobileBreakpointPx && width < appConfig.layout.rules.desktopBreakpointPx,
+      isDesktop: width >= appConfig.layout.rules.desktopBreakpointPx
     };
   });
 
@@ -45,9 +45,9 @@ export function useResponsive(): ResponsiveState {
       const width = window.innerWidth;
       setState({
         width,
-        isMobile: width < appConfig.breakpoints.mobile,
-        isTablet: width >= appConfig.breakpoints.mobile && width < appConfig.breakpoints.desktop,
-        isDesktop: width >= appConfig.breakpoints.desktop
+        isMobile: width < appConfig.layout.rules.mobileBreakpointPx,
+        isTablet: width >= appConfig.layout.rules.mobileBreakpointPx && width < appConfig.layout.rules.desktopBreakpointPx,
+        isDesktop: width >= appConfig.layout.rules.desktopBreakpointPx
       });
     };
 

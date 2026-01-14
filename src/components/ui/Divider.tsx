@@ -24,22 +24,22 @@ import { appConfig } from '@/config';
 
 const dividerConfig = appConfig.divider;
 
-const colorsConfig = appConfig.colors;
+const colorsConfig = appConfig.theme.colors;
 
 // Helper: Tailwind-Scale (0-32) auf theme.spacing (xxs-xxl) mappen
 const spacingBase = (key: number | string): string => {
   const keyNum = typeof key === 'number' ? key : parseInt(String(key), 10);
-  if (isNaN(keyNum)) return appConfig.spacing.md; // fallback
+  if (isNaN(keyNum)) return appConfig.theme.spacing.content_gap; // fallback
 
-  if (keyNum <= 0) return appConfig.spacing.xxs;
-  if (keyNum === 1) return appConfig.spacing.xs;
-  if (keyNum === 2) return appConfig.spacing.xs;
-  if (keyNum === 3) return appConfig.spacing.sm;
-  if (keyNum === 4) return appConfig.spacing.md;
-  if (keyNum === 5) return appConfig.spacing.md;
-  if (keyNum === 6) return appConfig.spacing.lg;
-  if (keyNum === 8) return appConfig.spacing.xl;
-  return appConfig.spacing.xxl; // 10+
+  if (keyNum <= 0) return appConfig.theme.spacing.tight;
+  if (keyNum === 1) return appConfig.theme.spacing.compact;
+  if (keyNum === 2) return appConfig.theme.spacing.compact;
+  if (keyNum === 3) return appConfig.theme.spacing.element_gap;
+  if (keyNum === 4) return appConfig.theme.spacing.content_gap;
+  if (keyNum === 5) return appConfig.theme.spacing.content_gap;
+  if (keyNum === 6) return appConfig.theme.spacing.panel_padding;
+  if (keyNum === 8) return appConfig.theme.spacing.section_padding;
+  return appConfig.theme.spacing.page_padding; // 10+
 };
 
 // ═══════════════════════════════════════════════════════

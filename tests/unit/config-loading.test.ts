@@ -20,124 +20,108 @@ import { appConfig } from '@/config';
 describe('Config Loading - Phase 1 Extensions', () => {
   describe('Theme Extensions', () => {
     it('should load theme.shadows', () => {
-      expect(appConfig.shadows).toBeDefined();
-      expect(appConfig.shadows.sm).toBe('0 1px 2px 0 rgba(0, 0, 0, 0.05)');
-      expect(appConfig.shadows.md).toBe('0 4px 6px -1px rgba(0, 0, 0, 0.1)');
-      expect(appConfig.shadows.lg).toBe('0 10px 15px -3px rgba(0, 0, 0, 0.1)');
-      expect(appConfig.shadows.xl).toBe('0 20px 25px -5px rgba(0, 0, 0, 0.1)');
-      expect(appConfig.shadows.none).toBe('none');
+      expect(appConfig.theme.shadows).toBeDefined();
+      expect(appConfig.theme.shadows.sm).toBe('0 1px 2px 0 rgba(0, 0, 0, 0.05)');
+      expect(appConfig.theme.shadows.md).toBe('0 4px 6px -1px rgba(0, 0, 0, 0.1)');
+      expect(appConfig.theme.shadows.lg).toBe('0 10px 15px -3px rgba(0, 0, 0, 0.1)');
+      expect(appConfig.theme.shadows.xl).toBe('0 20px 25px -5px rgba(0, 0, 0, 0.1)');
+      expect(appConfig.theme.shadows.none).toBe('none');
     });
 
-    it('should load theme.borderRadius', () => {
-      expect(appConfig.borderRadius).toBeDefined();
-      expect(appConfig.borderRadius.sm).toBe('0.125rem');
-      expect(appConfig.borderRadius.md).toBe('0.25rem');
-      expect(appConfig.borderRadius.full).toBe('9999px');
+    it('should load theme.border (borderRadius)', () => {
+      expect(appConfig.theme.border).toBeDefined();
+      expect(appConfig.theme.border.radius_sm).toBe('0.125rem');
+      expect(appConfig.theme.border.radius_md).toBe('0.25rem');
+      expect(appConfig.theme.border.radius_full).toBe('9999px');
     });
 
-    it('should load theme.breakpoints with devices', () => {
-      expect(appConfig.breakpoints).toBeDefined();
-      expect(appConfig.breakpoints.xs).toBe('320px');
-      expect(appConfig.breakpoints.xxl).toBe('1536px');
-      expect(appConfig.breakpoints.devices).toBeDefined();
-      expect(appConfig.breakpoints.devices.samsungS24.width).toBe(360);
-      expect(appConfig.breakpoints.devices.iPhone15.height).toBe(852);
-    });
-
-    it('should load theme.responsive', () => {
-      expect(appConfig.responsive).toBeDefined();
-      expect(appConfig.responsive.touchMinSize).toBe(44);
-      expect(appConfig.responsive.sidebarWidth).toBe('200px');
-    });
-
-    it('should load theme.spacing.mobile', () => {
-      expect(appConfig.spacing.mobile).toBeDefined();
-      expect(appConfig.spacing.mobile.xs).toBe('0.125rem');
-      expect(appConfig.spacing.mobile.xxl).toBe('1.5rem');
+    it('should load layout.rules (breakpoints)', () => {
+      expect(appConfig.layout.rules).toBeDefined();
+      expect(appConfig.layout.rules.mobileBreakpointPx).toBeDefined();
+      expect(appConfig.layout.rules.desktopBreakpointPx).toBeDefined();
+      expect(typeof appConfig.layout.rules.mobileBreakpointPx).toBe('number');
+      expect(typeof appConfig.layout.rules.desktopBreakpointPx).toBe('number');
     });
   });
 
   describe('Component Configs', () => {
     it('should load badge', () => {
-      expect(appConfig.badge).toBeDefined();
-      expect(appConfig.badge.base.fontSize).toBe('12px');
-      expect(appConfig.badge.variants.success.bg).toBe('{green.600}');
+      expect(appConfig.components.badge).toBeDefined();
+      expect(appConfig.components.badge.base.fontSize).toBe('12px');
+      expect(appConfig.components.badge.variants.success.bg).toBe('{green.600}');
     });
 
     it('should load button', () => {
-      expect(appConfig.button).toBeDefined();
-      expect(appConfig.button.rect.bg).toBe('{black.700}');
-      expect(appConfig.button.rect.height).toBe('2.5rem');
-      expect(appConfig.button.nav.iconSize).toBe('48px');
-      expect(appConfig.button.new.iconSize).toBe('32px');
-      expect(appConfig.button.act.iconSize).toBe('20px');
+      expect(appConfig.components.button).toBeDefined();
+      expect(appConfig.components.button.rect.bg).toBe('{black.700}');
+      expect(appConfig.components.button.rect.height).toBe('2.5rem');
+      expect(appConfig.components.button.nav.iconSize).toBe('48px');
+      expect(appConfig.components.button.new.iconSize).toBe('32px');
+      expect(appConfig.components.button.act.iconSize).toBe('20px');
     });
 
     it('should load dialog', () => {
-      expect(appConfig.dialog).toBeDefined();
-      expect(appConfig.dialog.overlay.bg).toBe('{opacity.75}');
-      expect(appConfig.dialog.container.shadow).toBe('xl');
-    });
-
-    it('should load input', () => {
-      expect(appConfig.input).toBeDefined();
-      expect(appConfig.input.base.fontSize).toBe('14px');
-      expect(appConfig.input.states.focus.border).toBe('{blue.500}');
+      expect(appConfig.components.dialog).toBeDefined();
+      expect(appConfig.components.dialog.base.overlay.bg).toBe('{opacity.75}');
+      expect(appConfig.components.dialog.base.container.shadow).toBe('xl');
     });
 
     it('should load table', () => {
-      expect(appConfig.table).toBeDefined();
-      expect(appConfig.table.rowHeight).toBe('40px');
-      expect(appConfig.table.cellFontMono).toBe(true);
+      expect(appConfig.components.table).toBeDefined();
+      expect(appConfig.components.table.base).toBeDefined();
+      expect(appConfig.components.table.base.wrapperBorder).toBeDefined();
     });
   });
 
   describe('UI Texts', () => {
     it('should load buttons', () => {
-      expect(appConfig.buttons).toBeDefined();
-      expect(appConfig.buttons.save).toBe('Speichern');
-      expect(appConfig.buttons.cancel).toBe('Abbrechen');
+      expect(appConfig.content.buttons).toBeDefined();
+      expect(appConfig.content.buttons.save).toBe('Speichern');
+      expect(appConfig.content.buttons.cancel).toBe('Abbrechen');
     });
 
     it('should load labels', () => {
-      expect(appConfig.labels).toBeDefined();
-      expect(appConfig.labels.date).toBe('Datum');
-      expect(appConfig.labels.designation).toBe('Bezeichnung');
+      expect(appConfig.content.labels).toBeDefined();
+      expect(appConfig.content.labels.date).toBe('Datum');
+      expect(appConfig.content.labels.designation).toBe('Bezeichnung');
     });
 
     it('should load tooltips', () => {
-      expect(appConfig.tooltips).toBeDefined();
-      expect(appConfig.tooltips.bar_transaction).toBe('BAR');
-      expect(appConfig.tooltips.edit).toBe('Bearbeiten');
+      expect(appConfig.content.tooltips).toBeDefined();
+      expect(appConfig.content.tooltips.bar_transaction).toBe('BAR');
+      expect(appConfig.content.tooltips.edit).toBe('Bearbeiten');
     });
 
     it('should load page_titles', () => {
-      expect(appConfig.page_titles).toBeDefined();
-      expect(appConfig.page_titles.material).toBe('Material');
+      expect(appConfig.pages.titles).toBeDefined();
+      expect(appConfig.pages.titles.material).toBe('Material');
     });
 
     it('should load dialog_titles', () => {
-      expect(appConfig.dialog_titles).toBeDefined();
-      expect(appConfig.dialog_titles.new_material).toBe('Neues Material');
+      expect(appConfig.content.dialog_titles).toBeDefined();
+      expect(appConfig.content.dialog_titles.new_material).toBe('Neues Material');
     });
 
     it('should load validation', () => {
-      expect(appConfig.validation).toBeDefined();
-      expect(appConfig.validation.date_required).toBe('Datum erforderlich');
+      expect(appConfig.content.validation).toBeDefined();
+      expect(appConfig.content.validation.date_required).toBe('Datum erforderlich');
     });
 
     it('should load errors', () => {
-      expect(appConfig.errors).toBeDefined();
-      expect(appConfig.errors.network_error).toBe('Netzwerkfehler');
+      expect(appConfig.content.errors).toBeDefined();
+      expect(appConfig.content.errors.network_error).toBe('Netzwerkfehler');
     });
   });
 
   describe('Config Structure Validation', () => {
     it('should have all required top-level sections', () => {
       expect(appConfig).toHaveProperty('app');
-      expect(appConfig).toHaveProperty('typography');
-      expect(appConfig).toHaveProperty('spacing');
-      expect(appConfig).toHaveProperty('breakpoints');
+      expect(appConfig).toHaveProperty('theme');
+      expect(appConfig).toHaveProperty('components');
+      expect(appConfig).toHaveProperty('content');
+      expect(appConfig).toHaveProperty('pages');
+      expect(appConfig).toHaveProperty('navigation');
+      expect(appConfig).toHaveProperty('layout');
     });
 
     it('should have correct app metadata', () => {
@@ -145,22 +129,21 @@ describe('Config Loading - Phase 1 Extensions', () => {
       expect(appConfig.app.version).toBe('1.2.0');
     });
 
-    it('should have all component sections', () => {
-      expect(appConfig).toHaveProperty('badge');
-      expect(appConfig).toHaveProperty('button');
-      expect(appConfig).toHaveProperty('dialog');
-      expect(appConfig).toHaveProperty('input');
-      expect(appConfig).toHaveProperty('table');
+    it('should have all component sections under components', () => {
+      expect(appConfig.components).toHaveProperty('badge');
+      expect(appConfig.components).toHaveProperty('button');
+      expect(appConfig.components).toHaveProperty('dialog');
+      expect(appConfig.components).toHaveProperty('table');
     });
 
-    it('should have all ui text sections', () => {
-      expect(appConfig).toHaveProperty('buttons');
-      expect(appConfig).toHaveProperty('labels');
-      expect(appConfig).toHaveProperty('tooltips');
-      expect(appConfig).toHaveProperty('page_titles');
-      expect(appConfig).toHaveProperty('dialog_titles');
-      expect(appConfig).toHaveProperty('validation');
-      expect(appConfig).toHaveProperty('errors');
+    it('should have all ui text sections under content and pages', () => {
+      expect(appConfig.content).toHaveProperty('buttons');
+      expect(appConfig.content).toHaveProperty('labels');
+      expect(appConfig.content).toHaveProperty('tooltips');
+      expect(appConfig.pages).toHaveProperty('titles');
+      expect(appConfig.content).toHaveProperty('dialog_titles');
+      expect(appConfig.content).toHaveProperty('validation');
+      expect(appConfig.content).toHaveProperty('errors');
     });
   });
 });

@@ -1,9 +1,9 @@
 /**
  * @file        load.ts
  * @description Config Loader: TOML only + Zod strict Validation
- * @version     2.0.0
+ * @version     3.0.0
  * @created     2026-01-07 19:45:00 CET
- * @updated     2026-01-10 14:00:00 CET
+ * @updated     2026-01-13 00:00:00 CET
  * @author      Akki Scholze
  *
  * @description
@@ -16,11 +16,9 @@
  *   - Backend: process.env.*
  *
  * @changelog
+ *   3.0.0 - 2026-01-13 - COMPLETE RESTRUCTURE: Anpassung an neue config.toml Struktur A-I (theme/components/pages/content/navigation/layout)
+ *   2.1.0 - 2026-01-12 - Added table progress fallback hydration (uses table.progress.colors when specific sections missing)
  *   2.0.0 - 2026-01-10 - Complete refactor: removed .env merge logic, config.toml only
- *   1.2.0 - 2026-01-10 - Implemented .env → config.toml merge architecture
- *   1.1.1 - 2026-01-08 - Entfernt CLIENT/HIDEANDSEEK_CLIENT Overrides
- *   1.0.1 - 2026-01-08 - Added .js extensions for Node ESM
- *   1.0.0 - 2026-01-07 - Initial loader mit strict validation
  */
 
 import { ConfigSchema, type AppConfig } from './schema/config.schema.js';
@@ -36,7 +34,7 @@ import { configFromToml } from './generated/config-from-toml.js';
  */
 export function loadConfig(): AppConfig {
   try {
-    // Load TOML config
+    // Load TOML config and validate
     const validated = ConfigSchema.parse(configFromToml);
     return validated;
   } catch (error) {

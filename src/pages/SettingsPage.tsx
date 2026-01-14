@@ -106,7 +106,7 @@ export function SettingsPage() {
 
   if (loading) {
     return (
-      <PageLayout title="Einstellungen">
+      <PageLayout title="Einstellungen" showBackButton={true}>
         <div className="flex items-center justify-center h-64">
           <p className="text-neutral-400">Laden...</p>
         </div>

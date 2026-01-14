@@ -13,7 +13,7 @@
  *   0.8.1 - 2026-01-10 04:26:18 - TASK 2.4.2: Header-Update (keine inline-styles vorhanden, bereits bereinigt in 0.7.1)
  *   0.7.1 - 2026-01-10 02:15:23 - TASK 2.4.2: Inline Monospace-Style entfernt (betrag Spalte)
  *   0.6.1 - 2026-01-10 00:20:42 - TASK 2.3.4: Überprüfung abgeschlossen - keine Hardcodes gefunden (bereits vollständig config-driven)
- *   0.6.0 - 2026-01-10 19:22:00 - Font-Familie Hardcode entfernt (appConfig.typography.monospace)
+ *   0.6.0 - 2026-01-10 19:22:00 - Font-Familie Hardcode entfernt (appConfig.theme.typography.monospace)
  *   0.5.0 - 2026-01-09 23:45:00 - Alle verbleibenden Hardcodes entfernt (Phase 2.3 Final)
  *   0.4.0 - 2026-01-09 - 19 Hardcodes durch appConfig.* ersetzt (Phase 2.3)
  *   0.3.1 - 2026-01-09 - Name + Betrag-Spalten als Monospace (type: 'input')
@@ -271,7 +271,7 @@ export function SchuldnerPage() {
     }
   };
 
-  const columns = appConfig.table.schuldner.columns.map((col) => ({
+  const columns = appConfig.components.table.schuldner.columns.map((col) => ({
     key: col.key,
     label: col.label,
     type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
@@ -281,6 +281,7 @@ export function SchuldnerPage() {
   return (
     <PageLayout
       title={appConfig.page_titles.debtors}
+      showBackButton={true}
       actions={
         <Button kind="new" onClick={() => setCreateDialogOpen(true)}>
           <div style={{ position: 'relative', display: 'inline-flex' }}>
@@ -319,7 +320,7 @@ export function SchuldnerPage() {
             setCreateDialogOpen(false);
             resetForm();
           }}
-          title={appConfig.dialog_titles.new_debtor}
+          title={appConfig.components.dialog_titles.new_debtor}
           actions={
             <>
               <Button
@@ -329,9 +330,9 @@ export function SchuldnerPage() {
                   resetForm();
                 }}
               >
-                {appConfig.buttons.cancel}
+                {appConfig.components.buttons.cancel}
               </Button>
-              <Button onClick={() => void handleCreate()}>{appConfig.buttons.create}</Button>
+              <Button onClick={() => void handleCreate()}>{appConfig.components.buttons.create}</Button>
             </>
           }
         >
@@ -376,7 +377,7 @@ export function SchuldnerPage() {
             setSelectedSchuldner(null);
             resetForm();
           }}
-          title={appConfig.dialog_titles.edit_debtor}
+          title={appConfig.components.dialog_titles.edit_debtor}
           actions={
             <>
               <Button
@@ -387,9 +388,9 @@ export function SchuldnerPage() {
                   resetForm();
                 }}
               >
-                {appConfig.buttons.cancel}
+                {appConfig.components.buttons.cancel}
               </Button>
-              <Button onClick={() => void handleUpdate()}>{appConfig.buttons.save}</Button>
+              <Button onClick={() => void handleUpdate()}>{appConfig.components.buttons.save}</Button>
             </>
           }
         >
@@ -433,7 +434,7 @@ export function SchuldnerPage() {
             setDeleteDialogOpen(false);
             setSelectedSchuldner(null);
           }}
-          title={appConfig.dialog_titles.delete_debtor}
+          title={appConfig.components.dialog_titles.delete_debtor}
           actions={
             <>
               <Button
@@ -443,10 +444,10 @@ export function SchuldnerPage() {
                   setSelectedSchuldner(null);
                 }}
               >
-                {appConfig.buttons.cancel}
+                {appConfig.components.buttons.cancel}
               </Button>
               <Button kind="rect" onClick={() => void handleDelete()}>
-                {appConfig.buttons.delete}
+                {appConfig.components.buttons.delete}
               </Button>
             </>
           }
@@ -464,7 +465,7 @@ export function SchuldnerPage() {
             setSelectedSchuldner(null);
             setZahlungbetrag(0);
           }}
-          title={appConfig.dialog_titles.record_payment}
+          title={appConfig.components.dialog_titles.record_payment}
           actions={
             <>
               <Button
@@ -475,9 +476,9 @@ export function SchuldnerPage() {
                   setZahlungbetrag(0);
                 }}
               >
-                {appConfig.buttons.cancel}
+                {appConfig.components.buttons.cancel}
               </Button>
-              <Button onClick={() => void handleZahlung()}>{appConfig.buttons.record}</Button>
+              <Button onClick={() => void handleZahlung()}>{appConfig.components.buttons.record}</Button>
             </>
           }
         >
@@ -506,8 +507,8 @@ export function SchuldnerPage() {
           }}
           title={
             selectedSchuldner
-              ? `${appConfig.dialog_titles.history}: ${selectedSchuldner.name}`
-              : appConfig.dialog_titles.history
+              ? `${appConfig.components.dialog_titles.history}: ${selectedSchuldner.name}`
+              : appConfig.components.dialog_titles.history
           }
           actions={
             <Button
@@ -517,7 +518,7 @@ export function SchuldnerPage() {
                 setZahlungsHistorie([]);
               }}
             >
-              {appConfig.buttons.close}
+              {appConfig.components.buttons.close}
             </Button>
           }
         >

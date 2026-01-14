@@ -19,8 +19,8 @@ import type { NavItem } from '@/types/ui.types';
 import { appConfig, navigationConfig } from '@/config';
 import { useAuth } from '@/context/AuthContext';
 
-const colorsConfig = appConfig.colors;
-const buttonConfig = appConfig.button;
+const colorsConfig = appConfig.theme.colors;
+const buttonConfig = appConfig.components.button;
 
 const iconMap: Record<string, React.ElementType> = {
   package: Package,
@@ -56,11 +56,11 @@ export function NavigationArea({ style, isMobile }: NavigationAreaProps) {
     return true;
   });
 
-  const layoutNavigation = appConfig.layout?.areas?.navigation as NavigationAreaConfig;
+  const layoutNavigation = appConfig.layout.navigation as NavigationAreaConfig;
   const navPadding =
     layoutNavigation?.padding ??
-    (isMobile ? `${appConfig.spacing.xs} 0` : `${appConfig.spacing.sm} ${appConfig.spacing.md}`);
-  const navGap = layoutNavigation?.gap ?? (isMobile ? appConfig.spacing.xs : appConfig.spacing.md);
+    (isMobile ? `${appConfig.theme.spacing.compact} 0` : `${appConfig.theme.spacing.element_gap} ${appConfig.theme.spacing.content_gap}`);
+  const navGap = layoutNavigation?.gap ?? (isMobile ? appConfig.theme.spacing.compact : appConfig.theme.spacing.content_gap);
   const navHeight = layoutNavigation?.height;
   const navMinHeight = layoutNavigation?.minHeight;
 
@@ -87,7 +87,7 @@ export function NavigationArea({ style, isMobile }: NavigationAreaProps) {
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: isMobile ? appConfig.spacing.xs : appConfig.spacing.sm,
+    padding: isMobile ? appConfig.theme.spacing.compact : appConfig.theme.spacing.element_gap,
     textDecoration: 'none',
     transition: appConfig.navigation.transition,
     backgroundColor: isHovered ? colorsConfig.black['700'] : 'transparent',
@@ -96,13 +96,13 @@ export function NavigationArea({ style, isMobile }: NavigationAreaProps) {
       !isMobile && isHovered
         ? `scale(${appConfig.navigation.hoverScale})`
         : `scale(${appConfig.navigation.normalScale})`,
-    minHeight: isMobile ? `${appConfig.responsive.touchMinSize}px` : undefined,
-    borderRadius: isMobile ? undefined : appConfig.spacing.sm
+    minHeight: isMobile ? `${appConfig.layout.rules.touchMinSizePx}px` : undefined,
+    borderRadius: isMobile ? undefined : appConfig.theme.spacing.element_gap
   });
 
   const getIconContainerStyle = (isActive: boolean): CSSProperties => ({
-    padding: isMobile ? appConfig.spacing.xs : appConfig.spacing.sm,
-    borderRadius: appConfig.spacing.sm,
+    padding: isMobile ? appConfig.theme.spacing.compact : appConfig.theme.spacing.element_gap,
+    borderRadius: appConfig.theme.spacing.element_gap,
     backgroundColor: isActive ? colorsConfig.green['500'] : 'transparent',
     display: 'flex',
     alignItems: 'center',
