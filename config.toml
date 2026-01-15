@@ -1,363 +1,251 @@
 # @file        config.toml
-# @description Single Source of Truth für App-Konfiguration
-# @version     3.0.0
+# @description Single Source of Truth für App-Konfiguration (100% config-driven UI – .tsx ist Renderer-only)
+# @version     5.0.0
 # @created     2026-01-06 15:35:00 CET
-# @updated     2026-01-13 00:00:00 CET
+# @updated     2026-01-15 00:00:00 CET
 # @author      Akki Scholze
 #
-# @changelog
-#   3.0.0 - 2026-01-13 - Neuordnung nach Zielstruktur A–I, einheitliches Gradient-Konzept, Breakpoints → layout.rules.*, keine doppelten Fortschrittspaletten
+# @rules (aus Audit abgeleitet)
+# - KEINE Layout-/Style-Entscheidungen in .tsx (kein flex/grid/gap/padding/margin/width/height/position/overflow/transition/cursor/outline hardcoded)
+# - ALLE Layout-/Style-Properties kommen aus ui.* (oder theme.* Tokens)
+# - backgroundColor nur über theme.colors.bg.* (kein hardcoded transparent/rgba/tailwind bg-*)
+# - Komponenten: ui.buttons.*, ui.tables.*, ui.dialogs.*, ui.entry.*, ui.layout.*, ui.pages.*, ui.infobox.*, ui.dividers.*
 
-# ========================================
-# A) APP METADATA
-# ========================================
-[app]
-name = "Material-Tracker"
-version = "1.2.0"
-description = "Material-Verwaltung mit Kundeninteraktionen und Schuldentracking"
+# ============================================================
+# APP
+# ============================================================
+[app.meta]
+name = "Material Tracker"
+version = "0.1.0"
+lastUpdated = "2026-01-15T00:00:00+01:00"
 
-[auth]
-enabled = false
-mode = "password_required"
-admin_bootstrap_user_id = "admin"
+[app.locale]
+language = "de-DE"
+currency = "EUR"
+timezone = "Europe/Berlin"
+dateFormat = "dd.MM.yyyy"
+timeFormat = "HH:mm"
+decimalSeparator = ","
+thousandSeparator = "."
 
-# ========================================
-# B) THEME PRIMITIVES (colors, typography, spacing, border, sizes, shadows)
-# ========================================
-[theme.spacing]
-# Semantische Spacing-Werte (keine generischen sm/md/lg)
-# Verwendungskontext: gap zwischen Elementen, padding zu Rändern, Abstände
+[app.database]
+name = "material-tracker.db"
+version = 1
 
-# Micro-Spacing (sehr kleine Abstände innerhalb von Komponenten)
-tight = "0.125rem"        # 2px - minimaler Abstand
-compact = "0.25rem"       # 4px - kompakter Abstand
+[app.server]
+host = "127.0.0.1"
+port = 3001
 
-# Element-Spacing (Abstände zwischen benachbarten Elementen)
-element_gap = "0.5rem"    # 8px - Standard-Gap zwischen Elementen
-content_gap = "1rem"      # 16px - Gap zwischen Content-Bereichen
+# ============================================================
+# PERMISSIONS
+# ============================================================
+[permissions.roles.admin]
+label = "Administrator (PC)"
+permissions = ["*"]
 
-# Container-Padding (Innenabstände von Containern)
-container_padding = "1rem"      # 16px - Standard Container Padding
-panel_padding = "1.5rem"        # 24px - Panel/Card Padding
-section_padding = "2rem"        # 32px - Section Padding
-page_padding = "3rem"           # 48px - Page-Level Padding
+[permissions.roles.customer]
+label = "Kunde (Self-Service)"
+permissions = ["kunden.view"]
 
-# Mobile-spezifische Werte (kleinere Abstände auf mobilen Geräten)
-mobile_element_gap = "0.5rem"      # 8px
-mobile_container_padding = "1rem"  # 16px
-mobile_section_padding = "1.5rem"  # 24px
+[permissions.features."kunden.view"]
+roles = ["admin", "customer"]
 
-[theme.border]
-radius_none = "0"
-radius_sm = "0.125rem"
-radius_md = "0.25rem"
-radius_lg = "0.5rem"
-radius_xl = "1rem"
-radius_full = "9999px"
+[permissions.scopes."kunden.view"]
+scope = "self"
+allowList = false
+allowSearch = false
+allowExport = false
 
-[theme.colors.black]
-50 = "#f8f8f8"
-100 = "#f0f0f0"
-200 = "#e0e0e0"
-300 = "#c0c0c0"
-400 = "#a0a0a0"
-500 = "#808080"
-600 = "#606060"
-700 = "#404040"
-800 = "#202020"
-900 = "#000000"
+[permissions.features."kunden.create"]
+roles = ["admin"]
+[permissions.features."kunden.edit"]
+roles = ["admin"]
+[permissions.features."kunden.delete"]
+roles = ["admin"]
+[permissions.features."kunden.zahlung"]
+roles = ["admin"]
+[permissions.features."kunden.posten.create"]
+roles = ["admin"]
+[permissions.features."kunden.posten.delete"]
+roles = ["admin"]
 
-[theme.colors.black]
-400 = "#818181"
-500 = "#4b4a4a"
-600 = "#3f3f3f"
-700 = "#303030"
-900 = "#0B0B0B"
+# ============================================================
+# NAVIGATION
+# ============================================================
+[navigation]
+items = ["dashboard", "material", "kunden", "schuldner", "glaeubiger", "settings"]
 
-[theme.colors.white]
-200 = "#7a7a7a"
-400 = "#999999"
-600 = "#b3b3b3"
-800 = "#e2e2e2"
-900 = "#FFFFFF"
+[[navigation.item]]
+key = "dashboard"
+label = "Dashboard"
+path = "/"
+icon = "home"
 
-[theme.colors.red]
-200 = "#F9B8B8"
-350 = "#F37B7B"
-500 = "#E74C3C"
-650 = "#D13A2C"
-800 = "#B62B20"
+[[navigation.item]]
+key = "material"
+label = "Material"
+path = "/material"
+icon = "boxes"
 
-[theme.colors.green]
-200 = "#AFE2C1"
-350 = "#66C78E"
-500 = "#27AE60"
-650 = "#1C974F"
-800 = "#127640"
+[[navigation.item]]
+key = "kunden"
+label = "Kunden"
+path = "/kunden"
+icon = "users"
 
-[theme.colors.yellow]
-200 = "#FFE38A"
-350 = "#FFCA36"
-500 = "#F1C40F"
-650 = "#CFA406"
-800 = "#A47F03"
+[[navigation.item]]
+key = "schuldner"
+label = "Schuldner"
+path = "/schuldner"
+icon = "hand-coins"
 
-[theme.colors.orange]
-200 = "#FFC6A3"
-350 = "#FF9C56"
-500 = "#F39C12"
-650 = "#D48303"
-800 = "#AD6500"
+[[navigation.item]]
+key = "glaeubiger"
+label = "Gläubiger"
+path = "/glaeubiger"
+icon = "hand-coins"
+iconTransform = "scaleX(-1)"
 
-[theme.colors.eisgraublau]
-200 = "#B9CBD4"
-350 = "#92acb8"
-500 = "#6F8896"
-650 = "#546A78"
-800 = "#3E4F5A"
-[theme.colors.blue]
-50 = "#e3f2fd"
-100 = "#bbdefb"
-200 = "#90caf9"
-300 = "#64b5f6"
-400 = "#42a5f5"
-500 = "#2196f3"
-600 = "#1e88e5"
-700 = "#1976d2"
-800 = "#1565c0"
-900 = "#0d47a1"
+[[navigation.item]]
+key = "settings"
+label = "Einstellungen"
+path = "/settings"
+icon = "settings"
 
-[theme.colors.bluegray]
-50 = "#f8fafc"
-100 = "#f1f5f9"
-200 = "#e2e8f0"
-300 = "#cbd5e1"
-400 = "#94a3b8"
-500 = "#64748b"
-600 = "#475569"
-700 = "#334155"
-800 = "#1e293b"
-900 = "#0f172a"
-
-[theme.colors.green]
-50 = "#f1f8e9"
-100 = "#dcedc8"
-200 = "#c5e1a5"
-300 = "#aed581"
-400 = "#9ccc65"
-500 = "#8bc34a"
-600 = "#7cb342"
-700 = "#689f38"
-800 = "#558b2f"
-900 = "#33691e"
-
-[theme.colors.gold]
-50 = "#fffef0"
-100 = "#fffde7"
-200 = "#fffdcf"
-300 = "#fffacd"
-400 = "#fff59d"
-500 = "#ffd54f"
-600 = "#ffca28"
-700 = "#ffc107"
-800 = "#ffb300"
-900 = "#ff8f00"
-
-[theme.colors.orange]
-50 = "#fff3e0"
-100 = "#ffe0b2"
-200 = "#ffcc80"
-300 = "#ffb74d"
-400 = "#ffa726"
-500 = "#ff9800"
-600 = "#fb8c00"
-700 = "#f57c00"
-800 = "#e65100"
-900 = "#d84315"
-
-[theme.colors.red]
-50 = "#ffebee"
-100 = "#ffcdd2"
-200 = "#ef9a9a"
-300 = "#e57373"
-400 = "#ef5350"
-500 = "#f44336"
-600 = "#e53935"
-700 = "#d32f2f"
-800 = "#c62828"
-900 = "#b71c1c"
-
-[theme.colors.graublau]
-50  = "#fafafa"
-100 = "#f4f5f6"
-200 = "#e4e6e7"
-300 = "#d2d4d7"
-400 = "#a0a3a7"
-500 = "#707378"
-600 = "#505357"
-700 = "#3d4044"
-800 = "#24272a"
-900 = "#15171b"
-
-[theme.colors.gray]
-50 = "#fafafa"
-100 = "#f5f5f5"
-200 = "#eeeeee"
-300 = "#e0e0e0"
-400 = "#bdbdbd"
-500 = "#9e9e9e"
-600 = "#757575"
-700 = "#616161"
-800 = "#424242"
-900 = "#212121"
-
+# ============================================================
+# THEME — COLORS (Primitives)
+# ============================================================
 [theme.colors.black]
 50  = "#3A3A3A"
 100 = "#333333"
-150 = "#303030"
 200 = "#2D2D2D"
-250 = "#2A2A2A"
 300 = "#272727"
-350 = "#242424"
 400 = "#222222"
-450 = "#202020"
 500 = "#1E1E1E"
-550 = "#1C1C1C"
 600 = "#1A1A1A"
-650 = "#181818"
 700 = "#151515"
-750 = "#131313"
 800 = "#101010"
-850 = "#0E0E0E"
 900 = "#0B0B0B"
-
 
 [theme.colors.white]
 50  = "#EDEDED"
 100 = "#F0F0F0"
-150 = "#F1F1F1"
 200 = "#F2F2F2"
-250 = "#F4F4F4"
 300 = "#F5F5F5"
-350 = "#F6F6F6"
 400 = "#F7F7F7"
-450 = "#F8F8F8"
 500 = "#FAFAFA"
-550 = "#FBFBFB"
 600 = "#FCFCFC"
-650 = "#FDFDFD"
 700 = "#FDFDFD"
-750 = "#FEFEFE"
 800 = "#FEFEFE"
-850 = "#FFFFFF"
 900 = "#FFFFFF"
 
+# Audit: zusätzliche Neutral-Shades benötigt
+[theme.colors.neutral]
+700 = "#404040"
+800 = "#262626"
+900 = "#171717"
 
+# Minimal Blue Token (Audit: Spinner borderColor = blue.500)
+[theme.colors.blue]
+500 = "#3B82F6"
+600 = "#2563EB"
+700 = "#1D4ED8"
+
+# Audit: red.* 100/300/900 nötig (und konsistent beibehalten)
 [theme.colors.red]
 50  = "#FDECEC"
-100 = "#FBD6D6"
-150 = "#FAC7C7"
+100 = "#FEE2E2"
 200 = "#F9B8B8"
-250 = "#F7A2A2"
-300 = "#F58C8C"
+300 = "#FCA5A5"
 350 = "#F37B7B"
 400 = "#F06A6A"
-450 = "#EC5B53"
 500 = "#E74C3C"
-550 = "#E04036"
 600 = "#D93F30"
 650 = "#D13A2C"
 700 = "#C93427"
-750 = "#C02F24"
 800 = "#B62B20"
-850 = "#AA271C"
-900 = "#9E2218"
+900 = "#7F1D1D"
 
-
+# Audit: green.* 100/300/900 nötig
 [theme.colors.green]
 50  = "#EAF7EF"
-100 = "#D4F0DE"
-150 = "#C2E9D0"
+100 = "#DCFCE7"
 200 = "#AFE2C1"
-250 = "#96D8AF"
-300 = "#7CCF9D"
+300 = "#86EFAC"
 350 = "#66C78E"
 400 = "#4FBF7E"
-450 = "#3BB76F"
 500 = "#27AE60"
-550 = "#23A85B"
 600 = "#1FA155"
 650 = "#1C974F"
 700 = "#188C4A"
-750 = "#157F45"
 800 = "#127640"
-850 = "#0E6959"
-900 = "#0B5B31"
+900 = "#14532D"
 
-
+# Audit: yellow.300 nötig
 [theme.colors.yellow]
 50  = "#FFF8E1"
 100 = "#FFEFBC"
-150 = "#FFE99B"
 200 = "#FFE38A"
-250 = "#FFDB6C"
-300 = "#FFD24D"
+300 = "#FDE047"
 350 = "#FFCA36"
 400 = "#FFC21F"
-450 = "#F8C318"
 500 = "#F1C40F"
-550 = "#E7BA0D"
 600 = "#DDAF0A"
 650 = "#CFA406"
 700 = "#C09806"
-750 = "#B28B05"
 800 = "#A47F03"
-850 = "#A48500"
 900 = "#7E6000"
-
 
 [theme.colors.orange]
 50  = "#FFF1E6"
 100 = "#FFE0CC"
-150 = "#FFD3B8"
 200 = "#FFC6A3"
-250 = "#FFB780"
 300 = "#FFA86E"
 350 = "#FF9C56"
 400 = "#FF8F3D"
-450 = "#F9B926"
 500 = "#F39C12"
-550 = "#EA930C"
 600 = "#E08A06"
 650 = "#D48303"
 700 = "#C97800"
-750 = "#BB6F00"
 800 = "#AD6500"
-850 = "#986800"
 900 = "#844B00"
-
 
 [theme.colors.eisgraublau]
 50  = "#E9EFF2"
 100 = "#D6E0E6"
-150 = "#C8D6DD"
 200 = "#B9CBD4"
-250 = "#A6BDC8"
 300 = "#93AFBC"
 350 = "#86A4B2"
 400 = "#7898A8"
-450 = "#74909F"
 500 = "#6F8896"
-550 = "#667E8C"
 600 = "#5D7483"
 650 = "#546A78"
 700 = "#4C616E"
-750 = "#455864"
 800 = "#3E4F5A"
-850 = "#364650"
 900 = "#2F3D45"
 
-
+[theme.colors.progress]
+"0" = "#7a7a7a"
+"5" = "#7a0000"
+"10" = "#7a0000"
+"15" = "#7a0000"
+"20" = "#821300"
+"25" = "#8b2600"
+"30" = "#933800"
+"35" = "#9b4b00"
+"40" = "#a45e00"
+"45" = "#ac7100"
+"50" = "#b58400"
+"55" = "#bd9700"
+"60" = "#c5a900"
+"65" = "#cebc00"
+"70" = "#d6cf00"
+"75" = "#b2c403"
+"80" = "#8fb805"
+"85" = "#6bac08"
+"90" = "#47a10b"
+"95" = "#24960d"
+"100" = "#008a10"
 
 [theme.colors.opacity]
 0 = "rgba(0, 0, 0, 0)"
@@ -373,68 +261,104 @@ radius_full = "9999px"
 90 = "rgba(0, 0, 0, 0.9)"
 100 = "rgba(0, 0, 0, 1)"
 
-[theme.colors.ui]
-background = "{black.800}"
-backgroundAlt = "{graublau.900}"
-backgroundCard = "{gray.900}"
-border = "{gray.700}"
+# ============================================================
+# THEME — COLORS (Semantic)
+# ============================================================
+[theme.colors.bg]
+main = "eisgraublau.800"
+navigation = "eisgraublau.650"
+header = "eisgraublau.650"
+body = "eisgraublau.800"
+footer = "eisgraublau.650"
+dialog = "eisgraublau.800"
+card = "eisgraublau.800"
+blackout = "black.700"
+blackoutSoft = "black.500"
+
+# Audit-required background colors (kein hardcoded transparent/rgba mehr in .tsx)
+transparent = "transparent"
+overlay = "rgba(0, 0, 0, 0.7)"
+errorOverlay = "rgba(239, 68, 68, 0.1)"
+statusBezahlt = "rgba(34, 197, 94, 0.2)"
+statusTeilbezahlt = "rgba(234, 179, 8, 0.2)"
+statusOffen = "rgba(239, 68, 68, 0.2)"
 
 [theme.colors.text]
-primary = "{gray.50}"
-secondary = "{gray.400}"
-tertiary = "{gray.500}"
+active = "white.900"
+inactive = "white.200"
+entryLight = "black.900"
+hint = "black.400"
+error = "red.650"
+success = "green.650"
+warning = "yellow.650"
 
-[theme.colors.button]
-gray = "{gray.700}"
-active = "{gray.600}"
+[theme.colors.table]
+headerBg = "eisgraublau.650"
+headerDivider = "black.500"
+row = "eisgraublau.800"
+rowAlt = "eisgraublau.650"
+rowHover = "black.500"
+rowSelected = "black.700"
+rowActive = "black.700"
+grid = "black.500"
+divider = "black.500"
+outerBorder = "black.700"
 
-[theme.colors.info]
-light = "{blue.400}"
-main = "{blue.500}"
-dark = "{blue.700}"
+[theme.colors.button.rect]
+rectActive = "eisgraublau.500"
+rectSave = "green.650"
+rectHover = "eisgraublau.650"
+rectInactive = "black.700"
 
-[theme.colors.success]
-light = "{green.500}"
-main = "{green.600}"
-dark = "{green.800}"
+[theme.colors.button.icon]
+iconActive = "eisgraublau.500"
+iconHover = "eisgraublau.650"
+iconInactive = "black.700"
 
-[theme.colors.error]
-light = "{red.400}"
-main = "{red.500}"
-dark = "{red.700}"
+[theme.colors.button.tab]
+tabActive = "eisgraublau.500"
+tabHover = "eisgraublau.650"
+tabInactive = "black.700"
 
-[theme.colors.status]
-error = "{red.500}"
-warning = "{gold.700}"
-success = "{green.600}"
-info = "{blue.500}"
+[theme.colors.dialog]
+entryBorder = "black.500"
+entryBorderFocus = "eisgraublau.650"
+entryBorderDisabled = "black.700"
+entryHover = "eisgraublau.500"
+entryActive = "eisgraublau.650"
+entryDisabled = "black.700"
+entrySelection = "eisgraublau.350"
+entryCaret = "white.900"
+entryError = "red.650"
+entrySuccess = "green.650"
+entryWarning = "yellow.650"
 
-[theme.colors.warning]
-light = "{gold.600}"
-main = "{gold.700}"
-dark = "{orange.700}"
+[theme.colors.border]
+default = "black.500"
+soft = "black.400"
+strong = "black.700"
+focus = "eisgraublau.650"
+active = "eisgraublau.500"
+error = "red.650"
+success = "green.650"
+warning = "yellow.650"
 
-[theme.shadows]
-sm = "0 1px 2px 0 rgba(0, 0, 0, 0.05)"
-md = "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
-lg = "0 10px 15px -3px rgba(0, 0, 0, 0.1)"
-xl = "0 20px 25px -5px rgba(0, 0, 0, 0.1)"
-none = "none"
+[theme.colors.icon]
+active = "white.900"
+inactive = "white.200"
+book = "green.650"
+edit = "yellow.650"
+delete = "red.650"
 
-[theme.sizes]
-touchMinSizePx = 44
-sidebarWidthPx = 200
+[theme.colors.cards]
+hover = "black.500"
 
-[theme.typography.fontFamily]
-base = "Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
-mono = "Inter Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, monospace"
-
-[theme.typography.fontSize]
-xs = "0.75rem"
-sm = "0.875rem"
-md = "1rem"
-lg = "1.25rem"
-xl = "1.5rem"
+# ============================================================
+# THEME — TYPOGRAPHY
+# ============================================================
+[theme.typography.font]
+base = "Inter"
+mono = "JetBrains Mono"
 
 [theme.typography.fontWeight]
 normal = 400
@@ -442,657 +366,1271 @@ medium = 500
 semibold = 600
 bold = 700
 
-# ========================================
-# C) BASE-KOMPONENTEN (Table/Dialog/Button/Badge/Form/Divider/Infobox)
-# ========================================
-[components.table.base]
-# Wrapper
-wrapperBg = "{black.800}"
-wrapperBorder = "{gray.700}"
-wrapperBorderRadius = "0.5rem"
-wrapperShadow = "md"
+[theme.typography.fontSize]
+headerTitle = "1.75rem"
+headerSubtitle = "1.25rem"
+headerMeta = "1rem"
+footerText = "1rem"
+footerMeta = "0.875rem"
+bodyText = "1.25rem"
+bodyTextSmall = "1rem"
+bodyHint = "1rem"
+tableHeader = "1.5rem"
+tableCell = "1.25rem"
+tableCellSmall = "1rem"
+tableCellMeta = "0.875rem"
+dialogTitle = "1.75rem"
+dialogSectionTitle = "1.25rem"
+dialogLabel = "1.25rem"
+dialogInsert = "1.25rem"
+dialogHint = "1rem"
+dialogMessage = "1rem"
+buttonRect = "1.25rem"
+buttonTab = "1rem"
+formLabel = "1.25rem"
+formInsert = "1.25rem"
+formHint = "1rem"
+formMessage = "1rem"
 
-# Header
-headerBg = "{gray.900}"
-headerText = "{gray.50}"
-headerFontSize = "13px"
-headerFontWeight = 500
-headerFontMono = true
+# ============================================================
+# THEME — BORDER / SPACING / SHADOWS / BREAKPOINTS / Z-INDEX
+# ============================================================
+[theme.border.sizes]
+thin = "1px"
+normal = "2px"
+thick = "3px"
 
-# Rows
-rowHeightPx = 50
-rowBgOdd = "{black.900}"
-rowBgEven = "{gray.800}"
-rowBgHover = "{gray.700}"
-rowBorderBottom = "{gray.700}"
+[theme.border.radius]
+buttonRect = "12px"
+buttonTab = "10px"
+navigation = "16px"
+header = "16px"
+body = "16px"
+footer = "16px"
 
-# Cells
-cellPaddingX = "1rem"
-cellPaddingY = "0.75rem"
-cellText = "{gray.50}"
-cellFontSize = "12px"
-cellFontWeight = 400
-cellFontMono = true
+[theme.spacing.layout]
+pagePadding = "16px"
+areaGap = "16px"
+areaPadding = "16px"
+bodyInnerGap = "12px"
 
-[components.table.base.behavior]
-minRows = 0
-emptyRowPlaceholder = ""
+[theme.spacing.table]
+headerPaddingX = "12px"
+headerPaddingY = "12px"
+cellPaddingX = "12px"
+cellPaddingY = "10px"
+actionsGap = "12px"
 
-# Fortschritt/Bestand Balken – gemeinsames Gradient-Set, Bestand nutzt invert=true
-[components.table.base.progress]
-height = "12px"
-radius = "0.5rem"
-trackBg = "{gray.800}"
-trackBorder = "{gray.700}"
-textColor = "{gray.50}"
+[theme.spacing.dialog]
+padding = "16px"
+contentGap = "12px"
+fieldGap = "10px"
+actionsGap = "12px"
 
-[[components.table.base.progress.gradientStops]]
-p = 0
-c = "{gray.600}"
-[[components.table.base.progress.gradientStops]]
-p = 5
-c = "{red.700}"
-[[components.table.base.progress.gradientStops]]
-p = 20
-c = "{red.500}"
-[[components.table.base.progress.gradientStops]]
-p = 40
-c = "{orange.500}"
-[[components.table.base.progress.gradientStops]]
-p = 60
-c = "{gold.700}"
-[[components.table.base.progress.gradientStops]]
-p = 75
-c = "{gold.600}"
-[[components.table.base.progress.gradientStops]]
-p = 85
-c = "{gold.400}"
-[[components.table.base.progress.gradientStops]]
-p = 90
-c = "{green.700}"
-[[components.table.base.progress.gradientStops]]
-p = 95
-c = "{green.600}"
-[[components.table.base.progress.gradientStops]]
-p = 100
-c = "{green.400}"
+[theme.spacing.button]
+rectPaddingX = "14px"
+rectPaddingY = "10px"
+rectGap = "10px"
+iconPaddingX = "14px"
+iconPaddingY = "14px"
+iconGap = "10px"
+tabPaddingX = "14px"
+tabPaddingY = "14px"
+tabGap = "10px"
 
-[components.table.base.bestand]
-invertProgressStops = true
-textColor = "{gray.50}"
+[theme.spacing.entry]
+paddingX = "12px"
+paddingY = "10px"
+labelGap = "6px"
+hintGap = "6px"
 
-[components.dialog.base.overlay]
-bg = "{opacity.75}"
+[theme.shadows]
+area = "0 10px 24px rgba(0, 0, 0, 0.25)"
+card = "0 8px 18px rgba(0, 0, 0, 0.22)"
+dialog = "0 16px 40px rgba(0, 0, 0, 0.35)"
+dropdown = "0 12px 24px rgba(0, 0, 0, 0.35)"
 
-[components.dialog.base.container]
-bg = "{gray.700}"
-border = "{gray.600}"
-borderRadius = "0.5rem"
-padding = "0"
-maxWidth = "90vw"
-width = "600px"
-height = "80vh"
-maxHeight = "80vh"
-shadow = "xl"
+[theme.effects]
+backdropBlur = "blur(8px)"
 
-[components.dialog.base.header]
-borderBottom = "{gray.600}"
-padding = "1.5rem"
-fontSize = "20px"
-fontWeight = 600
+[theme.breakpoints]
+smartphoneMaxWidth = "767px"
+pcMinWidth = "768px"
 
-[components.dialog.base.body]
-padding = "1.5rem"
-gap = "1rem"
-fontSize = "14px"
-fontWeight = 400
+[theme.zIndex]
+navigation = 100
+header = 100
+overlay = 150
+dialog = 200
+tooltip = 300
 
-[components.dialog.base.footer]
-borderTop = "{gray.600}"
-padding = "1rem 1.5rem"
-marginTop = "0"
-gap = "0.5rem"
+# ============================================================
+# UI — CONTENT (Text-only)
+# ============================================================
+[ui.labels]
+datum = "Datum"
+name = "Name"
+bezeichnung = "Bezeichnung"
+notiz = "Notiz"
+menge = "Menge"
+betrag = "Betrag"
+bezahlt = "Bezahlt"
+offen = "Offen"
+gesamt = "Gesamt"
+fortschritt = "Fortschritt"
+status = "Status"
+aktionen = "Aktionen"
+ekStck = "EK/Stck"
+ekGesamt = "EK Gesamt"
+vkStck = "VK/Stck"
+einnahmen = "Einnahmen"
+aussenstaende = "Außenstände"
+theorEinnahmen = "Theor. Einnahmen"
+gewinn = "Gewinn"
+bestand = "Bestand"
 
-[components.button]
-borderRadius = "0.25rem"
-
-[components.button.nav]
-bg = "transparent"
-icon = "{gray.50}"
-border = "transparent"
-hoverBg = "{black.800}"
-activeBg = "{black.900}"
-disabledBg = "transparent"
-disabledIcon = "{gray.600}"
-focusRing = "{blue.500}"
-focusRingOpacity = "{opacity.40}"
-iconSize = "48px"
-
-[components.button.new]
-bg = "transparent"
-icon = "{gray.50}"
-border = "transparent"
-hoverBg = "{black.800}"
-activeBg = "{black.900}"
-disabledBg = "transparent"
-disabledIcon = "{gray.600}"
-focusRing = "{green.500}"
-focusRingOpacity = "{opacity.40}"
-iconSize = "32px"
-
-[components.button.act]
-bg = "transparent"
-icon = "{gray.50}"
-border = "transparent"
-hoverBg = "{black.800}"
-activeBg = "{black.900}"
-disabledBg = "transparent"
-disabledIcon = "{gray.600}"
-focusRing = "{blue.500}"
-focusRingOpacity = "{opacity.40}"
-iconSize = "20px"
-
-[components.button.tab]
-bg = "transparent"
-icon = "{gray.50}"
-border = "transparent"
-hoverBg = "{black.800}"
-activeBg = "{black.900}"
-disabledBg = "transparent"
-disabledIcon = "{gray.600}"
-focusRing = "{blue.500}"
-focusRingOpacity = "{opacity.40}"
-iconSize = "20px"
-
-[components.button.rect]
-bg = "{black.700}"
-text = "{gray.50}"
-border = "transparent"
-hoverBg = "{black.800}"
-activeBg = "{black.900}"
-disabledBg = "{black.800}"
-disabledText = "{gray.500}"
-saveBg = "{green.600}"
-saveText = "{gray.50}"
-saveHoverBg = "{green.700}"
-saveActiveBg = "{green.800}"
-focusRing = "{blue.500}"
-focusRingOpacity = "{opacity.40}"
-padding = "0.75rem 1.5rem"
-fontSize = "16px"
-fontWeight = 500
-height = "2.5rem"
-iconSize = "20px"
-
-[components.button.back]
-bg = "transparent"
-icon = "{gray.50}"
-border = "transparent"
-hoverBg = "{black.800}"
-activeBg = "{black.900}"
-disabledBg = "transparent"
-disabledIcon = "{gray.600}"
-focusRing = "{blue.500}"
-focusRingOpacity = "{opacity.40}"
-iconSize = "32px"
-
-[components.badge.base]
-paddingX = 2
-paddingY = 1
-borderRadius = "0.25rem"
-fontSize = "12px"
-fontWeight = 500
-display = "inline-flex"
-alignItems = "center"
-gap = "0.25rem"
-
-[components.badge.variants.success]
-bg = "{green.600}"
-text = "{gray.50}"
-
-[components.badge.variants.error]
-bg = "{red.500}"
-text = "{gray.50}"
-
-[components.badge.variants.warning]
-bg = "{gold.700}"
-text = "{black.800}"
-
-[components.badge.variants.info]
-bg = "{blue.500}"
-text = "{gray.50}"
-
-[components.badge.variants.pending]
-bg = "{gray.500}"
-text = "{gray.50}"
-
-[components.badge.variants.neutral]
-bg = "{gray.800}"
-text = "{gray.50}"
-
-[components.form.input.base]
-bg = "{black.900}"
-border = "{gray.700}"
-text = "{gray.50}"
-padding = "0.5rem 0.75rem"
-paddingX = 3
-paddingY = 2
-borderRadius = "0.25rem"
-fontSize = "14px"
-fontWeight = 400
-height = "2.5rem"
-borderWidth = "1px"
-
-[components.form.input.states.default]
-border = "{gray.700}"
-bg = "{black.900}"
-text = "{gray.50}"
-outline = "none"
-
-[components.form.input.states.focus]
-border = "{blue.500}"
-bg = "{black.900}"
-outline = "2px solid {blue.500}"
-text = "{gray.50}"
-
-[components.form.input.states.error]
-border = "{red.500}"
-bg = "{black.900}"
-outline = "2px solid {red.500}"
-text = "{gray.50}"
-
-[components.form.input.states.disabled]
-border = "{gray.700}"
-bg = "{gray.800}"
-text = "{gray.600}"
-outline = "none"
-
-[components.divider.month]
-bg = "{black.800}"
-text = "{gray.50}"
-border = "{gray.700}"
-padding = "0.5rem 1rem"
-paddingY = 2
-paddingX = 4
-fontSize = "14px"
-fontWeight = 600
-textTransform = "uppercase"
-
-[components.divider.horizontal]
-border = "{gray.700}"
-margin = "1rem 0"
-marginY = 4
-height = "1px"
-thickness = "1px"
-color = "{gray.700}"
-
-[components.infobox.base]
-padding = "1rem"
-borderRadius = "0.5rem"
-fontSize = "14px"
-fontWeight = 400
-borderWidth = "1px"
-
-[components.infobox.panel]
-bg = "{black.800}"
-border = "{gray.700}"
-borderRadius = "0.5rem"
-padding = "1rem"
-
-[components.infobox.variants.info]
-bg = "{blue.800}"
-border = "{blue.500}"
-icon = "info"
-iconColor = "{blue.500}"
-
-[components.infobox.variants.success]
-bg = "{green.800}"
-border = "{green.600}"
-icon = "check-circle"
-iconColor = "{green.600}"
-
-[components.infobox.variants.warning]
-bg = "{orange.800}"
-border = "{gold.700}"
-icon = "alert-triangle"
-iconColor = "{gold.700}"
-
-[components.infobox.variants.error]
-bg = "{red.800}"
-border = "{red.500}"
-icon = "x-circle"
-iconColor = "{red.500}"
-
-[components.infobox.formCompact]
-containerWidth = "300px"
-inputWidth = "100px"
-buttonSize = "md"
-
-# ========================================
-# D) PAGES (Struktur + Datenmapping, keine Styles)
-# ========================================
-# Seiten: Material
-[pages.material.table]
-columns = [
-  { key = "datum", label = "Datum", width = "8%", type = "date" },
-  { key = "bezeichnung", label = "Bezeichnung", width = "12%", type = "text" },
-  { key = "notiz", label = "Notiz", width = "10%", type = "text" },
-  { key = "ek_stueck", label = "EK/Stück", width = "7%", type = "currency", monospace = false },
-  { key = "ek_gesamt", label = "EK Gesamt", width = "7%", type = "currency", monospace = false },
-  { key = "vk_stueck", label = "VK/Stück", width = "7%", type = "currency", monospace = false },
-  { key = "menge", label = "Menge", width = "6%", type = "number", monospace = false },
-  { key = "bestand", label = "Bestand", width = "6%", type = "progress", monospace = false },
-  { key = "einnahmen", label = "Einnahmen", width = "7%", type = "currency", monospace = false },
-  { key = "aussenstaende", label = "Aussenstände", width = "7%", type = "currency", monospace = false },
-  { key = "theor_einnahmen", label = "Theor. Einnahmen", width = "7%", type = "currency", monospace = false },
-  { key = "gewinn", label = "Gewinn", width = "7%", type = "currency", monospace = false },
-  { key = "status", label = "Status", width = "6%", type = "status" },
-  { key = "actions", label = "Aktionen", width = "7%", type = "actions", buttons = ["bar", "kombi", "edit", "delete"] }
-]
-
-# Seiten: Kunden (Übersicht)
-[pages.kunden.overview.table]
-columns = [
-  { key = "name", label = "Name", width = "25%", type = "text" },
-  { key = "anzahl_posten", label = "Anzahl offene Posten", width = "15%", type = "number", monospace = false },
-  { key = "summe_offen", label = "Summe Betrag offener Posten", width = "20%", type = "currency", monospace = false },
-  { key = "fortschritt", label = "Fortschritt", width = "15%", type = "progress" },
-  { key = "status", label = "Status", width = "15%", type = "status" },
-  { key = "actions", label = "Aktionen", width = "10%", type = "actions", buttons = ["view", "edit", "delete"] }
-]
-
-# Seiten: Kunden (Material-Posten)
-[pages.kunden.mat.table]
-columns = [
-  { key = "datum", label = "Datum", width = "10%", type = "date" },
-  { key = "material", label = "Material", width = "15%", type = "text" },
-  { key = "menge", label = "Menge", width = "8%", type = "number", monospace = false },
-  { key = "vk_stueck", label = "VK/Stück", width = "10%", type = "currency", monospace = false },
-  { key = "gesamt", label = "Gesamt", width = "10%", type = "currency", monospace = false },
-  { key = "bezahlt", label = "Bezahlt", width = "10%", type = "currency", monospace = false },
-  { key = "offen", label = "Offen", width = "10%", type = "currency", monospace = false },
-  { key = "fortschritt", label = "Fortschritt", width = "12%", type = "progress" },
-  { key = "zahlungen", label = "Zahlungen", width = "8%", type = "button", buttons = ["payment_history"] },
-  { key = "actions", label = "Aktionen", width = "7%", type = "actions", buttons = ["edit", "delete"] }
-]
-
-# Seiten: Kunden (Sonstige Posten)
-[pages.kunden.nomat.table]
-columns = [
-  { key = "datum", label = "Datum", width = "12%", type = "date" },
-  { key = "notiz", label = "Notiz", width = "25%", type = "text" },
-  { key = "gesamt", label = "Gesamt", width = "12%", type = "currency", monospace = false },
-  { key = "bezahlt", label = "Bezahlt", width = "12%", type = "currency", monospace = false },
-  { key = "offen", label = "Offen", width = "12%", type = "currency", monospace = false },
-  { key = "fortschritt", label = "Fortschritt", width = "12%", type = "progress" },
-  { key = "zahlungen", label = "Zahlungen", width = "8%", type = "button", buttons = ["payment_history"] },
-  { key = "actions", label = "Aktionen", width = "7%", type = "actions", buttons = ["edit", "delete"] }
-]
-
-# Seiten: Schuldner
-[pages.schuldner.table]
-columns = [
-  { key = "datum", label = "Datum", width = "10%", type = "date" },
-  { key = "name", label = "Wer?!", width = "20%", type = "text" },
-  { key = "notiz", label = "Notiz", width = "15%", type = "text" },
-  { key = "gesamt", label = "Gesamt", width = "13%", type = "currency", monospace = false },
-  { key = "offen", label = "Offen", width = "13%", type = "currency", monospace = false },
-  { key = "fortschritt", label = "Fortschritt", width = "12%", type = "progress" },
-  { key = "actions", label = "Aktionen", width = "12%", type = "actions", buttons = ["edit", "delete", "payment"] }
-]
-
-# Seiten: Gläubiger
-[pages.glaeubiger.table]
-columns = [
-  { key = "datum", label = "Datum", width = "10%", type = "date" },
-  { key = "name", label = "Wer?!", width = "20%", type = "text" },
-  { key = "notiz", label = "Notiz", width = "15%", type = "text" },
-  { key = "gesamt", label = "Gesamt", width = "13%", type = "currency", monospace = false },
-  { key = "offen", label = "Offen", width = "13%", type = "currency", monospace = false },
-  { key = "fortschritt", label = "Fortschritt", width = "12%", type = "progress" },
-  { key = "actions", label = "Aktionen", width = "12%", type = "actions", buttons = ["edit", "delete", "payment"] }
-]
-
-[pages.settings]
-# Placeholder für Settings-spezifische Struktur (keine Styles)
-
-# Dashboard
-[pages.dashboard.card]
-width = "120px"
-height = "120px"
-gap = "1.5rem"
-iconSize = "60px"
-padding = "1rem"
-
-# Page-Titel
-[pages.titles]
+[ui.titles]
 dashboard = "Dashboard"
 material = "Material"
-customers = "Kunden"
-creditors = "Gläubiger"
-debtors = "Schuldner"
+kunden = "Kunden"
+kundenView = "Kundendetails"
+schuldner = "Schuldner"
+glaeubiger = "Gläubiger"
 settings = "Einstellungen"
 
-# ========================================
-# E) CONTENT (Texte & Labels – UI-Texte)
-# ========================================
-# Buttons
-[content.buttons]
-save = "Speichern"
-cancel = "Abbrechen"
-delete = "Löschen"
-create = "Erstellen"
-edit = "Bearbeiten"
-close = "Schließen"
-record = "Verbuchen"
+[ui.titles.dialog]
+newMaterial = "Neues Material"
+editMaterial = "Material bearbeiten"
+deleteMaterial = "Material löschen"
+newKunde = "Neuer Kunde"
+editKunde = "Kunde bearbeiten"
+deleteKunde = "Kunde löschen"
+newPostenMat = "Neuer Material-Posten"
+editPostenMat = "Material-Posten bearbeiten"
+deletePostenMat = "Material-Posten löschen"
+newPostenNoMat = "Neuer sonstiger Posten"
+editPostenNoMat = "Sonstiger Posten bearbeiten"
+deletePostenNoMat = "Sonstiger Posten löschen"
+newSchuldner = "Neuer Schuldner"
+editSchuldner = "Schuldner bearbeiten"
+deleteSchuldner = "Schuldner löschen"
+newGlaeubiger = "Neuer Gläubiger"
+editGlaeubiger = "Gläubiger bearbeiten"
+deleteGlaeubiger = "Gläubiger löschen"
+barBuchen = "Bar-Zahlung buchen"
+rechnungErstellen = "Rechnung erstellen"
+zahlungBuchen = "Zahlung buchen"
+historie = "Historie"
 
-# Dialog-Titel
-[content.dialog_titles]
-new_material = "Neues Material"
-edit_material = "Material bearbeiten"
-delete_material = "Material löschen"
-bar_transaction = "BAR-Bewegung"
-kombi_transaction = "KOMBI-Bewegung"
-new_customer = "Neuer Kunde"
-edit_customer = "Kunde bearbeiten"
-delete_customer = "Kunde löschen"
-new_material_post = "Neuer Material-Posten"
-new_other_post = "Neuer sonstiger Posten"
-record_payment = "Zahlung verbuchen"
-new_creditor = "Neuer Gläubiger"
-edit_creditor = "Gläubiger bearbeiten"
-delete_creditor = "Gläubiger löschen"
-new_debtor = "Neuer Schuldner"
-edit_debtor = "Schuldner bearbeiten"
-delete_debtor = "Schuldner löschen"
-history = "Historie"
+[ui.buttons]
+speichern = "Speichern"
+abbrechen = "Abbrechen"
+loeschen = "Löschen"
+neu = "Neu"
+bearbeiten = "Bearbeiten"
+schliessen = "Schließen"
+buchen = "Buchen"
+erstellen = "Erstellen"
+zurueck = "Zurück"
+weiter = "Weiter"
+ja = "Ja"
+nein = "Nein"
 
-# Labels
-[content.labels]
-date = "Datum"
-name = "Name"
-designation = "Bezeichnung"
-quantity = "Menge"
-amount = "Betrag"
-amount_paid = "Bezahlt"
-payment_amount = "Zahlungsbetrag"
-material = "Material"
-note = "Notiz (optional)"
-price_per_unit = "VK Stück (Mindest-VK)"
-purchase_price = "EK Stück"
-purchase_price_total = "EK Gesamt"
-selling_price_unit = "VK Stück"
-info = "Info (optional)"
-due_date = "Fälligkeit (optional)"
-open_amount = "Offener Betrag"
-status = "Status"
-actions = "Aktionen"
-stock = "Bestand"
-revenue = "Einnahmen"
-profit = "Gewinn"
-available = "Verfügbar"
-bar_sale = "Bar-Verkauf"
-kombi_booking = "KOMBI-Buchung"
-total_price = "Preis Gesamt"
-total = "Gesamt"
-price = "Preis"
-customer = "Kunde"
-price_per_unit_short = "Preis/Stück"
-price_total_short = "Preis Gesamt"
-price_per_piece = "Preis pro Stück"
+[ui.messages.confirm]
+deleteMaterial = "Möchten Sie dieses Material wirklich löschen?"
+deleteKunde = "Möchten Sie diesen Kunden wirklich löschen?"
+deletePosten = "Möchten Sie diesen Posten wirklich löschen?"
+deleteSchuldner = "Möchten Sie diesen Schuldner wirklich löschen?"
+deleteGlaeubiger = "Möchten Sie diesen Gläubiger wirklich löschen?"
+deleteHistorie = "Möchten Sie diesen Historie-Eintrag wirklich löschen?"
 
-[content.messages]
-confirm_delete_material = "Möchten Sie das Material \"{name}\" wirklich löschen?"
-confirm_delete_customer = "Möchten Sie den Kunden \"{name}\" wirklich löschen?"
-confirm_delete_creditor = "Möchten Sie den Gläubiger \"{name}\" wirklich löschen?"
-confirm_delete_debtor = "Möchten Sie den Schuldner \"{name}\" wirklich löschen?"
+[ui.messages.success]
+created = "Erfolgreich erstellt"
+updated = "Erfolgreich aktualisiert"
+deleted = "Erfolgreich gelöscht"
+booked = "Erfolgreich gebucht"
 
-[content.input_limits]
-quantity_min = 0
-quantity_step = 1
-price_min = 0
-price_step = 0.01
+[ui.messages.error]
+createFailed = "Fehler beim Erstellen"
+updateFailed = "Fehler beim Aktualisieren"
+deleteFailed = "Fehler beim Löschen"
+bookFailed = "Fehler beim Buchen"
+loadFailed = "Fehler beim Laden"
+networkError = "Netzwerkfehler"
+validationError = "Validierungsfehler"
 
-[content.empty_states]
-no_history = "Keine Historie vorhanden"
-no_customers = "Keine Kunden vorhanden"
-no_material_posts = "Keine Material-Posten vorhanden"
-no_other_posts = "Keine sonstigen Posten vorhanden"
-no_creditors = "Keine Gläubiger vorhanden"
-no_debtors = "Keine Schuldner vorhanden"
+[ui.messages.validation]
+required = "Pflichtfeld"
+invalidFormat = "Ungültiges Format"
+minValue = "Mindestwert unterschritten"
+maxValue = "Maximalwert überschritten"
+invalidDate = "Ungültiges Datum"
+invalidNumber = "Ungültige Zahl"
 
-[content.errors]
-create_failed = "Fehler beim Erstellen"
-update_failed = "Fehler beim Aktualisieren"
-delete_failed = "Fehler beim Löschen"
-load_failed = "Fehler beim Laden"
-booking_failed = "Fehler beim Buchen"
-network_error = "Netzwerkfehler"
+[ui.empty]
+material = "Keine Materialien vorhanden"
+kunden = "Keine Kunden vorhanden"
+postenMat = "Keine Material-Posten vorhanden"
+postenNoMat = "Keine sonstigen Posten vorhanden"
+schuldner = "Keine Schuldner vorhanden"
+glaeubiger = "Keine Gläubiger vorhanden"
+historie = "Keine Historie-Einträge vorhanden"
+searchResults = "Keine Ergebnisse gefunden"
 
-[content.status]
-paid = "Bezahlt"
-partial = "Teilweise"
-open = "Offen"
+[ui.loading]
+default = "Wird geladen..."
+material = "Materialien werden geladen..."
+kunden = "Kunden werden geladen..."
+posten = "Posten werden geladen..."
+schuldner = "Schuldner werden geladen..."
+glaeubiger = "Gläubiger werden geladen..."
+historie = "Historie wird geladen..."
+saving = "Wird gespeichert..."
+deleting = "Wird gelöscht..."
 
-[content.tooltips]
-bar_transaction = "BAR"
-kombi_transaction = "KOMBI"
-edit = "Bearbeiten"
-delete = "Löschen"
-new_material = "Neues Material"
-new_customer = "Neuer Kunde"
-new_creditor = "Neuer Gläubiger"
-new_debtor = "Neuer Schuldner"
-payment = "Zahlung"
-create = "Erstellen"
-record = "Verbuchen"
+[ui.descriptions]
+material = "Verwaltung aller Materialien mit EK/VK-Preisen und Bestandsübersicht"
+kunden = "Kundenverwaltung mit offenen Posten und Zahlungshistorie"
+schuldner = "Personen, die mir Geld schulden"
+glaeubiger = "Personen, denen ich Geld schulde"
+settings = "App-Einstellungen und Konfiguration"
 
-[content.validation]
-date_required = "Datum erforderlich"
-designation_required = "Bezeichnung erforderlich"
-quantity_must_be_positive = "Menge muss größer 0 sein"
-ek_stueck_must_be_positive = "EK Stück muss größer 0 sein"
-ek_gesamt_must_be_positive = "EK Gesamt muss größer 0 sein"
-vk_stueck_must_be_positive = "VK Stück muss größer 0 sein"
+# ============================================================
+# UI — TOKENS (compact reuse; Renderer darf das optional nutzen)
+# ============================================================
+[ui.tokens.size]
+touchMin = "44px"
+iconAction = "40px"
+iconTableAction = "32px"
+spinner = "32px"
 
-# ========================================
-# E) NAVIGATION (komplett unter navigation)
-# ========================================
-[navigation]
-zIndex = 1000
-borderWidth = "1px"
-transition = "background-color 0.15s ease, transform 0.15s ease"
-hoverScale = "1.05"
-normalScale = "1"
-fontSize = "14px"
+[ui.tokens.transition]
+fast = "all 0.2s ease"
+opacityFast = "opacity 0.2s ease"
+colors150 = "colors 0.15s"
+
+[ui.tokens.cursor]
+default = "pointer"
+disabled = "not-allowed"
+
+[ui.tokens.radius]
+sm = "0.25rem"
+md = "0.375rem"
+lg = "0.5rem"
+
+# ============================================================
+# UI — COMPONENT STYLES (Audit-required keys)
+# ============================================================
+
+# --- Buttons
+[ui.buttons.navigation.style.base]
+display = "flex"
+alignItems = "center"
+justifyContent = "center"
+transition = "all 0.2s ease"
+cursor = "pointer"
+outline = "none"
+
+[ui.buttons.navigation.style.inactive]
+bg = "transparent"
+
+[ui.buttons.action.style.base]
+width = "40px"
+height = "40px"
+bg = "bg.card"
+display = "flex"
+alignItems = "center"
+justifyContent = "center"
+transition = "all 0.2s ease"
+cursor = "pointer"
+outline = "none"
+
+[ui.buttons.act.style.base]
+width = "32px"
+height = "32px"
+bg = "transparent"
+display = "flex"
+alignItems = "center"
+justifyContent = "center"
+transition = "opacity 0.2s ease"
+cursor = "pointer"
+outline = "none"
+
+[ui.buttons.rect.style.base]
+minWidth = "120px"
+minWidthFull = "100%"
+height = "44px"
+display = "inline-flex"
+alignItems = "center"
+justifyContent = "center"
+transition = "all 0.2s ease"
+cursor = "pointer"
+cursorDisabled = "not-allowed"
+opacity = 1
+opacityDisabled = 0.5
+outline = "none"
+
+[ui.buttons.tab.style.base]
+minWidth = "100px"
+height = "40px"
+display = "inline-flex"
+alignItems = "center"
+justifyContent = "center"
+transition = "all 0.2s ease"
+cursor = "pointer"
+outline = "none"
+
+# --- Tables
+[ui.tables.loading.container]
+display = "flex"
+alignItems = "center"
+justifyContent = "center"
+paddingY = "2rem"
+
+[ui.tables.loading.spinner]
+size = "32px"
+borderWidth = "2px"
+borderColor = "blue.500"
+borderTopColor = "transparent"
+borderRadius = "50%"
+animation = "spin 1s linear infinite"
+
+[ui.tables.wrapper.style]
+overflowX = "auto"
+overflowY = "hidden"
+webkitOverflowScrollingMobile = "touch"
+
+[ui.tables.table.style]
+width = "100%"
+minWidthMobile = "800px"
+borderCollapse = "collapse"
+tableLayout = "fixed"
+
+[ui.tables.header.style]
+textAlign = "center"
+
+[ui.tables.cell.content]
+display = "flex"
+flexDirection = "column"
+justifyContent = "center"
+alignItems = "center"
+textAlign = "center"
+width = "100%"
+height = "100%"
+gap = "0px"
+
+# --- Dialogs
+[ui.dialogs.container.style.mobile]
+position = "fixed"
+top = "0"
+left = "0"
+right = "0"
+bottom = "0"
+zIndex = "200"
+borderRadius = "0"
+padding = "20px"
+overflow = "auto"
+display = "flex"
+flexDirection = "column"
+
+[ui.dialogs.container.style.desktop]
+position = "relative"
+zIndex = "200"
+maxWidth = "800px"
+width = "90%"
+maxHeight = "90vh"
+overflow = "auto"
+
+[ui.dialogs.closeButton.style]
+padding = "8px"
+borderRadius = "0.375rem"
+bg = "transparent"
+border = "none"
+cursor = "pointer"
+minWidthMobile = "44px"
+minHeightMobile = "44px"
+display = "flex"
+alignItems = "center"
+justifyContent = "center"
+
+[ui.dialogs.overlay.style]
+position = "absolute"
+inset = "0"
+bg = "overlay"
+cursor = "pointer"
+
+[ui.dialogs.footer.style]
+display = "flex"
+
+[ui.dialogs.footer.style.mobile]
+justifyContent = "stretch"
+flexDirection = "column"
+marginTop = "auto"
+paddingTop = "20px"
+
+[ui.dialogs.footer.style.desktop]
+justifyContent = "center"
+flexDirection = "row"
+marginTop = "16px"
+
+[ui.dialogs.header.style]
+display = "flex"
+alignItems = "center"
+justifyContent = "space-between"
+
+[ui.dialogs.body.style]
+display = "flex"
+flexDirection = "column"
+
+[ui.dialogs.body.style.mobile]
+flex = "1"
+
+# --- Entry (Input/Select)
+[ui.entry.container.style]
+display = "flex"
+flexDirection = "column"
+gap = "0.25rem"
+
+[ui.entry.input.style]
+width = "100%"
+transition = "colors 0.15s"
+textAlign = "center"
+webkitTapHighlightColorMobile = "transparent"
+minHeightMobile = "44px"
+
+[ui.entry.input.focus]
+outline = "none"
+ring = "2px"
+
+[ui.entry.input.cursor]
+default = "pointer"
+disabled = "not-allowed"
+
+[ui.entry.select.style]
+appearance = "none"
+backgroundImage = "url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3e%3cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'M6 8l4 4 4-4\'/%3e%3c/svg%3e')"
+backgroundPosition = "right 0.5rem center"
+backgroundRepeat = "no-repeat"
+backgroundSize = "1.5em 1.5em"
+
+[ui.entry.select.cursor]
+default = "pointer"
+disabled = "not-allowed"
+
+[ui.entry.label.style]
+fontSize = "0.875rem"
 fontWeight = 500
+color = "neutral.700"
 
-[navigation.icon]
-rotateGlaeubiger = "rotate(180deg) scaleX(-1)"
+[ui.entry.error.style]
+fontSize = "0.75rem"
+color = "text.error"
 
-[[navigation.items]]
-key = "material"
-label = "Material"
-path = "/material"
-icon = "package"
+# --- Layout (mainapp.tsx)
+[ui.layout.pageContainer.style]
+display = "flex"
+flexDirection = "column"
+minHeight = "100vh"
 
-[[navigation.items]]
-key = "kunden"
-label = "Kunden"
-path = "/kunden"
-icon = "users"
+[ui.layout.navigation.style.mobile]
+position = "fixed"
+bottom = "0"
+left = "0"
+right = "0"
+zIndex = "100"
 
-[[navigation.items]]
-key = "schuldner"
-label = "Schuldner"
-path = "/schuldner"
-icon = "hand-coins"
+[ui.layout.header.style]
+display = "grid"
+alignItems = "center"
 
-[[navigation.items]]
-key = "glaeubiger"
-label = "Gläubiger"
-path = "/glaeubiger"
-icon = "hand-coins"
+[ui.layout.content.style]
+flex = "1"
+display = "flex"
+flexDirection = "column"
+overflow = "hidden"
 
-[[navigation.items]]
-key = "settings"
-label = "Einstellungen"
-path = "/settings"
-icon = "settings"
+# --- Pages (Material/Kunden/Settings etc.)
+[ui.pages.buttonContainer.style]
+display = "flex"
+justifyContent = "flex-end"
+marginBottom = "16px"
 
-[[navigation.items]]
-key = "logout"
-label = "Logout"
-path = "/logout"
-icon = "log-out"
-
-# ========================================
-# F) LAYOUT
-# ========================================
-[layout.navigation]
-bg = "{ui.backgroundAlt}"
-border = "{ui.border}"
-height = "auto"
-
-[layout.header]
-bg = "{ui.backgroundAlt}"
-border = "{ui.border}"
-borderWidth = "1px"
+[ui.pages.error.style]
 padding = "1rem"
-gap = "1rem"
-fontSize = "2rem"
-fontWeight = 700
+bg = "errorOverlay"
+border = "1px solid"
+borderColor = "border.error"
+borderRadius = "0.375rem"
+color = "text.error"
 
-# ========================================
-# G) CONTENT
-# ========================================
-[layout.content]
-bg = "{ui.background}"
-border = "transparent"
-borderWidth = "0"
-
-# ========================================
-# H) FOOTER
-# ========================================
-[layout.footer]
-bg = "{ui.backgroundAlt}"
-border = "{ui.border}"
-borderWidth = "1px"
-borderRadius = "0.5rem"
-height = "auto"
-padding = "1rem"
+[ui.pages.monthNavigation.style]
+display = "flex"
+alignItems = "center"
+justifyContent = "center"
 gap = "0.75rem"
-gridColumns = 3
 
-# ========================================
-# I) LAYOUT RULES
-# ========================================
-[layout.rules]
-mobileBreakpointPx = 767
-desktopBreakpointPx = 1024
-sidebarCollapseBelowPx = 767
-tableHorizontalScrollBelowPx = 767
-contentMaxWidthPx = 1600
-bottomNavHeightPx = 60
-bottomNavPadding = "80px"
-touchMinSizePx = 48
+[ui.pages.monthPicker.style]
+position = "absolute"
+left = "50%"
+zIndex = "10"
+marginTop = "0.5rem"
+transform = "translateX(-50%)"
+minWidth = "14rem"
+borderRadius = "0.5rem"
+border = "1px solid"
+borderColor = "neutral.700"
+bg = "neutral.900"
+bgOpacity = 0.90
+padding = "0.5rem"
+boxShadow = "theme.shadows.dropdown"
+backdropBlur = "theme.effects.backdropBlur"
+
+[ui.pages.dialogContent.style]
+display = "flex"
+flexDirection = "column"
+alignItems = "center"
+textAlign = "center"
+gap = "1rem"
+
+[ui.pages.dialogContent.centered.style]
+width = "100%"
+maxWidth = "32rem"
+textAlign = "center"
+
+[ui.pages.status.style]
+paddingX = "0.5rem"
+paddingY = "0.25rem"
+borderRadius = "0.25rem"
+fontSize = "0.875rem"
+
+[ui.pages.status.bezahlt]
+bg = "statusBezahlt"
+color = "green.300"
+
+[ui.pages.status.teilbezahlt]
+bg = "statusTeilbezahlt"
+color = "yellow.300"
+
+[ui.pages.status.offen]
+bg = "statusOffen"
+color = "red.300"
+
+[ui.pages.actions.style]
+display = "flex"
+gap = "0.5rem"
+
+[ui.pages.detailHeader.style]
+display = "flex"
+justifyContent = "space-between"
+alignItems = "center"
+
+[ui.pages.detailHeaderLeft.style]
+display = "flex"
+alignItems = "center"
+gap = "1rem"
+
+[ui.pages.detailHeaderActions.style]
+display = "flex"
+gap = "0.5rem"
+
+[ui.pages.section.style]
+display = "flex"
+flexDirection = "column"
+gap = "0.5rem"
+
+[ui.pages.sectionHeader.style]
+display = "flex"
+justifyContent = "space-between"
+alignItems = "center"
+
+# SettingsPage
+[ui.pages.settings.loading.style]
+display = "flex"
+alignItems = "center"
+justifyContent = "center"
+height = "16rem"
+
+[ui.pages.settings.message.style]
+padding = "1rem"
+borderRadius = "0.375rem"
+
+[ui.pages.settings.message.error]
+bg = "red.100"
+color = "red.900"
+
+[ui.pages.settings.message.success]
+bg = "green.100"
+color = "green.900"
+
+[ui.pages.settings.sections.style]
+display = "flex"
+flexDirection = "column"
+gap = "2rem"
+
+[ui.pages.settings.sectionTitle.style]
+fontSize = "1.25rem"
+fontWeight = "bold"
+marginBottom = "1rem"
+
+[ui.pages.settings.userCard.style]
+border = "1px solid"
+borderColor = "border.default"
+borderRadius = "0.375rem"
+padding = "1rem"
+
+[ui.pages.settings.userCard.pending.style]
+display = "flex"
+flexDirection = "column"
+gap = "0.5rem"
+
+[ui.pages.settings.userCard.pendingHeader.style]
+display = "flex"
+justifyContent = "space-between"
+alignItems = "flex-start"
+
+[ui.pages.settings.userCard.pendingActions.style]
+display = "flex"
+gap = "0.5rem"
+alignItems = "center"
+
+[ui.pages.settings.userCard.active.style]
+display = "flex"
+justifyContent = "space-between"
+alignItems = "center"
+
+[ui.pages.settings.userCard.disabled.style]
+opacity = 0.5
+
+# --- Infobox
+[ui.infobox.container.style]
+display = "flex"
+gapMobile = "8px"
+gapDesktop = "12px"
+borderWidth = "1px"
+borderStyle = "solid"
+borderRadius = "12px"
+paddingMobile = "12px"
+paddingDesktop = "16px"
+widthMobile = "100%"
+
+[ui.infobox.icon.style]
+widthMobile = "1rem"
+widthDesktop = "1.25rem"
+heightMobile = "1rem"
+heightDesktop = "1.25rem"
+flexShrink = "0"
+marginTop = "4px"
+
+[ui.infobox.title.style]
+marginBottom = "4px"
+
+[ui.infobox.content.style]
+flex = "1"
+
+# --- Dividers
+[ui.dividers.month.style]
+padding = "8px 12px"
+fontWeight = 600
+fontSize = "0.875rem"
+textTransform = "uppercase"
+textAlign = "center"
+
+[ui.dividers.horizontal.style]
+border = "none"
+borderTop = "1px solid"
+borderColor = "border.default"
+marginTop = "12px"
+marginBottom = "12px"
+
+# ============================================================
+# COMPONENTS — ICON (Lucide React)
+# ============================================================
+[components.icon]
+home = "home"
+logout = "log-out"
+settings = "settings"
+kunden = "users"
+material = "boxes"
+schuldner = "hand-coins"
+glaeubiger = "hand-coins"
+plus = "plus"
+bar = "banknote"
+rechnung = "layers-plus"
+billianz = "chart-candlestick"
+bearbeiten = "pencil"
+loeschen = "trash-2"
+zurueckBlaettern = "arrow-left"
+vorBlaettern = "arrow-right"
+wartend = "history"
+in_bearbeitung = "loader-pinwheel"
+erledigt = "shield-check"
+bestand_0_aber_aussenstaende = "database-x"
+
+[components.icon.nav]
+buttonSize = "48px"
+iconSize = "36px"
+radius = "16px"
+
+[components.icon.dash]
+buttonSize = "64px"
+iconSize = "48px"
+radius = "16px"
+
+[components.icon.act]
+buttonSize = "20px"
+iconSize = "20px"
+radius = "12px"
+
+# ============================================================
+# COMPONENTS — PROGRESSBAR
+# ============================================================
+[components.progressbar]
+height = "18px"
+radius = "12px"
+padding = "2px"
+
+[components.progressbar.scale.progressPercent]
+themeScalePath = "theme.colors.progress"
+min = 0
+max = 100
+step = 5
+direction = "normal"
+showValueInsideBar = true
+unit = "%"
+
+[components.progressbar.scale.progressPercent110]
+themeScalePath = "theme.colors.progress"
+min = 0
+max = 110
+step = 5
+direction = "normal"
+clampColorAtMaxScaleKey = "100"
+showValueInsideBar = true
+unit = "%"
+
+[components.progressbar.scale.stock]
+themeScalePath = "theme.colors.progress"
+direction = "inverted"
+showValueInsideBar = true
+unit = ""
+
+# ============================================================
+# COMPONENTS — ENTRY (Schema)
+# ============================================================
+[components.entry]
+height = "44px"
+width = "200px"
+radius = "12px"
+paddingX = "12px"
+paddingY = "10px"
+
+# ============================================================
+# COMPONENTS — TABLE (Schema)
+# ============================================================
+[components.table]
+headerHeight = "52px"
+rowHeight = "48px"
+actionsColumnWidth = "80px"
+
+[components.table.columns.material]
+order = ["datum", "bezeichnung", "notiz", "ekStck", "ekGesamt", "vkStck", "menge", "einnahmen", "aussenstaende", "theorEinnahmen", "gewinn", "status", "bestand", "aktionen"]
+labels = { datum = "Datum", bezeichnung = "Bezeichnung", notiz = "Notiz", ekStck = "EK/Stck", ekGesamt = "EK Gesamt", vkStck = "VK/Stck", menge = "Menge", einnahmen = "Einnahmen", aussenstaende = "Außenstände", theorEinnahmen = "theor. Einnahmen", gewinn = "Gewinn", status = "Status", bestand = "Bestand", aktionen = "Aktionen" }
+
+[components.table.columns.kundenOverview]
+order = ["name", "notiz", "summeBetragPostenMat", "summeOffenPostenMat", "summeBetragPostenNoMat", "summeOffenPostenNoMat", "fortschritt", "status", "aktionen"]
+labels = { name = "Name", notiz = "Notiz", summeBetragPostenMat = "Summe Betrag PostenMat", summeOffenPostenMat = "Summe offen PostenMat", summeBetragPostenNoMat = "Summe Betrag PostenNoMat", summeOffenPostenNoMat = "Summe offen PostenNoMat", fortschritt = "Fortschritt", status = "Status", aktionen = "Aktionen" }
+
+[components.table.columns.kundenViewPostenMat]
+order = ["datum", "bezeichnung", "notiz", "menge", "vkStck", "gesamt", "bezahlt", "offen", "fortschritt", "status", "aktionen"]
+labels = { datum = "Datum", bezeichnung = "Bezeichnung", notiz = "Notiz", menge = "Menge", vkStck = "VK/Stck", gesamt = "Gesamt", bezahlt = "Bezahlt", offen = "Offen", fortschritt = "Fortschritt", status = "Status", aktionen = "Aktionen" }
+
+[components.table.columns.kundenViewPostenNoMat]
+order = ["datum", "notiz", "gesamt", "bezahlt", "offen", "fortschritt", "status", "aktionen"]
+labels = { datum = "Datum", notiz = "Notiz", gesamt = "Gesamt", bezahlt = "Bezahlt", offen = "Offen", fortschritt = "Fortschritt", status = "Status", aktionen = "Aktionen" }
+
+[components.table.columns.schuldner]
+order = ["datum", "name", "notiz", "betrag", "bezahlt", "offen", "fortschritt", "status", "aktionen"]
+labels = { datum = "Datum", name = "Name", notiz = "Notiz", betrag = "Betrag", bezahlt = "Bezahlt", offen = "Offen", fortschritt = "Fortschritt", status = "Status", aktionen = "Aktionen" }
+
+[components.table.columns.glaeubiger]
+order = ["datum", "name", "notiz", "betrag", "bezahlt", "offen", "fortschritt", "status", "aktionen"]
+labels = { datum = "Datum", name = "Name", notiz = "Notiz", betrag = "Betrag", bezahlt = "Bezahlt", offen = "Offen", fortschritt = "Fortschritt", status = "Status", aktionen = "Aktionen" }
+
+[components.table.format.moneyEur]
+type = "money"
+align = "center"
+sortable = false
+currency = "EUR"
+minDecimals = 0
+maxDecimals = 2
+padToMaxIfFraction = true
+trimTrailingZeros = true
+
+[components.table.format.qtyHalf]
+type = "quantity"
+align = "center"
+sortable = false
+rounding = "floorToStep"
+step = 0.5
+minDecimals = 0
+maxDecimals = 1
+trimTrailingZeros = true
+
+[components.table.format.date]
+type = "date"
+align = "center"
+sortable = true
+
+[components.table.format.text]
+type = "text"
+align = "center"
+sortable = false
+
+[components.table.format.status]
+type = "status"
+align = "center"
+sortable = false
+
+[components.table.format.actions]
+type = "actions"
+align = "center"
+sortable = false
+
+# ============================================================
+# COMPONENTS — STATUS (Rules)
+# ============================================================
+[components.status.common]
+order = ["wartend", "in_bearbeitung", "erledigt"]
+
+[components.status.common.rule.wartend]
+when = { started = false }
+
+[components.status.common.rule.in_bearbeitung]
+when = { started = true, erledigt = false }
+
+[components.status.common.rule.erledigt]
+when = { erledigt = true }
+
+[components.status.material]
+order = ["wartend", "in_bearbeitung", "bestand_0_aber_aussenstaende", "erledigt"]
+
+[components.status.material.rule.wartend]
+when = { started = false }
+
+[components.status.material.rule.in_bearbeitung]
+when = { started = true, bestand_gt = 0 }
+
+[components.status.material.rule.bestand_0_aber_aussenstaende]
+when = { bestand = 0, aussenstaende_gt = 0 }
+
+[components.status.material.rule.erledigt]
+when = { bestand = 0, aussenstaende = 0 }
+
+# ============================================================
+# COMPONENTS — DIALOG (Schema)
+# ============================================================
+[components.dialog]
+version = 1
+
+[components.dialog.entryType.date]
+control = "date"
+format = "components.table.format.date"
+
+[components.dialog.entryType.text]
+control = "text"
+format = "components.table.format.text"
+
+[components.dialog.entryType.note]
+control = "textarea"
+format = "components.table.format.text"
+
+[components.dialog.entryType.moneyEur]
+control = "money"
+format = "components.table.format.moneyEur"
+
+[components.dialog.entryType.qtyHalf]
+control = "quantity"
+format = "components.table.format.qtyHalf"
+
+[components.dialog.entryType.materialSelect]
+control = "select"
+format = "components.table.format.text"
+optionsSource = "material"
+optionLabelField = "bezeichnung"
+optionValueField = "id"
+
+[components.dialog.entryType.kundeSelect]
+control = "select"
+format = "components.table.format.text"
+optionsSource = "kunde"
+optionLabelField = "name"
+optionValueField = "id"
+
+[components.dialog.grid.oneColumn]
+columns = 1
+
+[components.dialog.grid.twoColumn]
+columns = 2
+
+[components.dialog.grid.threeColumn]
+columns = 3
+
+# ============================================================
+# DIALOG FORMS — MATERIAL
+# ============================================================
+[components.dialog.form.material]
+gridPc = "twoColumn"
+gridSmartphone = "oneColumn"
+order = ["datum", "bezeichnung", "notiz", "ek_stck", "ek_gesamt", "vk_stck", "menge"]
+
+[components.dialog.form.material.field.datum]
+entryType = "date"
+label = "Datum"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.material.field.bezeichnung]
+entryType = "text"
+label = "Bezeichnung"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.material.field.notiz]
+entryType = "note"
+label = "Notiz"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 2
+gridSpanSmartphone = 1
+
+[components.dialog.form.material.field.ek_stck]
+entryType = "moneyEur"
+label = "EK / Stck"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.material.field.ek_gesamt]
+entryType = "moneyEur"
+label = "EK gesamt"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.material.field.vk_stck]
+entryType = "moneyEur"
+label = "VK / Stck"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.material.field.menge]
+entryType = "qtyHalf"
+label = "Menge"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+# ============================================================
+# DIALOG FORMS — KUNDE
+# ============================================================
+[components.dialog.form.kunde]
+gridPc = "oneColumn"
+gridSmartphone = "oneColumn"
+order = ["name", "notiz"]
+
+[components.dialog.form.kunde.field.name]
+entryType = "text"
+label = "Name"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.kunde.field.notiz]
+entryType = "note"
+label = "Notiz"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+# ============================================================
+# DIALOG FORMS — KUNDENVIEW POSTEN MAT
+# ============================================================
+[components.dialog.form.kundenviewPostenMat]
+gridPc = "twoColumn"
+gridSmartphone = "oneColumn"
+order = ["datum", "vk_stck", "gesamt", "menge"]
+
+[components.dialog.form.kundenviewPostenMat.field.datum]
+entryType = "date"
+label = "Datum"
+visibleOn = ["edit"]
+editableOn = ["edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.kundenviewPostenMat.field.vk_stck]
+entryType = "moneyEur"
+label = "VK / Stck"
+visibleOn = ["edit"]
+editableOn = ["edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.kundenviewPostenMat.field.gesamt]
+entryType = "moneyEur"
+label = "Gesamt"
+visibleOn = ["edit"]
+editableOn = ["edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.kundenviewPostenMat.field.menge]
+entryType = "qtyHalf"
+label = "Menge"
+visibleOn = ["edit"]
+editableOn = ["edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+# ============================================================
+# DIALOG FORMS — KUNDENVIEW POSTEN NO MAT
+# ============================================================
+[components.dialog.form.kundenviewPostenNoMat]
+gridPc = "oneColumn"
+gridSmartphone = "oneColumn"
+order = ["datum", "notiz", "gesamt"]
+
+[components.dialog.form.kundenviewPostenNoMat.field.datum]
+entryType = "date"
+label = "Datum"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.kundenviewPostenNoMat.field.notiz]
+entryType = "note"
+label = "Notiz"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.kundenviewPostenNoMat.field.gesamt]
+entryType = "moneyEur"
+label = "Gesamt"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+# ============================================================
+# DIALOG FORMS — SCHULDNER
+# ============================================================
+[components.dialog.form.schuldner]
+gridPc = "twoColumn"
+gridSmartphone = "oneColumn"
+order = ["datum", "name", "notiz", "betrag"]
+
+[components.dialog.form.schuldner.field.datum]
+entryType = "date"
+label = "Datum"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.schuldner.field.name]
+entryType = "text"
+label = "Name"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.schuldner.field.notiz]
+entryType = "note"
+label = "Notiz"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 2
+gridSpanSmartphone = 1
+
+[components.dialog.form.schuldner.field.betrag]
+entryType = "moneyEur"
+label = "Betrag"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+# ============================================================
+# DIALOG FORMS — GLAEUBIGER
+# ============================================================
+[components.dialog.form.glaeubiger]
+gridPc = "twoColumn"
+gridSmartphone = "oneColumn"
+order = ["datum", "name", "notiz", "betrag"]
+
+[components.dialog.form.glaeubiger.field.datum]
+entryType = "date"
+label = "Datum"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.glaeubiger.field.name]
+entryType = "text"
+label = "Name"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.glaeubiger.field.notiz]
+entryType = "note"
+label = "Notiz"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 2
+gridSpanSmartphone = 1
+
+[components.dialog.form.glaeubiger.field.betrag]
+entryType = "moneyEur"
+label = "Betrag"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+# ============================================================
+# DIALOG FORMS — HISTORIE EDIT
+# ============================================================
+[components.dialog.form.historieEdit]
+gridPc = "twoColumn"
+gridSmartphone = "oneColumn"
+order = ["bar", "menge"]
+
+[components.dialog.form.historieEdit.field.bar]
+entryType = "moneyEur"
+label = "Bar"
+visibleOn = ["edit"]
+editableOn = ["edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.historieEdit.field.menge]
+entryType = "qtyHalf"
+label = "Menge"
+visibleOn = ["edit"]
+editableOn = ["edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+# ============================================================
+# DIALOG FORMS — MATERIAL BAR
+# ============================================================
+[components.dialog.form.materialBar]
+gridPc = "oneColumn"
+gridSmartphone = "oneColumn"
+order = ["material", "datum", "bar", "notiz"]
+
+[components.dialog.form.materialBar.field.material]
+entryType = "materialSelect"
+label = "Material"
+visibleOn = ["new"]
+editableOn = ["new"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.materialBar.field.datum]
+entryType = "date"
+label = "Datum"
+visibleOn = ["new"]
+editableOn = ["new"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.materialBar.field.bar]
+entryType = "moneyEur"
+label = "Bar"
+visibleOn = ["new"]
+editableOn = ["new"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.materialBar.field.notiz]
+entryType = "note"
+label = "Notiz"
+visibleOn = ["new"]
+editableOn = ["new"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+# ============================================================
+# DIALOG FORMS — MATERIAL RECHNUNG
+# ============================================================
+[components.dialog.form.materialRechnung]
+gridPc = "twoColumn"
+gridSmartphone = "oneColumn"
+order = ["kunde", "datum", "material", "menge", "vk_stck", "notiz"]
+
+[components.dialog.form.materialRechnung.field.kunde]
+entryType = "kundeSelect"
+label = "Kunde"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.materialRechnung.field.datum]
+entryType = "date"
+label = "Datum"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.materialRechnung.field.material]
+entryType = "materialSelect"
+label = "Material"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.materialRechnung.field.menge]
+entryType = "qtyHalf"
+label = "Menge"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.materialRechnung.field.vk_stck]
+entryType = "moneyEur"
+label = "VK / Stck"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 1
+gridSpanSmartphone = 1
+
+[components.dialog.form.materialRechnung.field.notiz]
+entryType = "note"
+label = "Notiz"
+visibleOn = ["new", "edit"]
+editableOn = ["new", "edit"]
+gridSpanPc = 2
+gridSpanSmartphone = 1
