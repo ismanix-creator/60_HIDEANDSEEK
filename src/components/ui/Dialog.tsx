@@ -30,30 +30,12 @@
 import { useEffect, useCallback } from 'react';
 import type { DialogProps } from '@/types/ui.types';
 import { appConfig } from '@/config';
-
-const dialogConfig = appConfig.components.dialog.base;
-
-const colorsConfig = appConfig.theme.colors;
 import { X } from 'lucide-react';
 import { useResponsive } from '@/hooks/useResponsive';
 
-// Helper: Tailwind-Scale (0-32) auf spacing (semantische Namen) mappen
-const spacingBase = (key: number | string): string => {
-  const keyNum = typeof key === 'number' ? key : parseInt(String(key), 10);
-  if (isNaN(keyNum)) return appConfig.theme.spacing.content_gap; // fallback
-
-  // Tailwind-Scale Mapping:
-  // 0 -> tight, 1-2 -> compact, 3 -> element_gap, 4-5 -> content_gap, 6 -> panel_padding, 8 -> section_padding, 10+ -> page_padding
-  if (keyNum <= 0) return appConfig.theme.spacing.tight;
-  if (keyNum === 1) return appConfig.theme.spacing.compact;
-  if (keyNum === 2) return appConfig.theme.spacing.compact;
-  if (keyNum === 3) return appConfig.theme.spacing.element_gap;
-  if (keyNum === 4) return appConfig.theme.spacing.content_gap;
-  if (keyNum === 5) return appConfig.theme.spacing.content_gap;
-  if (keyNum === 6) return appConfig.theme.spacing.panel_padding;
-  if (keyNum === 8) return appConfig.theme.spacing.section_padding;
-  return appConfig.theme.spacing.page_padding; // 10+
-};
+// Config shortcuts
+const colorsConfig = appConfig.theme.colors;
+const spacingDialog = appConfig.theme.spacing.dialog;
 
 // ═══════════════════════════════════════════════════════
 // COMPONENT
@@ -87,71 +69,75 @@ export function Dialog({ open = true, onClose, title, children, actions, footer,
     return null;
   }
 
-  // Touch-Target Minimum (fallback to 44px if not in config)
-  const minTouchTarget = `${appConfig.layout.responsive?.touchMinSize || 44}px`;
+  // Touch-Target Minimum
+  const minTouchTarget = '44px';
 
   // ═══════════════════════════════════════════════════════
   // RESPONSIVE STYLES
   // ═══════════════════════════════════════════════════════
 
   // Dialog Container Style
+  const dialogContainerMobile = appConfig.ui.dialogs.container.style.mobile;
+  const dialogContainerDesktop = appConfig.ui.dialogs.container.style.desktop;
   const containerStyle: React.CSSProperties = isMobile
     ? {
         // MOBILE: Fullscreen
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 10,
-        backgroundColor: colorsConfig.ui.backgroundCard,
-        borderRadius: 0,
-        padding: appConfig.theme.spacing.mobile_section_padding,
-        overflow: 'auto',
-        display: 'flex',
-        flexDirection: 'column'
+        position: dialogContainerMobile.position,
+        top: dialogContainerMobile.top,
+        left: dialogContainerMobile.left,
+        right: dialogContainerMobile.right,
+        bottom: dialogContainerMobile.bottom,
+        zIndex: dialogContainerMobile.zIndex,
+        backgroundColor: colorsConfig.bg.card,
+        borderRadius: dialogContainerMobile.borderRadius,
+        padding: dialogContainerMobile.padding,
+        overflow: dialogContainerMobile.overflow,
+        display: dialogContainerMobile.display,
+        flexDirection: dialogContainerMobile.flexDirection
       }
     : {
         // DESKTOP: Centered Modal
-        position: 'relative',
-        zIndex: 10,
-        backgroundColor: colorsConfig.ui.backgroundCard,
-        borderRadius: dialogConfig.container.borderRadius,
-        boxShadow: dialogConfig.container.shadow,
-        padding: spacingBase(dialogConfig.container.padding),
-        maxWidth: dialogConfig.container.maxWidth,
-        width: dialogConfig.container.width,
-        maxHeight: '90vh',
-        overflow: 'auto',
-        border: `1px solid ${colorsConfig.ui.border}`
+        position: dialogContainerDesktop.position,
+        zIndex: dialogContainerDesktop.zIndex,
+        backgroundColor: colorsConfig.bg.card,
+        borderRadius: appConfig.theme.border.radius.body,
+        boxShadow: appConfig.theme.shadows.dialog,
+        padding: spacingDialog.padding,
+        maxWidth: dialogContainerDesktop.maxWidth,
+        width: dialogContainerDesktop.width,
+        maxHeight: dialogContainerDesktop.maxHeight,
+        overflow: dialogContainerDesktop.overflow,
+        border: `1px solid ${colorsConfig.border.default}`
       };
 
-  // Close Button Style
+  // Close Button Style (100% config-driven)
+  const dialogCloseBtn = appConfig.ui.dialogs.closeButtons.style;
   const closeButtonStyle: React.CSSProperties = {
-    padding: spacingBase(1),
-    borderRadius: '0.375rem',
-    color: colorsConfig.text.tertiary,
-    backgroundColor: 'transparent',
-    border: 'none',
-    cursor: 'pointer',
+    padding: dialogCloseBtn.padding,
+    borderRadius: dialogCloseBtn.borderRadius,
+    color: colorsConfig.text.hint,
+    backgroundColor: colorsConfig.bg[dialogCloseBtn.bg as keyof typeof colorsConfig.bg],
+    border: dialogCloseBtn.border,
+    cursor: dialogCloseBtn.cursor,
     // Mobile: Größerer Touch-Target
-    minWidth: isMobile ? minTouchTarget : undefined,
-    minHeight: isMobile ? minTouchTarget : undefined,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
+    minWidth: isMobile ? dialogCloseBtn.minWidthMobile : undefined,
+    minHeight: isMobile ? dialogCloseBtn.minHeightMobile : undefined,
+    display: dialogCloseBtn.display,
+    alignItems: dialogCloseBtn.alignItems,
+    justifyContent: dialogCloseBtn.justifyContent
   };
 
-  // Footer Style
+  // Footer Style (100% config-driven)
+  const dialogFooter = appConfig.ui.dialogs.footer.style;
+  const dialogFooterMobile = appConfig.ui.dialogs.footer.style.mobile;
+  const dialogFooterDesktop = appConfig.ui.dialogs.footer.style.desktop;
   const footerStyle: React.CSSProperties = {
-    display: 'flex',
-    justifyContent: isMobile ? 'stretch' : 'center',
-    flexDirection: isMobile ? 'column' : 'row',
-    marginTop: isMobile ? 'auto' : dialogConfig.footer.marginTop,
-    paddingTop: isMobile ? appConfig.theme.spacing.mobile_section_padding : undefined,
-    paddingLeft: isMobile ? appConfig.theme.spacing.mobile_section_padding : dialogConfig.container.padding,
-    paddingRight: isMobile ? appConfig.theme.spacing.mobile_section_padding : dialogConfig.container.padding,
-    gap: isMobile ? appConfig.theme.spacing.mobile_element_gap : dialogConfig.footer.gap
+    display: dialogFooter.display,
+    justifyContent: isMobile ? dialogFooterMobile.justifyContent : dialogFooterDesktop.justifyContent,
+    flexDirection: isMobile ? dialogFooterMobile.flexDirection : dialogFooterDesktop.flexDirection,
+    marginTop: isMobile ? dialogFooterMobile.marginTop : dialogFooterDesktop.marginTop,
+    paddingTop: isMobile ? dialogFooterMobile.paddingTop : undefined,
+    gap: spacingDialog.actionsGap
   };
 
   return (
@@ -160,6 +146,7 @@ export function Dialog({ open = true, onClose, title, children, actions, footer,
         position: 'fixed',
         inset: 0,
         zIndex: 50,
+        // Wrapper-Layout ist fix für Dialogs (zentriert), aber explizit für clarity
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
@@ -169,10 +156,10 @@ export function Dialog({ open = true, onClose, title, children, actions, footer,
       {!isMobile && (
         <div
           style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundColor: dialogConfig.overlay.bg,
-            cursor: 'pointer'
+            position: appConfig.ui.dialogs.overlay.style.position,
+            inset: appConfig.ui.dialogs.overlay.style.inset,
+            backgroundColor: colorsConfig.bg.overlay,
+            cursor: appConfig.ui.dialogs.overlay.style.cursor
           }}
           onClick={onClose}
         />
@@ -183,17 +170,17 @@ export function Dialog({ open = true, onClose, title, children, actions, footer,
         {/* Header */}
         <div
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginBottom: isMobile ? appConfig.theme.spacing.mobile_section_padding : spacingBase(4)
+            display: appConfig.ui.dialogs.header.style.display,
+            alignItems: appConfig.ui.dialogs.header.style.alignItems,
+            justifyContent: appConfig.ui.dialogs.header.style.justifyContent,
+            marginBottom: isMobile ? '20px' : spacingDialog.contentGap
           }}
         >
           <h2
             style={{
-              fontSize: isMobile ? '1.25rem' : dialogConfig.header.fontSize,
-              fontWeight: dialogConfig.header.fontWeight,
-              color: colorsConfig.text.primary
+              fontSize: isMobile ? '1.25rem' : '1.125rem',
+              fontWeight: '600',
+              color: colorsConfig.text.active
             }}
           >
             {title}
@@ -203,14 +190,14 @@ export function Dialog({ open = true, onClose, title, children, actions, footer,
             style={closeButtonStyle}
             onMouseEnter={(e) => {
               if (!isMobile) {
-                e.currentTarget.style.backgroundColor = colorsConfig.gray[200];
-                e.currentTarget.style.color = colorsConfig.text.primary;
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                e.currentTarget.style.color = colorsConfig.text.active;
               }
             }}
             onMouseLeave={(e) => {
               if (!isMobile) {
                 e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.color = colorsConfig.text.tertiary;
+                e.currentTarget.style.color = colorsConfig.text.hint;
               }
             }}
             aria-label="Schließen"
@@ -227,10 +214,10 @@ export function Dialog({ open = true, onClose, title, children, actions, footer,
         {/* Body */}
         <div
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: isMobile ? appConfig.theme.spacing.mobile_section_padding : spacingBase(dialogConfig.body.gap),
-            flex: isMobile ? 1 : undefined
+            display: appConfig.ui.dialogs.body.style.display,
+            flexDirection: appConfig.ui.dialogs.body.style.flexDirection,
+            gap: isMobile ? '20px' : spacingDialog.fieldGap,
+            flex: isMobile ? appConfig.ui.dialogs.body.style.mobile.flex : undefined
           }}
         >
           {children}

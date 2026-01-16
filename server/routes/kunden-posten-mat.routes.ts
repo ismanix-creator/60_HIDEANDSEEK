@@ -10,16 +10,16 @@
  *   0.1.0 - 2026-01-07 - Initial scaffold
  */
 
-import { Hono } from "hono";
-import type { AppEnv } from "../types.js";
-import { fromZodError } from "../errors.js";
+import { Hono } from 'hono';
+import type { AppEnv } from '../types.js';
+import { fromZodError } from '../errors.js';
 import {
   kundenPostenMatCreateSchema,
   kundenPostenMatIdParamSchema,
   kundenPostenMatKundeIdParamSchema,
   kundenPostenMatUpdateSchema,
-  kundenPostenMatZahlungSchema,
-} from "../validation/kunden-posten-mat.validation.js";
+  kundenPostenMatZahlungSchema
+} from '../validation/kunden-posten-mat.validation.js';
 import {
   createKundenPostenMat,
   deleteKundenPostenMat,
@@ -27,18 +27,18 @@ import {
   listKundenPostenMat,
   listKundenPostenMatByKunde,
   updateKundenPostenMat,
-  verbucheZahlungKundenPostenMat,
-} from "../services/kunden-posten-mat.service.js";
+  verbucheZahlungKundenPostenMat
+} from '../services/kunden-posten-mat.service.js';
 
 export const kundenPostenMatRoutes = new Hono<AppEnv>();
 
-kundenPostenMatRoutes.get("/kunden-posten-mat", (c) => {
-  const db = c.get("db");
+kundenPostenMatRoutes.get('/kunden-posten-mat', (c) => {
+  const db = c.get('db');
   const data = listKundenPostenMat(db);
   return c.json({ success: true, data });
 });
 
-kundenPostenMatRoutes.get("/kunden-posten-mat/:id", (c) => {
+kundenPostenMatRoutes.get('/kunden-posten-mat/:id', (c) => {
   const params = kundenPostenMatIdParamSchema.safeParse(c.req.param());
   if (!params.success) throw fromZodError(params.error);
   const db = c.get('db');

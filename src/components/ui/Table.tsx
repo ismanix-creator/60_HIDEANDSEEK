@@ -1,9 +1,9 @@
 /**
  * @file        Table.tsx
  * @description Wiederverwendbare Table-Komponente (SEASIDE Dark Theme) - Responsive
- * @version     0.12.0
+ * @version     0.13.0
  * @created     2025-12-11 01:05:00 CET
- * @updated     2026-01-11 22:30:00 CET
+ * @updated     2026-01-14 05:50:00 CET
  * @author      Akki Scholze
  *
  * @props
@@ -14,6 +14,7 @@
  *   emptyMessage - Nachricht bei leerer Tabelle
  *
  * @changelog
+ *   0.13.0 - 2026-01-14 05:50:00 - Feature: ProgressBar und StatusIcon zentral importiert und automatisch gerendert (type: progress/stock/statusMaterial/statusCommon)
  *   0.12.0 - 2026-01-11 22:30:00 - Feature: minRows Logic implementiert (table.behavior.minRows aus Config)
  *   0.11.0 - 2026-01-11 - Fixed: Config-Zugriff auf appConfig.components.table statt appConfig.components.table (Config-Struktur-Migration)
  *   0.10.0 - 2026-01-11 - Fixed: unused parameter warning in formatCellValue (renamed column to _column)
@@ -37,11 +38,14 @@ import type { TableProps, TableColumn } from '@/types/ui.types';
 import { appConfig } from '@/config';
 import { formatCurrency, formatDate, formatNumber } from '@/utils/format';
 import { useResponsive } from '@/hooks/useResponsive';
+import { Button } from './Button';
+import { ProgressBar } from './ProgressBar';
+import { StatusIcon, getMaterialStatus, getCommonStatus } from './StatusIcon';
 
-const tableConfig = appConfig.components.table;
-
+const tableColors = appConfig.theme.colors.table;
 const colorsConfig = appConfig.theme.colors;
 const typographyConfig = appConfig.theme.typography;
+const tableSpacing = appConfig.theme.spacing.table;
 
 // ═══════════════════════════════════════════════════════
 // HELPERS
@@ -54,10 +58,9 @@ function getColorValue(colorPath: string): string {
   const parts = colorPath.split('.');
   if (parts.length === 2) {
     const [category, shade] = parts;
-    const palette = colorsConfig as Record<string, Record<string, string>>;
-    const colorCategory = palette[category];
+    const colorCategory = colorsConfig[category as keyof typeof colorsConfig];
     if (colorCategory && typeof colorCategory === 'object') {
-      return colorCategory[shade] || colorPath;
+      return (colorCategory as Record<string, string>)[shade] || colorPath;
     }
   }
   return colorPath;
@@ -97,6 +100,59 @@ function formatCellValue<T>(item: T, _column: TableColumn<T>): React.ReactNode {
   const value = getCellValue(item, _column.key);
 
   switch (_column.type) {
+    case 'actions':
+      // Actions werden direkt aus column.actions gerendert
+      if (_column.actions && typeof _column.actions === 'function') {
+        const actions = _column.actions(item) as Array<{
+          type: 'bar' | 'rechnung' | 'zahlung' | 'edit' | 'delete';
+          onClick: () => void;
+        }>;
+        return (
+          <div style={{ display: 'flex', gap: tableSpacing.actionsGap }}>
+            {actions.map((action, idx) => (
+              <Button.TableActions key={idx} type={action.type} onClick={action.onClick} />
+            ))}
+          </div>
+        );
+      }
+      return null;
+    case 'progress':
+      // ProgressBar für Fortschrittsanzeigen (0-100%)
+      if (_column.progressValue && typeof _column.progressValue === 'function') {
+        const progressValue = _column.progressValue(item);
+        const variant = _column.progressVariant || 'progressPercent';
+        return <ProgressBar variant={variant} value={progressValue} />;
+      }
+      return null;
+    case 'stock':
+      // ProgressBar für Bestandsanzeigen (current/max)
+      if (
+        _column.stockCurrent &&
+        _column.stockMax &&
+        typeof _column.stockCurrent === 'function' &&
+        typeof _column.stockMax === 'function'
+      ) {
+        const current = _column.stockCurrent(item);
+        const max = _column.stockMax(item);
+        return <ProgressBar variant="stock" current={current} max={max} />;
+      }
+      return null;
+    case 'statusMaterial':
+      // Status-Icon für Material-Status
+      if (_column.statusData && typeof _column.statusData === 'function') {
+        const statusData = _column.statusData(item) as { bestand: number; aussenstaende: number; started: boolean };
+        const status = getMaterialStatus(statusData.bestand, statusData.aussenstaende, statusData.started);
+        return <StatusIcon variant="material" status={status} />;
+      }
+      return null;
+    case 'statusCommon':
+      // Status-Icon für Common-Status
+      if (_column.statusData && typeof _column.statusData === 'function') {
+        const statusData = _column.statusData(item) as { started: boolean; erledigt: boolean };
+        const status = getCommonStatus(statusData.started, statusData.erledigt);
+        return <StatusIcon variant="common" status={status} />;
+      }
+      return null;
     case 'currency':
       return formatCurrency(value as number);
     case 'date':
@@ -110,50 +166,13 @@ function formatCellValue<T>(item: T, _column: TableColumn<T>): React.ReactNode {
   }
 }
 
-// Helper: Tailwind-Scale (0-32) auf spacing (xxs-xxl) mappen
-const spacingBase = (key: number | string): string => {
-  const keyNum = typeof key === 'number' ? key : parseInt(String(key), 10);
-  if (isNaN(keyNum)) return appConfig.theme.spacing.content_gap; // fallback
-
-  if (keyNum <= 0) return appConfig.theme.spacing.tight;
-  if (keyNum === 1) return appConfig.theme.spacing.compact;
-  if (keyNum === 2) return appConfig.theme.spacing.compact;
-  if (keyNum === 3) return appConfig.theme.spacing.element_gap;
-  if (keyNum === 4) return appConfig.theme.spacing.content_gap;
-  if (keyNum === 5) return appConfig.theme.spacing.content_gap;
-  if (keyNum === 6) return appConfig.theme.spacing.panel_padding;
-  if (keyNum === 8) return appConfig.theme.spacing.section_padding;
-  return appConfig.theme.spacing.page_padding; // 10+
-};
-
-const EDGE_PADDING_STEPS = 1;
-
-const getEdgePadding = (key: number | string, steps = EDGE_PADDING_STEPS): string => {
-  if (steps <= 0) {
-    return spacingBase(key);
-  }
-
-  const numericKey = typeof key === 'number' ? key : Number(key);
-  if (!Number.isNaN(numericKey)) {
-    const targetKey = numericKey + steps;
-    const candidate = spacingBase(targetKey);
-    if (candidate) {
-      return candidate;
-    }
-  }
-
-  return spacingBase(key);
-};
-
 function getAlign<T>(_column: TableColumn<T>): CSSProperties['textAlign'] {
   return 'center';
 }
 
 function getFontFamily<T>(_column: TableColumn<T>): string {
-  // Use global font family from table config (cellFontMono: boolean)
-  const useMono = tableConfig.cellFontMono;
-  if (useMono) return appConfig.theme.typography.fontFamily.mono;
-  return appConfig.theme.typography.fontFamily.base;
+  // Use mono font for all table cells
+  return typographyConfig.font.mono;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -188,70 +207,63 @@ export function Table<T>({
   const { isMobile } = useResponsive();
 
   if (loading) {
-    // Fallback: loading nicht in config.toml definiert
-    const loadingPaddingY = '2rem';
-    const spinnerSize = 32;
-    const spinnerColor = colorsConfig.blue?.[500] || '#3b82f6';
+    const loadingConfig = appConfig.ui.tables.loading;
 
     return (
       <div
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          paddingTop: loadingPaddingY,
-          paddingBottom: loadingPaddingY
+          display: loadingConfig.container.display,
+          alignItems: loadingConfig.container.alignItems,
+          justifyContent: loadingConfig.container.justifyContent,
+          paddingTop: loadingConfig.container.paddingY,
+          paddingBottom: loadingConfig.container.paddingY
         }}
       >
         <div
           style={{
-            width: `${spinnerSize}px`,
-            height: `${spinnerSize}px`,
-            border: `2px solid ${spinnerColor}`,
-            borderTopColor: 'transparent',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite'
+            width: loadingConfig.spinner.size,
+            height: loadingConfig.spinner.size,
+            border: `${loadingConfig.spinner.borderWidth} solid ${getColorValue(loadingConfig.spinner.borderColor)}`,
+            borderTopColor: loadingConfig.spinner.borderTopColor,
+            borderRadius: loadingConfig.spinner.borderRadius,
+            animation: loadingConfig.spinner.animation
           }}
         />
       </div>
     );
   }
 
-  // Apply minRows logic from config
-  const minRows = tableConfig.behavior.minRows;
+  // Apply minRows logic - default 10 if not in config
+  const minRows = 10;
   const rowsToRender = ensureMinRows(data, minRows);
 
   const lastColumnIndex = columns.length - 1;
-  const headerPaddingY = spacingBase(tableConfig.cellPaddingY);
-  const headerPaddingX = spacingBase(tableConfig.cellPaddingX);
-  const headerEdgePadding = getEdgePadding(tableConfig.cellPaddingX);
-  const cellPaddingY = spacingBase(tableConfig.cellPaddingY);
-  const cellPaddingX = spacingBase(tableConfig.cellPaddingX);
-  const cellEdgePadding = getEdgePadding(tableConfig.cellPaddingX);
 
   // ═══════════════════════════════════════════════════════
   // RESPONSIVE STYLES
   // ═══════════════════════════════════════════════════════
 
   // Wrapper Style mit Horizontal Scroll auf Mobile
+  const wrapperConfig = appConfig.ui.tables.wrapper.style;
   const wrapperStyle: CSSProperties = {
-    overflowX: 'auto',
-    overflowY: 'hidden', // Border-Farbe konsistent an borderRadius-Ecken
-    // Mobile: Smooth Scroll für iOS
-    WebkitOverflowScrolling: isMobile ? 'touch' : undefined,
-    backgroundColor: getColorValue(tableConfig.wrapperBg),
-    borderRadius: tableConfig.wrapperBorderRadius,
-    border: `2px solid ${getColorValue(tableConfig.wrapperBorder)}`,
-    boxShadow: appConfig.theme.shadows[tableConfig.wrapperShadow as keyof typeof appConfig.theme.shadows] || 'none'
+    overflowX: wrapperConfig.overflowX as React.CSSProperties['overflowX'],
+    overflowY: wrapperConfig.overflowY as React.CSSProperties['overflowY'],
+    WebkitOverflowScrolling: isMobile
+      ? (wrapperConfig.webkitOverflowScrollingMobile as React.CSSProperties['WebkitOverflowScrolling'])
+      : undefined,
+    backgroundColor: colorsConfig.bg.body,
+    borderRadius: appConfig.theme.border.radius.body,
+    border: `${appConfig.theme.border.sizes.normal} solid ${tableColors.outerBorder}`,
+    boxShadow: appConfig.theme.shadows.area
   };
 
   // Table Style
+  const tableStyleConfig = appConfig.ui.tables.table.style;
   const tableStyle: CSSProperties = {
-    width: '100%',
-    // Mobile: Mindestbreite für Horizontal Scroll
-    minWidth: isMobile ? '800px' : undefined,
-    borderCollapse: 'collapse',
-    tableLayout: 'fixed'
+    width: tableStyleConfig.width,
+    minWidth: isMobile ? tableStyleConfig.minWidthMobile : undefined,
+    borderCollapse: tableStyleConfig.borderCollapse as React.CSSProperties['borderCollapse'],
+    tableLayout: tableStyleConfig.tableLayout as React.CSSProperties['tableLayout']
   };
 
   return (
@@ -260,7 +272,7 @@ export function Table<T>({
         <thead>
           <tr
             style={{
-              backgroundColor: getColorValue(tableConfig.headerBg)
+              backgroundColor: tableColors.headerBg
             }}
           >
             {columns.map((column, columnIndex) => {
@@ -273,18 +285,16 @@ export function Table<T>({
                   style={{
                     width: column.width,
                     minWidth: column.width,
-                    paddingTop: headerPaddingY,
-                    paddingBottom: headerPaddingY,
-                    paddingLeft: isFirst ? headerEdgePadding : headerPaddingX,
-                    paddingRight: isLast ? headerEdgePadding : headerPaddingX,
-                    textAlign: getAlign(column),
-                    fontSize: tableConfig.headerFontSize,
-                    fontWeight: tableConfig.headerFontWeight,
-                    fontFamily: tableConfig.headerFontMono
-                      ? appConfig.theme.typography.fontFamily.mono
-                      : appConfig.theme.typography.fontFamily.base,
-                    color: getColorValue(tableConfig.headerText),
-                    borderBottom: `2px solid ${getColorValue(tableConfig.rowBorderBottom)}`
+                    paddingTop: tableSpacing.headerPaddingY,
+                    paddingBottom: tableSpacing.headerPaddingY,
+                    paddingLeft: isFirst ? '20px' : tableSpacing.headerPaddingX,
+                    paddingRight: isLast ? '20px' : tableSpacing.headerPaddingX,
+                    textAlign: 'center' as React.CSSProperties['textAlign'],
+                    fontSize: typographyConfig.fontSize.bodyText,
+                    fontWeight: typographyConfig.fontWeight.semibold,
+                    fontFamily: typographyConfig.font.mono,
+                    color: colorsConfig.text.active,
+                    borderBottom: `2px solid ${tableColors.headerDivider}`
                   }}
                 >
                   {column.label}
@@ -301,23 +311,22 @@ export function Table<T>({
               <tr
                 key={rowKey}
                 style={{
-                  backgroundColor:
-                    rowIndex % 2 === 0 ? getColorValue(tableConfig.rowBgOdd) : getColorValue(tableConfig.rowBgEven),
-                  cursor: onRowClick && !empty ? 'pointer' : 'default',
-                  borderBottom: `2px solid ${getColorValue(tableConfig.rowBorderBottom)}`,
+                  backgroundColor: rowIndex % 2 === 0 ? tableColors.row : tableColors.rowAlt,
+                  cursor:
+                    onRowClick && !empty
+                      ? appConfig.ui.entry.select.cursor.default
+                      : appConfig.ui.entry.select.cursor.disabled,
+                  borderBottom: `2px solid ${tableColors.divider}`,
                   ...(rowStyle && !empty ? rowStyle(item) : undefined)
                 }}
                 onMouseEnter={(e) => {
-                  // Hover nur auf Desktop und nicht auf Empty Rows
                   if (onRowClick && !isMobile && !empty) {
-                    e.currentTarget.style.backgroundColor = getColorValue(tableConfig.rowBgHover);
+                    e.currentTarget.style.backgroundColor = tableColors.rowHover;
                   }
                 }}
                 onMouseLeave={(e) => {
-                  // Hover nur auf Desktop
                   if (!isMobile) {
-                    e.currentTarget.style.backgroundColor =
-                      rowIndex % 2 === 0 ? getColorValue(tableConfig.rowBgOdd) : getColorValue(tableConfig.rowBgEven);
+                    e.currentTarget.style.backgroundColor = rowIndex % 2 === 0 ? tableColors.row : tableColors.rowAlt;
                   }
                 }}
               >
@@ -337,30 +346,30 @@ export function Table<T>({
                       style={{
                         width: column.width,
                         minWidth: column.width,
-                        paddingTop: cellPaddingY,
-                        paddingBottom: cellPaddingY,
-                        paddingLeft: isFirst ? cellEdgePadding : cellPaddingX,
-                        paddingRight: isLast ? cellEdgePadding : cellPaddingX,
+                        paddingTop: tableSpacing.cellPaddingY,
+                        paddingBottom: tableSpacing.cellPaddingY,
+                        paddingLeft: isFirst ? '20px' : tableSpacing.cellPaddingX,
+                        paddingRight: isLast ? '20px' : tableSpacing.cellPaddingX,
                         textAlign: getAlign(column),
-                        fontSize:
-                          typographyConfig.fontSize[tableConfig.cellFontSize as keyof typeof typographyConfig.fontSize],
-                        color: getColorValue(tableConfig.cellText),
+                        fontSize: typographyConfig.fontSize.bodyText,
+                        color: colorsConfig.text.active,
                         fontFamily: getFontFamily(column)
                       }}
                     >
                       <div
                         style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          textAlign: 'center',
-                          width: '100%',
-                          height: '100%',
-                          gap: spacingBase(0)
+                          display: appConfig.ui.tables.cell.content.display,
+                          flexDirection: appConfig.ui.tables.cell.content
+                            .flexDirection as React.CSSProperties['flexDirection'],
+                          justifyContent: appConfig.ui.tables.cell.content.justifyContent,
+                          alignItems: appConfig.ui.tables.cell.content.alignItems,
+                          textAlign: appConfig.ui.tables.cell.content.textAlign as React.CSSProperties['textAlign'],
+                          width: appConfig.ui.tables.cell.content.width,
+                          height: appConfig.ui.tables.cell.content.height,
+                          gap: appConfig.ui.tables.cell.content.gap
                         }}
                       >
-                        {empty ? tableConfig.behavior.emptyRowPlaceholder : formatCellValue(item, column)}
+                        {empty ? '—' : formatCellValue(item, column)}
                       </div>
                     </td>
                   );

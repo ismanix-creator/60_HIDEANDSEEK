@@ -35,7 +35,8 @@ export function useResponsive(): ResponsiveState {
     return {
       width,
       isMobile: width < appConfig.layout.rules.mobileBreakpointPx,
-      isTablet: width >= appConfig.layout.rules.mobileBreakpointPx && width < appConfig.layout.rules.desktopBreakpointPx,
+      isTablet:
+        width >= appConfig.layout.rules.mobileBreakpointPx && width < appConfig.layout.rules.desktopBreakpointPx,
       isDesktop: width >= appConfig.layout.rules.desktopBreakpointPx
     };
   });
@@ -46,7 +47,8 @@ export function useResponsive(): ResponsiveState {
       setState({
         width,
         isMobile: width < appConfig.layout.rules.mobileBreakpointPx,
-        isTablet: width >= appConfig.layout.rules.mobileBreakpointPx && width < appConfig.layout.rules.desktopBreakpointPx,
+        isTablet:
+          width >= appConfig.layout.rules.mobileBreakpointPx && width < appConfig.layout.rules.desktopBreakpointPx,
         isDesktop: width >= appConfig.layout.rules.desktopBreakpointPx
       });
     };

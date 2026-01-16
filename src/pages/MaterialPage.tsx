@@ -32,8 +32,8 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
-import { PageLayout } from '@/components/layout/PageLayout';
-import { Table, isEmptyRow } from '@/components/ui/Table';
+import { MainApp } from '@/components/layout/mainapp';
+import { Table } from '@/components/ui/Table';
 import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
 import { Input } from '@/components/ui/Input';
@@ -42,7 +42,6 @@ import { Infobox } from '@/components/ui/Infobox';
 import { useApi } from '@/hooks/useApi';
 import { formatCurrency, formatCurrencyTruncate, formatDate, formatNumberTruncate } from '@/utils/format';
 import { appConfig } from '@/config';
-import { PackagePlus, Banknote, FileText, Pencil, Trash2, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import type {
   Material,
   Kunde,
@@ -53,68 +52,7 @@ import type {
   CreateKombiBewegungRequest
 } from '@/types';
 
-// Progress-Konfiguration aus config.toml (gradientStops-basiert)
-const progressConfig = appConfig.components.table.base.progress;
-const gradientStops = progressConfig.gradientStops;
-
-const resolveColorToken = (colorPath: string): string => {
-  if (colorPath === 'none' || colorPath === 'transparent' || colorPath === 'white') {
-    return colorPath === 'none' ? 'transparent' : colorPath;
-  }
-
-  // Token-Syntax: "{category.shade}" → Farbe aus Theme auflösen
-  const tokenMatch = colorPath.match(/^\{(.+)\}$/);
-  if (tokenMatch) {
-    const innerPath = tokenMatch[1];
-    const parts = innerPath.split('.');
-    if (parts.length === 2) {
-      const [category, shade] = parts;
-      const palette = appConfig.theme.colors as Record<string, Record<string, string>>;
-      const colorCategory = palette[category];
-      if (colorCategory && typeof colorCategory === 'object') {
-        return colorCategory[shade] || colorPath;
-      }
-    }
-  }
-
-  // Fallback: Direkte Farbangabe (z.B. "gray.600" ohne Klammern)
-  const parts = colorPath.split('.');
-  if (parts.length === 2) {
-    const [category, shade] = parts;
-    const palette = appConfig.theme.colors as Record<string, Record<string, string>>;
-    const colorCategory = palette[category];
-    if (colorCategory && typeof colorCategory === 'object') {
-      return colorCategory[shade] || colorPath;
-    }
-  }
-  return colorPath;
-};
-
-const clampPercent = (value: number): number => Math.max(0, Math.min(100, value));
-
-/**
- * Ermittelt die Farbe basierend auf gradientStops aus config.toml
- * gradientStops ist sortiert nach p (Prozent), wir finden den passenden Stop
- */
-const getProgressColor = (percent: number): string => {
-  const p = clampPercent(percent);
-
-  // Finde den höchsten Stop, der <= p ist
-  let matchedColor = gradientStops[0]?.c || '{gray.600}';
-  for (const stop of gradientStops) {
-    if (p >= stop.p) {
-      matchedColor = stop.c;
-    } else {
-      break;
-    }
-  }
-  return resolveColorToken(matchedColor);
-};
-
-const progressTextColor = resolveColorToken(progressConfig.textColor);
-const progressTrackColor = resolveColorToken(progressConfig.trackBg);
-const progressTrackBorderColor = resolveColorToken(progressConfig.trackBorder);
-
+// Formatierungs-Helpers
 const formatInteger = (value: number): string => formatNumberTruncate(value, 0);
 const formatCurrencyInt = (value: number): string => formatCurrencyTruncate(value, 0);
 const formatCurrencyTwo = (value: number): string => formatCurrencyTruncate(value, 2);
@@ -264,9 +202,6 @@ export function MaterialPage() {
     () => materialien.filter((m) => toMonthKeyFromString(m.datum) === selectedMonth),
     [materialien, selectedMonth]
   );
-
-  const previousMonthLabel = relativeMonthFormatter.format(-1, 'month');
-  const nextMonthLabel = relativeMonthFormatter.format(1, 'month');
 
   // Load Material
   const loadMaterial = async () => {
@@ -649,133 +584,51 @@ export function MaterialPage() {
     setPreisMode('stueck');
   };
 
-  // Table Columns
-  const getColumnRender = (key: string) => {
-    switch (key) {
-      case 'datum':
-        return (m: Material) => formatDate(m.datum);
-      case 'menge':
-        return (m: Material) => formatInteger(m.menge);
-      case 'ek_stueck':
-        return (m: Material) => formatCurrencyTwo(m.ek_stueck);
-      case 'ek_gesamt':
-        return (m: Material) => formatCurrencyInt(m.ek_gesamt);
-      case 'vk_stueck':
-        return (m: Material) => formatCurrencyTwo(m.vk_stueck);
-      case 'bestand':
-        return (m: Material) => {
-          const start = m.menge || 0;
-          const current = m.bestand || 0;
-          const percentRaw = start > 0 ? (current / start) * 100 : 0;
-          const percent = clampPercent(percentRaw);
-          const barColor = getProgressColor(percent);
-
-          return (
-            <div className="w-full" style={{ color: progressTextColor }}>
-              <div
-                className="relative w-full h-3 rounded-full overflow-hidden"
-                style={{
-                  backgroundColor: progressTrackColor,
-                  border: `1px solid ${progressTrackBorderColor}`
-                }}
-                aria-label={`Bestand ${formatInteger(current)} von ${formatInteger(start)}`}
-              >
-                <div
-                  style={{
-                    width: `${percent}%`,
-                    height: '100%',
-                    backgroundColor: barColor,
-                    transition: 'width 0.2s ease'
-                  }}
-                />
-                <div
-                  className="absolute inset-0 flex items-center justify-center text-[11px] font-semibold"
-                  style={{ color: progressTextColor }}
-                >
-                  {formatInteger(current)}
-                </div>
-              </div>
-            </div>
-          );
-        };
-      case 'einnahmen':
-        return (m: Material) => formatCurrencyInt(m.einnahmen_bar + m.einnahmen_kombi);
-      case 'aussenstaende':
-        return (m: Material) => {
-          // Placeholder bis echte Kunden-Offenstände (Summe offen aus Kunden-Posten) vorhanden sind
-          return formatCurrencyInt(0);
-        };
-      case 'theor_einnahmen':
-        return (m: Material) => formatCurrencyInt(m.vk_stueck * m.menge);
-      case 'gewinn':
-      case 'gewinn_aktuell':
-        return (m: Material) => {
-          const earned = (m.einnahmen_bar || 0) + (m.einnahmen_kombi || 0);
-          const profit = earned - (m.ek_gesamt || 0);
-          return formatCurrencyInt(profit);
-        };
-      case 'actions':
-        return (m: Material) => {
-          const empty = isEmptyRow(m);
-          return (
-            <div className="flex gap-2 flex-wrap">
-              <Button kind="act" disabled={empty} onClick={() => void openBarDialog(m)}>
-                <Banknote />
-              </Button>
-              <Button kind="act" disabled={isEmptyRow(m)} onClick={() => void openKombiDialog(m)}>
-                <FileText />
-              </Button>
-              <Button kind="act" disabled={isEmptyRow(m)} onClick={() => void openEditDialog(m)}>
-                <Pencil />
-              </Button>
-              <Button kind="act" disabled={isEmptyRow(m)} onClick={() => void openDeleteDialog(m)}>
-                <Trash2 />
-              </Button>
-            </div>
-          );
-        };
-      default:
-        return undefined;
-    }
-  };
-
+  // Table Columns mit Auto-Rendering (Table.tsx)
   const columns = appConfig.pages.material.table.columns.map((col) => ({
     key: col.key,
     label: col.label,
-    type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
-    render: getColumnRender(col.key)
+    type: col.key === 'bestand' ? 'stock' : (col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | 'stock' | undefined),
+    // ProgressBar Auto-Rendering für Bestand
+    stockCurrent: col.key === 'bestand' ? (m: Material) => m.bestand : undefined,
+    stockMax: col.key === 'bestand' ? (m: Material) => m.menge : undefined,
+    // Custom Renders für spezielle Formatierungen
+    render: col.key === 'datum' ? (m: Material) => formatDate(m.datum) :
+            col.key === 'menge' ? (m: Material) => formatInteger(m.menge) :
+            col.key === 'ek_stueck' ? (m: Material) => formatCurrencyTwo(m.ek_stueck) :
+            col.key === 'ek_gesamt' ? (m: Material) => formatCurrencyInt(m.ek_gesamt) :
+            col.key === 'vk_stueck' ? (m: Material) => formatCurrencyTwo(m.vk_stueck) :
+            col.key === 'einnahmen' ? (m: Material) => formatCurrencyInt(m.einnahmen_bar + m.einnahmen_kombi) :
+            col.key === 'aussenstaende' ? () => formatCurrencyInt(0) :
+            col.key === 'theor_einnahmen' ? (m: Material) => formatCurrencyInt(m.vk_stueck * m.menge) :
+            (col.key === 'gewinn' || col.key === 'gewinn_aktuell') ? (m: Material) => {
+              const earned = (m.einnahmen_bar || 0) + (m.einnahmen_kombi || 0);
+              const profit = earned - (m.ek_gesamt || 0);
+              return formatCurrencyInt(profit);
+            } : undefined,
+    actions: col.key === 'actions' ? (m: Material) => [
+      { type: 'bar' as const, onClick: () => void openBarDialog(m) },
+      { type: 'rechnung' as const, onClick: () => void openKombiDialog(m) },
+      { type: 'edit' as const, onClick: () => void openEditDialog(m) },
+      { type: 'delete' as const, onClick: () => void openDeleteDialog(m) }
+    ] : undefined
   }));
 
   return (
-    <PageLayout
-      title={appConfig.page_titles.material}
-      showBackButton={true}
-      actions={
-        <Button kind="new" onClick={() => setCreateDialogOpen(true)}>
-          <PackagePlus />
-        </Button>
-      }
-    >
+    <MainApp title={appConfig.page_titles.material}>
       <div className="space-y-4">
         {/* Error */}
         {error && <div className="p-4 bg-red-500/10 border border-red-500 rounded text-red-400">{error}</div>}
 
-        {/* Monats-Navigation */}
-        <div className="flex items-center justify-center gap-3">
-          <Button kind="rect" onClick={() => handleMonthStep(-1)} aria-label={previousMonthLabel}>
-            <ChevronLeft />
-          </Button>
-
-          <div className="relative">
-            <Button
-              kind="rect"
-              aria-expanded={monthPickerOpen}
-              aria-haspopup="listbox"
-              onClick={() => setMonthPickerOpen((open) => !open)}
-            >
-              <Calendar />
-              <span className="capitalize">{formatMonthLabel(selectedMonth)}</span>
-            </Button>
+        {/* Button-Reihe: Neu + Monats-Navigation über der Tabelle */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <Button.Action type="prevMonth" onClick={() => handleMonthStep(-1)} />
+            <div className="relative">
+              <Button.Rect onClick={() => setMonthPickerOpen((open) => !open)}>
+                <Calendar />
+                <span className="capitalize">{formatMonthLabel(selectedMonth)}</span>
+              </Button.Rect>
 
             {monthPickerOpen && (
               <div className="absolute left-1/2 z-10 mt-2 -translate-x-1/2 min-w-56 rounded-lg border border-neutral-700 bg-neutral-900/90 p-2 shadow-lg backdrop-blur">
@@ -786,7 +639,9 @@ export function MaterialPage() {
                       type="button"
                       onClick={() => handleMonthSelect(monthKey)}
                       className={`flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm ${
-                        monthKey === selectedMonth ? 'bg-neutral-700 text-white' : 'text-neutral-200 hover:bg-neutral-800'
+                        monthKey === selectedMonth
+                          ? 'bg-neutral-700 text-white'
+                          : 'text-neutral-200 hover:bg-neutral-800'
                       }`}
                       role="option"
                       aria-selected={monthKey === selectedMonth}
@@ -806,12 +661,12 @@ export function MaterialPage() {
             )}
           </div>
 
-          <Button kind="rect" onClick={() => handleMonthStep(1)} aria-label={nextMonthLabel}>
-            <ChevronRight />
-          </Button>
+            <Button.Action type="nextMonth" onClick={() => handleMonthStep(1)} />
+          </div>
+          <Button.Action type="new" onClick={() => setCreateDialogOpen(true)} />
         </div>
 
-        {/* Table - VOLLE BREITE */}
+        {/* Table - VOLLE BREITE */
         <Table
           data={filteredMaterialien}
           columns={columns}
@@ -831,17 +686,15 @@ export function MaterialPage() {
           title={appConfig.components.dialog_titles.new_material}
           actions={
             <>
-              <Button
-                kind="rect"
+              <Button.Rect
+                type="cancel"
                 onClick={() => {
                   setCreateDialogOpen(false);
                   setError(null);
                   resetForm();
                 }}
-              >
-                {appConfig.components.buttons.cancel}
-              </Button>
-              <Button onClick={() => void handleCreate()}>{appConfig.components.buttons.create}</Button>
+              />
+              <Button.Rect onClick={() => void handleCreate()}>{appConfig.components.buttons.create}</Button.Rect>
             </>
           }
         >
@@ -875,12 +728,12 @@ export function MaterialPage() {
             />
             <div className="space-y-2 w-full max-w-sm">
               <div className="flex gap-2 justify-center">
-                <Button kind="rect" onClick={() => handleCreateEkMode('stueck')}>
+                <Button.Rect onClick={() => handleCreateEkMode('stueck')}>
                   {appConfig.labels.purchase_price}
-                </Button>
-                <Button kind="rect" onClick={() => handleCreateEkMode('gesamt')}>
+                </Button.Rect>
+                <Button.Rect onClick={() => handleCreateEkMode('gesamt')}>
                   EK Gesamt
-                </Button>
+                </Button.Rect>
               </div>
               <Input
                 label={ekPreisMode === 'stueck' ? appConfig.labels.purchase_price : 'EK Gesamt'}
@@ -926,17 +779,15 @@ export function MaterialPage() {
           title={appConfig.components.dialog_titles.edit_material}
           actions={
             <>
-              <Button
-                kind="rect"
+              <Button.Rect
+                type="cancel"
                 onClick={() => {
                   setEditDialogOpen(false);
                   setSelectedMaterial(null);
                   resetForm();
                 }}
-              >
-                {appConfig.components.buttons.cancel}
-              </Button>
-              <Button onClick={() => void handleUpdate()}>{appConfig.components.buttons.save}</Button>
+              />
+              <Button.Rect type="save" onClick={() => void handleUpdate()} />
             </>
           }
         >
@@ -978,12 +829,12 @@ export function MaterialPage() {
             />
             <div className="space-y-2">
               <div className="flex gap-2">
-                <Button kind="rect" onClick={() => handleCreateEkMode('stueck')}>
+                <Button.Rect onClick={() => handleCreateEkMode('stueck')}>
                   {appConfig.labels.purchase_price}
-                </Button>
-                <Button kind="rect" onClick={() => handleCreateEkMode('gesamt')}>
+                </Button.Rect>
+                <Button.Rect onClick={() => handleCreateEkMode('gesamt')}>
                   EK Gesamt
-                </Button>
+                </Button.Rect>
               </div>
               <Input
                 label={ekPreisMode === 'stueck' ? appConfig.labels.purchase_price : 'EK Gesamt'}
@@ -1017,18 +868,16 @@ export function MaterialPage() {
           title={appConfig.components.dialog_titles.delete_material}
           actions={
             <>
-              <Button
-                kind="rect"
+              <Button.Rect
+                type="cancel"
                 onClick={() => {
                   setDeleteDialogOpen(false);
                   setSelectedMaterial(null);
                 }}
-              >
-                {appConfig.components.buttons.cancel}
-              </Button>
-              <Button kind="rect" onClick={() => void handleDelete()}>
+              />
+              <Button.Rect onClick={() => void handleDelete()}>
                 {appConfig.components.buttons.delete}
-              </Button>
+              </Button.Rect>
             </>
           }
         >
@@ -1048,19 +897,17 @@ export function MaterialPage() {
           title={`Bar-Verkauf: ${selectedMaterial?.bezeichnung || ''}`}
           actions={
             <>
-              <Button
-                kind="rect"
+              <Button.Rect
+                type="cancel"
                 onClick={() => {
                   setBarDialogOpen(false);
                   setSelectedMaterial(null);
                   resetBarForm();
                 }}
-              >
-                {appConfig.components.buttons.cancel}
-              </Button>
-              <Button kind="rect" onClick={() => void handleBarBewegung()}>
+              />
+              <Button.Rect onClick={() => void handleBarBewegung()}>
                 {appConfig.components.buttons.record}
-              </Button>
+              </Button.Rect>
             </>
           }
         >
@@ -1084,12 +931,12 @@ export function MaterialPage() {
             />
             <div className="space-y-2">
               <div className="flex gap-2">
-                <Button kind="rect" onClick={() => setPreisMode('stueck')}>
+                <Button.Rect onClick={() => setPreisMode('stueck')}>
                   Preis/Stück
-                </Button>
-                <Button kind="rect" onClick={() => setPreisMode('gesamt')}>
+                </Button.Rect>
+                <Button.Rect onClick={() => setPreisMode('gesamt')}>
                   Preis Gesamt
-                </Button>
+                </Button.Rect>
               </div>
               <Input
                 label={preisMode === 'stueck' ? 'Preis pro Stück' : 'Preis Gesamt'}
@@ -1128,19 +975,17 @@ export function MaterialPage() {
           title={`Kombi-Buchung: ${selectedMaterial?.bezeichnung || ''}`}
           actions={
             <>
-              <Button
-                kind="rect"
+              <Button.Rect
+                type="cancel"
                 onClick={() => {
                   setKombiDialogOpen(false);
                   setSelectedMaterial(null);
                   resetKombiForm();
                 }}
-              >
-                {appConfig.components.buttons.cancel}
-              </Button>
-              <Button kind="rect" onClick={() => void handleKombiBewegung()}>
+              />
+              <Button.Rect onClick={() => void handleKombiBewegung()}>
                 {appConfig.components.buttons.record}
-              </Button>
+              </Button.Rect>
             </>
           }
         >
@@ -1170,12 +1015,12 @@ export function MaterialPage() {
             />
             <div className="space-y-2">
               <div className="flex gap-2">
-                <Button kind="rect" onClick={() => setPreisMode('stueck')}>
+                <Button.Rect onClick={() => setPreisMode('stueck')}>
                   Preis/Stück
-                </Button>
-                <Button kind="rect" onClick={() => setPreisMode('gesamt')}>
+                </Button.Rect>
+                <Button.Rect onClick={() => setPreisMode('gesamt')}>
                   Preis Gesamt
-                </Button>
+                </Button.Rect>
               </div>
               <Input
                 label={preisMode === 'stueck' ? 'Preis pro Stück' : 'Preis Gesamt'}
@@ -1256,6 +1101,6 @@ export function MaterialPage() {
           )}
         </Dialog>
       </div>
-    </PageLayout>
+    </MainApp>
   );
 }

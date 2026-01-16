@@ -22,12 +22,11 @@
  */
 
 import { useState, useEffect } from 'react';
-import { PageLayout } from '@/components/layout/PageLayout';
+import { MainApp } from '@/components/layout/mainapp';
 import { Table, isEmptyRow } from '@/components/ui/Table';
 import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
 import { Input } from '@/components/ui/Input';
-import { Badge } from '@/components/ui/Badge';
 import { useApi } from '@/hooks/useApi';
 import { formatCurrency, formatDate } from '@/utils/format';
 import { appConfig } from '@/config';
@@ -226,82 +225,50 @@ export function GlaeubigerPage() {
     });
   };
 
-  // Table Columns
-  const getColumnRender = (key: string) => {
-    switch (key) {
-      case 'datum':
-        return (g: Glaeubiger) => formatDate(g.datum);
-      case 'betrag':
-        return (g: Glaeubiger) => formatCurrency(g.betrag);
-      case 'bezahlt':
-        return (g: Glaeubiger) => formatCurrency(g.bezahlt);
-      case 'offen':
-        return (g: Glaeubiger) => formatCurrency(g.offen);
-      case 'faelligkeit':
-        return (g: Glaeubiger) => (g.faelligkeit ? formatDate(g.faelligkeit) : '-');
-      case 'status':
-        return (g: Glaeubiger) => (
-          <Badge variant={g.status === 'bezahlt' ? 'success' : g.status === 'teilbezahlt' ? 'warning' : 'error'}>
-            {g.status === 'bezahlt'
-              ? appConfig.status.paid
-              : g.status === 'teilbezahlt'
-                ? appConfig.status.partial
-                : appConfig.status.open}
-          </Badge>
-        );
-      case 'actions':
-        return (g: Glaeubiger) => (
-          <div className="flex gap-2">
-            {!isEmptyRow(g) && g.offen > 0 && (
-              <Button kind="act" onClick={() => openZahlungDialog(g)}>
-                <DollarSign />
-              </Button>
-            )}
-            <Button kind="act" disabled={isEmptyRow(g)} onClick={() => openEditDialog(g)}>
-              <Pencil />
-            </Button>
-            <Button kind="act" disabled={isEmptyRow(g)} onClick={() => openDeleteDialog(g)}>
-              <Trash2 />
-            </Button>
-          </div>
-        );
-      default:
-        return undefined;
-    }
-  };
-
+  // Table Columns mit inline renders und actions via property
   const columns = appConfig.components.table.glaeubiger.columns.map((col) => ({
     key: col.key,
     label: col.label,
     type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
-    render: getColumnRender(col.key)
+    render: col.key === 'datum' ? (g: Glaeubiger) => formatDate(g.datum) :
+            col.key === 'betrag' ? (g: Glaeubiger) => formatCurrency(g.betrag) :
+            col.key === 'bezahlt' ? (g: Glaeubiger) => formatCurrency(g.bezahlt) :
+            col.key === 'offen' ? (g: Glaeubiger) => formatCurrency(g.offen) :
+            col.key === 'faelligkeit' ? (g: Glaeubiger) => (g.faelligkeit ? formatDate(g.faelligkeit) : '-') :
+            col.key === 'status' ? (g: Glaeubiger) => (
+              <span
+                className={`px-2 py-1 rounded text-sm ${
+                  g.status === 'bezahlt'
+                    ? 'bg-green-500/20 text-green-300'
+                    : g.status === 'teilbezahlt'
+                      ? 'bg-yellow-500/20 text-yellow-300'
+                      : 'bg-red-500/20 text-red-300'
+                }`}
+              >
+                {g.status === 'bezahlt' ? 'Bezahlt' : g.status === 'teilbezahlt' ? 'Teilbezahlt' : 'Offen'}
+              </span>
+            ) : undefined,
+    actions: col.key === 'actions' ? (g: Glaeubiger) => {
+      const acts = [];
+      if (!isEmptyRow(g) && g.offen > 0) {
+        acts.push({ type: 'zahlung' as const, onClick: () => void openZahlungDialog(g) });
+      }
+      acts.push({ type: 'edit' as const, onClick: () => void openEditDialog(g) });
+      acts.push({ type: 'delete' as const, onClick: () => void openDeleteDialog(g) });
+      return acts;
+    } : undefined
   }));
 
   return (
-    <PageLayout
-      title={appConfig.page_titles.creditors}
-      showBackButton={true}
-      actions={
-        <Button kind="new" onClick={() => setCreateDialogOpen(true)}>
-          <div style={{ position: 'relative', display: 'inline-flex' }}>
-            <HandCoins style={{ transform: 'rotate(180deg) scaleX(-1)' }} />
-            <Plus
-              style={{
-                position: 'absolute',
-                bottom: '-4px',
-                right: '-8px',
-                width: '12px',
-                height: '12px'
-              }}
-              strokeWidth={3}
-            />
-          </div>
-        </Button>
-      }
-    >
+    <MainApp title={appConfig.page_titles.creditors}>
       <div className="space-y-4">
         {/* Error */}
         {error && <div className="p-4 bg-red-500/10 border border-red-500 rounded text-red-400">{error}</div>}
+
+        {/* Button-Reihe über der Tabelle */}
+        <div className="flex justify-end mb-4">
+          <Button.Action type="new" onClick={() => setCreateDialogOpen(true)} />
+        </div>
 
         {/* Table */}
         <Table
@@ -322,16 +289,14 @@ export function GlaeubigerPage() {
           title={appConfig.components.dialog_titles.new_creditor}
           actions={
             <>
-              <Button
-                kind="rect"
+              <Button.Rect
+                type="cancel"
                 onClick={() => {
                   setCreateDialogOpen(false);
                   resetForm();
                 }}
-              >
-                {appConfig.components.buttons.cancel}
-              </Button>
-              <Button onClick={() => void handleCreate()}>{appConfig.components.buttons.create}</Button>
+              />
+              <Button.Rect onClick={() => void handleCreate()}>{appConfig.components.buttons.create}</Button.Rect>
             </>
           }
         >
@@ -379,17 +344,15 @@ export function GlaeubigerPage() {
           title={appConfig.components.dialog_titles.edit_creditor}
           actions={
             <>
-              <Button
-                kind="rect"
+              <Button.Rect
+                type="cancel"
                 onClick={() => {
                   setEditDialogOpen(false);
                   setSelectedGlaeubiger(null);
                   resetForm();
                 }}
-              >
-                {appConfig.components.buttons.cancel}
-              </Button>
-              <Button onClick={() => void handleUpdate()}>{appConfig.components.buttons.save}</Button>
+              />
+              <Button.Rect type="save" onClick={() => void handleUpdate()} />
             </>
           }
         >
@@ -436,18 +399,16 @@ export function GlaeubigerPage() {
           title={appConfig.components.dialog_titles.delete_creditor}
           actions={
             <>
-              <Button
-                kind="rect"
+              <Button.Rect
+                type="cancel"
                 onClick={() => {
                   setDeleteDialogOpen(false);
                   setSelectedGlaeubiger(null);
                 }}
-              >
-                {appConfig.components.buttons.cancel}
-              </Button>
-              <Button kind="rect" onClick={() => void handleDelete()}>
+              />
+              <Button.Rect onClick={() => void handleDelete()}>
                 {appConfig.components.buttons.delete}
-              </Button>
+              </Button.Rect>
             </>
           }
         >
@@ -467,17 +428,15 @@ export function GlaeubigerPage() {
           title={appConfig.components.dialog_titles.record_payment}
           actions={
             <>
-              <Button
-                kind="rect"
+              <Button.Rect
+                type="cancel"
                 onClick={() => {
                   setZahlungDialogOpen(false);
                   setSelectedGlaeubiger(null);
                   setZahlungbetrag(0);
                 }}
-              >
-                {appConfig.components.buttons.cancel}
-              </Button>
-              <Button onClick={() => void handleZahlung()}>{appConfig.components.buttons.record}</Button>
+              />
+              <Button.Rect onClick={() => void handleZahlung()}>{appConfig.components.buttons.record}</Button.Rect>
             </>
           }
         >
@@ -534,21 +493,21 @@ export function GlaeubigerPage() {
                           {formatCurrency(Number(payment.betrag))}
                         </p>
                       </div>
-                      <Badge
-                        variant={
+                      <span
+                        className={`px-2 py-1 rounded text-sm ${
                           payment.status === 'bezahlt'
-                            ? 'success'
+                            ? 'bg-green-500/20 text-green-300'
                             : payment.status === 'teilbezahlt'
-                              ? 'warning'
-                              : 'error'
-                        }
+                              ? 'bg-yellow-500/20 text-yellow-300'
+                              : 'bg-red-500/20 text-red-300'
+                        }`}
                       >
                         {payment.status === 'bezahlt'
-                          ? appConfig.status.paid
+                          ? 'Bezahlt'
                           : payment.status === 'teilbezahlt'
-                            ? appConfig.status.partial
-                            : appConfig.status.open}
-                      </Badge>
+                            ? 'Teilbezahlt'
+                            : 'Offen'}
+                      </span>
                     </div>
                   </div>
                 );
@@ -559,6 +518,6 @@ export function GlaeubigerPage() {
           )}
         </Dialog>
       </div>
-    </PageLayout>
+    </MainApp>
   );
 }

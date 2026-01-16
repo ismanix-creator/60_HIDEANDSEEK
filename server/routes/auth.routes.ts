@@ -106,10 +106,10 @@ export function createAuthRoutes(db: Database) {
 
       insertStmt.run(userId, username, displayName, hash, salt, now, now, now, now);
 
-      return c.json({ 
-        userId, 
+      return c.json({
+        userId,
         status: 'pending',
-        message: 'Signup successful. Waiting for admin approval.' 
+        message: 'Signup successful. Waiting for admin approval.'
       });
     } catch (error) {
       console.error('Signup error:', error);
@@ -150,10 +150,13 @@ export function createAuthRoutes(db: Database) {
 
       // Check status
       if (user.status !== 'active') {
-        return c.json({ 
-          error: `Account status: ${user.status}`, 
-          status: user.status 
-        }, 403);
+        return c.json(
+          {
+            error: `Account status: ${user.status}`,
+            status: user.status
+          },
+          403
+        );
       }
 
       // Return user info (no password fields)

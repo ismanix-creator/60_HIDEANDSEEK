@@ -27,31 +27,14 @@ import { appConfig } from '@/config';
 import { Info, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
 import { useResponsive } from '@/hooks/useResponsive';
 
-const infoboxConfig = appConfig.infobox;
-
 const colorsConfig = appConfig.theme.colors;
 const typographyConfig = appConfig.theme.typography;
-
-// Helper: Tailwind-Scale (0-32) auf spacing (xxs-xxl) mappen
-const spacingBase = (key: number | string): string => {
-  const keyNum = typeof key === 'number' ? key : parseInt(String(key), 10);
-  if (isNaN(keyNum)) return appConfig.theme.spacing.content_gap; // fallback
-
-  if (keyNum <= 0) return appConfig.theme.spacing.tight;
-  if (keyNum === 1) return appConfig.theme.spacing.compact;
-  if (keyNum === 2) return appConfig.theme.spacing.compact;
-  if (keyNum === 3) return appConfig.theme.spacing.element_gap;
-  if (keyNum === 4) return appConfig.theme.spacing.content_gap;
-  if (keyNum === 5) return appConfig.theme.spacing.content_gap;
-  if (keyNum === 6) return appConfig.theme.spacing.panel_padding;
-  if (keyNum === 8) return appConfig.theme.spacing.section_padding;
-  return appConfig.theme.spacing.page_padding; // 10+
-};
+const infoboxConfig = appConfig.ui.infobox;
 
 // ═══════════════════════════════════════════════════════
 // HELPERS
 // ═══════════════════════════════════════════════════════
-function getColorValue(colorPath: string): string {
+function resolveColor(colorPath: string): string {
   const parts = colorPath.split('.');
   if (parts.length === 2) {
     const [category, shade] = parts;
@@ -76,46 +59,50 @@ const iconMap = {
 export function Infobox({ variant = 'info', title, children, className = '' }: InfoboxProps) {
   const { isMobile } = useResponsive();
 
-  const variantStyles = infoboxConfig.variants[variant];
   const Icon = iconMap[variant];
-  const baseConfig = infoboxConfig.base;
+
+  const variantConfig = infoboxConfig.variants[variant];
+  const variantStyles = {
+    bg: resolveColor(variantConfig.bg),
+    border: resolveColor(variantConfig.border),
+    iconColor: resolveColor(variantConfig.iconColor)
+  };
 
   // ═══════════════════════════════════════════════════════
   // RESPONSIVE STYLES
   // ═══════════════════════════════════════════════════════
 
   const containerStyle: React.CSSProperties = {
-    display: 'flex',
-    gap: isMobile ? appConfig.theme.spacing.mobile_element_gap : spacingBase(3),
-    backgroundColor: getColorValue(variantStyles.bg),
-    borderWidth: `${baseConfig.borderWidth}px`,
-    borderStyle: 'solid',
-    borderColor: getColorValue(variantStyles.border),
-    borderRadius: baseConfig.borderRadius,
-    padding: isMobile ? appConfig.theme.spacing.mobile_container_padding : spacingBase(baseConfig.padding),
-    // Mobile: Volle Breite
-    width: isMobile ? '100%' : undefined
+    display: infoboxConfig.container.style.display,
+    gap: isMobile ? infoboxConfig.container.style.gapMobile : infoboxConfig.container.style.gapDesktop,
+    backgroundColor: variantStyles.bg,
+    borderWidth: infoboxConfig.container.style.borderWidth,
+    borderStyle: infoboxConfig.container.style.borderStyle,
+    borderColor: variantStyles.border,
+    borderRadius: infoboxConfig.container.style.borderRadius,
+    padding: isMobile ? infoboxConfig.container.style.paddingMobile : infoboxConfig.container.style.paddingDesktop,
+    width: isMobile ? infoboxConfig.container.style.widthMobile : undefined
   };
 
   const iconStyle: React.CSSProperties = {
-    width: isMobile ? '1rem' : '1.25rem',
-    height: isMobile ? '1rem' : '1.25rem',
-    flexShrink: 0,
-    marginTop: spacingBase(1),
-    color: getColorValue(variantStyles.iconColor)
+    width: isMobile ? infoboxConfig.icon.style.widthMobile : infoboxConfig.icon.style.widthDesktop,
+    height: isMobile ? infoboxConfig.icon.style.heightMobile : infoboxConfig.icon.style.heightDesktop,
+    flexShrink: infoboxConfig.icon.style.flexShrink,
+    marginTop: infoboxConfig.icon.style.marginTop,
+    color: variantStyles.iconColor
   };
 
   return (
     <div className={className} style={containerStyle}>
       <Icon style={iconStyle} />
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: infoboxConfig.content.style.flex }}>
         {title && (
           <p
             style={{
               fontWeight: typographyConfig.fontWeight.semibold,
-              marginBottom: spacingBase(1),
-              color: getColorValue(variantStyles.iconColor),
-              fontSize: isMobile ? '0.875rem' : undefined
+              marginBottom: infoboxConfig.title.style.marginBottom,
+              color: variantStyles.iconColor,
+              fontSize: isMobile ? typographyConfig.fontSize.small : undefined
             }}
           >
             {title}
@@ -123,8 +110,8 @@ export function Infobox({ variant = 'info', title, children, className = '' }: I
         )}
         <div
           style={{
-            fontSize: isMobile ? '0.8125rem' : typographyConfig.fontSize.sm,
-            color: colorsConfig.text.primary
+            fontSize: isMobile ? typographyConfig.fontSize.xsmall : typographyConfig.fontSize.bodyText,
+            color: colorsConfig.text.active
           }}
         >
           {children}

@@ -202,4 +202,3 @@ button:not(:disabled):hover {
 button:not(:disabled):active {
   background-color: var(--button-active-bg, inherit);
 }
-

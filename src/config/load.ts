@@ -1,9 +1,9 @@
 /**
  * @file        load.ts
  * @description Config Loader: TOML only + Zod strict Validation
- * @version     3.0.0
+ * @version     5.0.0
  * @created     2026-01-07 19:45:00 CET
- * @updated     2026-01-13 00:00:00 CET
+ * @updated     2026-01-15 06:00:00 CET
  * @author      Akki Scholze
  *
  * @description
@@ -16,6 +16,9 @@
  *   - Backend: process.env.*
  *
  * @changelog
+ *   5.0.0 - 2026-01-15 - Complete schema rebuild für config.toml v5.0.0 (100% config-driven UI)
+ *                      - Added theme.effects, theme.shadows.dropdown
+ *                      - Added ui.tokens.*, ui.buttons component styles, ui.tables.*, ui.dialogs.*, ui.entry.*, ui.layout.*, ui.pages.*, ui.infobox.*, ui.dividers.*
  *   3.0.0 - 2026-01-13 - COMPLETE RESTRUCTURE: Anpassung an neue config.toml Struktur A-I (theme/components/pages/content/navigation/layout)
  *   2.1.0 - 2026-01-12 - Added table progress fallback hydration (uses table.progress.colors when specific sections missing)
  *   2.0.0 - 2026-01-10 - Complete refactor: removed .env merge logic, config.toml only

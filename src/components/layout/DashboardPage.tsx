@@ -12,7 +12,7 @@
  */
 
 import { useNavigate } from 'react-router-dom';
-import { PageLayout } from '@/components/layout/PageLayout';
+import { MainApp } from '@/components/layout/mainapp';
 import { appConfig } from '@/config';
 import type { CSSProperties } from 'react';
 import { Package, Users, HandCoins, Settings } from 'lucide-react';

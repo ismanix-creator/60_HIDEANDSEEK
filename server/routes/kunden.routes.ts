@@ -45,9 +45,9 @@ kundenRoutes.get('/kunden', (c) => {
 kundenRoutes.get('/kunden/:id', (c) => {
   const params = kundenIdParamSchema.safeParse(c.req.param());
   if (!params.success) throw fromZodError(params.error);
-  
+
   const user = c.get('user') as User | undefined;
-  
+
   // Enforce access if auth enabled + user exists
   if (user) {
     assertKundeAccess(user, params.data.id);
@@ -62,7 +62,7 @@ kundenRoutes.post('/kunden', async (c) => {
   const payload = await c.req.json();
   const parsed = kundenCreateSchema.safeParse(payload);
   if (!parsed.success) throw fromZodError(parsed.error);
-  
+
   // Only admin can create kunden when auth enabled
   const user = c.get('user') as User | undefined;
   if (user) {
@@ -81,7 +81,7 @@ kundenRoutes.post('/kunden', async (c) => {
 kundenRoutes.put('/kunden/:id', async (c) => {
   const params = kundenIdParamSchema.safeParse(c.req.param());
   if (!params.success) throw fromZodError(params.error);
-  
+
   const user = c.get('user') as User | undefined;
   if (user) {
     if (user.role !== 'admin') {
@@ -100,7 +100,7 @@ kundenRoutes.put('/kunden/:id', async (c) => {
 kundenRoutes.delete('/kunden/:id', (c) => {
   const params = kundenIdParamSchema.safeParse(c.req.param());
   if (!params.success) throw fromZodError(params.error);
-  
+
   // Only admin can delete when auth enabled
   const user = c.get('user') as User | undefined;
   if (user) {

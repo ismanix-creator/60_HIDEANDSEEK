@@ -45,14 +45,16 @@ Alle Consumers (UI Components, Server, Tests)
 ```
 
 ### Kernprinzipien
-- **100% config.toml-driven:** Keine *.config.ts mehr außerhalb von Config-System
+
+- **100% config.toml-driven:** Keine \*.config.ts mehr außerhalb von Config-System
 - **Theme:** Alle Werte aus `appConfig.*` (colors, spacing, breakpoints, fonts, shadows, etc.)
 - **Components:** Alle Werte aus `appConfig.components.*`
 - **UI-Texte:** Alle aus `appConfig.ui.*` (labels, titles, descriptions, buttons, etc.)
 - **Keine Hardcodes:** Keine Inline-Styles, keine festen Texte, keine Magic Numbers
 
 ### Importmuster (Validiert ✅)
-- **Nur** `src/config/index.ts` darf importiert werden:  
+
+- **Nur** `src/config/index.ts` darf importiert werden:
   ```ts
   import { appConfig } from '@/config';
   const { theme, components, ui } = appConfig;
@@ -61,6 +63,7 @@ Alle Consumers (UI Components, Server, Tests)
 - **Kein** Import von eliminated configs (spacingConfig, breakpointsConfig)
 
 ### Zod strict-Validation (Enforced ✅)
+
 - Das Config-Schema wird mit Zod `strict()` validiert
 - Bei Fehlern: **Sofortiger Abbruch** (`process.exit(1)`)
 - Unbekannte Keys werden abgelehnt
@@ -68,6 +71,7 @@ Alle Consumers (UI Components, Server, Tests)
 ---
 
 ## Keine Hardcodes, keine Inline-Styles
+
 - **Alle** UI-Texte, Farben, Spacing, Radii etc. kommen aus der Config.
 - **Keine** Inline-Styles oder Hardcodes in Komponenten.
 
@@ -76,15 +80,18 @@ Alle Consumers (UI Components, Server, Tests)
 ## Migrationserfolg (Phase 2 Abgeschlossen ✅)
 
 ### Option B Implementation
+
 - ✅ **spacingConfig eliminiert:** Alle Spacing-Werte direkt in `appConfig.spacing`
 - ✅ **breakpointsConfig eliminiert:** Alle Breakpoint-Werte direkt in `appConfig.breakpoints`
-- ✅ **Keine *.config.ts imports:** Theme/Component-Configs nur über appConfig
+- ✅ **Keine \*.config.ts imports:** Theme/Component-Configs nur über appConfig
 
 ### Hardcode & Inline-Style Eliminierung
+
 - ✅ **142 UI-Text-Hardcodes entfernt:** Alle Texte aus `appConfig.ui.labels/titles/descriptions/buttons`
 - ✅ **26 Inline-Styles entfernt:** Alle Styles aus `appConfig.colors/spacing/shadows`
 
 ### Komponenten-Migration
+
 - ✅ **Alle** 21+ Komponenten nutzen ausschließlich `appConfig`
 - ✅ **Keine** Direct Imports aus `config/generated/` außer in `load.ts`
 - ✅ **Keine** Direct Imports aus `theme/*.config.ts` oder `components/*.config.ts`
@@ -95,12 +102,14 @@ Alle Consumers (UI Components, Server, Tests)
 ## Beispiele
 
 ### Config-Import (korrekt)
+
 ```ts
 import { appConfig } from '@/config';
 const { theme, components } = appConfig;
 ```
 
 ### Falscher Import (verboten)
+
 ```ts
 // ❌ import { config } from './config/generated/config-from-toml';
 // ❌ import { config } from './config/load';
@@ -109,5 +118,6 @@ const { theme, components } = appConfig;
 ---
 
 ## Weitere Infos
+
 - Siehe `docs/RULES.md` für Coding Style und Projektregeln.
 - Siehe `CONFIG_ARCHITECTURE_SUMMARY.md` für Details zur Config-Pipeline.

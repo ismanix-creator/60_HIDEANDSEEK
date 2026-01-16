@@ -10,7 +10,7 @@
  * ARCHITEKTUR: Strikte Trennung config.toml ⊥ .env
  * - config.toml = App-Config ONLY (nicht runtime!)
  * - .env = Runtime-Variablen (Ports, Hosts, URLs, Secrets)
- * 
+ *
  * Runtime-Werte kommen direkt aus process.env, NICHT aus appConfig!
  * Falls missing → Error beim Start (fail fast)
  *
@@ -32,4 +32,3 @@ export const runtimeConfig = {
     path: process.env.SQLITE_DB_PATH
   }
 };
-

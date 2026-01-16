@@ -19,18 +19,18 @@
 
 ### Screenshots
 
-| Screenshot | Größe | Status | Timestamp |
-|-----------|-------|--------|-----------|
-| `material-page-initial.png` | 23 KB | ✅ Baseline | 2026-01-10 00:28:01 |
-| `material-page-dialog.png` | 38 KB | ✅ Baseline | 2026-01-10 00:28:04 |
-| `material-page.png` | 17 KB | ✅ Baseline | 2026-01-10 00:28:05 |
-| `kunden-page.png` | 77 KB | ✅ Aktualisiert | 2026-01-10 01:13:25 |
-| `glaeubiger-page.png` | 77 KB | ✅ Aktualisiert | 2026-01-10 01:13:28 |
-| `schuldner-page.png` | 77 KB | ✅ Aktualisiert | 2026-01-10 01:13:29 |
+| Screenshot                   | Größe | Status          | Timestamp           |
+| ---------------------------- | ----- | --------------- | ------------------- |
+| `material-page-initial.png`  | 23 KB | ✅ Baseline     | 2026-01-10 00:28:01 |
+| `material-page-dialog.png`   | 38 KB | ✅ Baseline     | 2026-01-10 00:28:04 |
+| `material-page.png`          | 17 KB | ✅ Baseline     | 2026-01-10 00:28:05 |
+| `kunden-page.png`            | 77 KB | ✅ Aktualisiert | 2026-01-10 01:13:25 |
+| `glaeubiger-page.png`        | 77 KB | ✅ Aktualisiert | 2026-01-10 01:13:28 |
+| `schuldner-page.png`         | 77 KB | ✅ Aktualisiert | 2026-01-10 01:13:29 |
 | `component-interactions.png` | 15 KB | ✅ Aktualisiert | 2026-01-10 01:13:33 |
-| `material-desktop.png` | 84 KB | ✅ Aktualisiert | 2026-01-10 01:13:37 |
-| `material-tablet.png` | 77 KB | ✅ Aktualisiert | 2026-01-10 01:13:37 |
-| `material-mobile.png` | 46 KB | ✅ Aktualisiert | 2026-01-10 01:13:38 |
+| `material-desktop.png`       | 84 KB | ✅ Aktualisiert | 2026-01-10 01:13:37 |
+| `material-tablet.png`        | 77 KB | ✅ Aktualisiert | 2026-01-10 01:13:37 |
+| `material-mobile.png`        | 46 KB | ✅ Aktualisiert | 2026-01-10 01:13:38 |
 
 **Gesamt:** 10 Screenshots, 517 KB
 
@@ -40,15 +40,15 @@
 
 ### Visual Tests (components-visual.spec.ts)
 
-| Test | Status | Dauer | Notizen |
-|------|--------|-------|---------|
-| Material Page: All components visible | ⚠️ | 6.0s | ngrok-Warnung blockiert |
-| Kunden Page: All components visible | ✅ | 3.1s | - |
-| Gläubiger Page: All components visible | ✅ | 1.0s | - |
-| Schuldner Page: All components visible | ✅ | 0.97s | - |
-| Component Interactions: Button, Dialog, Input | ✅ | 3.9s | - |
-| Navigation: All pages reachable | ✅ | 2.8s | - |
-| Responsive Design: Material Page (3 viewports) | ✅ | 2.2s | - |
+| Test                                           | Status | Dauer | Notizen                 |
+| ---------------------------------------------- | ------ | ----- | ----------------------- |
+| Material Page: All components visible          | ⚠️     | 6.0s  | ngrok-Warnung blockiert |
+| Kunden Page: All components visible            | ✅     | 3.1s  | -                       |
+| Gläubiger Page: All components visible         | ✅     | 1.0s  | -                       |
+| Schuldner Page: All components visible         | ✅     | 0.97s | -                       |
+| Component Interactions: Button, Dialog, Input  | ✅     | 3.9s  | -                       |
+| Navigation: All pages reachable                | ✅     | 2.8s  | -                       |
+| Responsive Design: Material Page (3 viewports) | ✅     | 2.2s  | -                       |
 
 **Gesamt:** 7 Tests, 6 bestanden, 1 bekanntes Problem  
 **Test-Laufzeit:** 21.5 Sekunden
@@ -61,10 +61,12 @@
 
 **Problem:**  
 ngrok zeigt beim ersten Request eine Browser-Sicherheitswarnung:
+
 - "You are about to visit: liana-unrowdy-silva.ngrok-free.dev"
 - Blockiert Locator `div.space-y-4` im ersten Test
 
-**Impact:**  
+**Impact:**
+
 - Nicht blockierend für Visual Testing
 - Alle Screenshots werden trotzdem erstellt
 - 6/7 Tests bestanden
@@ -140,11 +142,13 @@ await expect(page).toHaveScreenshot('material-page.png');
 ```
 
 **Vorteile:**
+
 - Automatischer Baseline-Vergleich
 - Diff-Bilder bei Abweichungen
 - Integriert in Playwright Report
 
 **Next Steps:**
+
 - Migration zu `toHaveScreenshot()`
 - Baseline-Snapshots erstellen via `--update-snapshots`
 - CI/CD Integration
@@ -154,15 +158,18 @@ await expect(page).toHaveScreenshot('material-page.png');
 ## Report & Artefakte
 
 ### Playwright HTML Report
+
 - **Pfad:** [playwright-report/index.html](playwright-report/index.html)
 - **Server:** http://localhost:9323 (läuft)
 - **Größe:** 513 KB
 
 ### Test-Results
+
 - **Pfad:** [test-results/](test-results/)
 - **Error-Context:** [test-results/components-visual-Componen-f6190-ents-visible-and-functional/error-context.md](test-results/components-visual-Componen-f6190-ents-visible-and-functional/error-context.md)
 
 ### Screenshots
+
 - **Pfad:** [tests/e2e/screenshots/](tests/e2e/screenshots/)
 - **Anzahl:** 10
 - **Format:** PNG
@@ -173,6 +180,7 @@ await expect(page).toHaveScreenshot('material-page.png');
 ## Fazit
 
 ✅ **Visual Regression Tests erfolgreich**
+
 - Alle Screenshots aktualisiert
 - Keine visuellen Regressionen erkannt
 - 6/7 Tests bestanden

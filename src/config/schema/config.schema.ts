@@ -1,1011 +1,1996 @@
 /**
  * @file        config.schema.ts
- * @description Zod Schema für config.toml Validation (STRICT) - passt 1:1 zur Struktur A-I
- * @version     3.0.0
- * @created     2026-01-07 19:45:00 CET
- * @updated     2026-01-13 00:00:00 CET
+ * @description Zod schema für config.toml v5.0.0 (100% config-driven UI – .tsx ist Renderer-only)
+ * @version     5.0.0
+ * @created     2026-01-06 15:35:00 CET
+ * @updated     2026-01-15 05:30:00 CET
  * @author      Akki Scholze
  *
  * @changelog
- *   3.0.0 - 2026-01-13 - COMPLETE RESTRUCTURE: Schema passt jetzt 1:1 zur config.toml Struktur A-I
+ *   5.0.0 - 2026-01-15 - Complete rebuild from config.toml v5.0.0 structure
+ *                      - Added theme.effects (backdropBlur)
+ *                      - Added theme.shadows.dropdown
+ *                      - Added ui.tokens.* (size, transition, cursor, radius)
+ *                      - Merged ui.buttons text labels + component styles
+ *                      - Added ui.tables component styles
+ *                      - Added ui.dialogs component styles
+ *                      - Added ui.entry component styles
+ *                      - Added ui.layout component styles
+ *                      - Added ui.pages component styles (including settings.*)
+ *                      - Added ui.infobox component styles
+ *                      - Added ui.dividers component styles
+ *   4.0.0 - 2026-01-14 - Previous version
  */
 
 import { z } from 'zod';
 
-// ========================================
-// A) APP METADATA
-// ========================================
+// ============================================================
+// APP
+// ============================================================
+
+const AppMetaSchema = z
+  .object({
+    name: z.string(),
+    version: z.string(),
+    lastUpdated: z.string()
+  })
+  .strict();
+
+const AppLocaleSchema = z
+  .object({
+    language: z.string(),
+    currency: z.string(),
+    timezone: z.string(),
+    dateFormat: z.string(),
+    timeFormat: z.string(),
+    decimalSeparator: z.string(),
+    thousandSeparator: z.string()
+  })
+  .strict();
+
+const AppDatabaseSchema = z
+  .object({
+    name: z.string(),
+    version: z.number()
+  })
+  .strict();
+
+const AppServerSchema = z
+  .object({
+    host: z.string(),
+    port: z.number()
+  })
+  .strict();
 
 const AppSchema = z
   .object({
-    name: z.string().min(1),
-    version: z.string().min(1),
-    description: z.string()
+    meta: AppMetaSchema,
+    locale: AppLocaleSchema,
+    database: AppDatabaseSchema,
+    server: AppServerSchema
   })
   .strict();
 
-const AuthSchema = z
+// ============================================================
+// PERMISSIONS
+// ============================================================
+
+const PermissionsRoleSchema = z
   .object({
-    enabled: z.boolean(),
-    mode: z.enum(['password_required']),
-    admin_bootstrap_user_id: z.string()
-  })
-  .strict();
-
-// ========================================
-// B) THEME PRIMITIVES
-// ========================================
-
-// Border
-const ThemeBorderSchema = z
-  .object({
-    radius_none: z.string(),
-    radius_sm: z.string(),
-    radius_md: z.string(),
-    radius_lg: z.string(),
-    radius_xl: z.string(),
-    radius_full: z.string()
-  })
-  .strict();
-
-// Color Scale (für Farbpaletten)
-const ColorScaleSchema = z
-  .object({
-    50: z.string(),
-    100: z.string(),
-    200: z.string(),
-    300: z.string(),
-    400: z.string(),
-    500: z.string(),
-    600: z.string(),
-    700: z.string(),
-    800: z.string(),
-    900: z.string()
-  })
-  .strict();
-
-// Colors
-const ThemeColorsSchema = z
-  .object({
-    black: ColorScaleSchema,
-    blue: ColorScaleSchema,
-    bluegray: ColorScaleSchema,
-    gold: ColorScaleSchema,
-    graublau: ColorScaleSchema,
-    gray: ColorScaleSchema,
-    green: ColorScaleSchema,
-    orange: ColorScaleSchema,
-    red: ColorScaleSchema,
-    opacity: z.record(z.string()),
-    button: z
-      .object({
-        gray: z.string(),
-        active: z.string()
-      })
-      .strict(),
-    error: z
-      .object({
-        light: z.string(),
-        main: z.string(),
-        dark: z.string()
-      })
-      .strict(),
-    info: z
-      .object({
-        light: z.string(),
-        main: z.string(),
-        dark: z.string()
-      })
-      .strict(),
-    status: z
-      .object({
-        error: z.string(),
-        warning: z.string(),
-        success: z.string(),
-        info: z.string()
-      })
-      .strict(),
-    success: z
-      .object({
-        light: z.string(),
-        main: z.string(),
-        dark: z.string()
-      })
-      .strict(),
-    text: z
-      .object({
-        primary: z.string(),
-        secondary: z.string(),
-        tertiary: z.string()
-      })
-      .strict(),
-    ui: z
-      .object({
-        background: z.string(),
-        backgroundAlt: z.string(),
-        backgroundCard: z.string(),
-        border: z.string()
-      })
-      .strict(),
-    warning: z
-      .object({
-        light: z.string(),
-        main: z.string(),
-        dark: z.string()
-      })
-      .strict()
-  })
-  .strict();
-
-// Shadows
-const ThemeShadowsSchema = z
-  .object({
-    sm: z.string(),
-    md: z.string(),
-    lg: z.string(),
-    xl: z.string(),
-    none: z.string()
-  })
-  .strict();
-
-// Sizes
-const ThemeSizesSchema = z
-  .object({
-    touchMinSizePx: z.number(),
-    sidebarWidthPx: z.number()
-  })
-  .strict();
-
-// Typography
-const ThemeTypographySchema = z
-  .object({
-    fontFamily: z
-      .object({
-        base: z.string(),
-        mono: z.string()
-      })
-      .strict(),
-    fontSize: z
-      .object({
-        xs: z.string(),
-        sm: z.string(),
-        md: z.string(),
-        lg: z.string(),
-        xl: z.string()
-      })
-      .strict(),
-    fontWeight: z
-      .object({
-        normal: z.number(),
-        medium: z.number(),
-        semibold: z.number(),
-        bold: z.number()
-      })
-      .strict()
-  })
-  .strict();
-
-const ThemeSpacingSchema = z
-  .object({
-    // Micro-Spacing (sehr kleine Abstände innerhalb von Komponenten)
-    tight: z.string(),
-    compact: z.string(),
-    // Element-Spacing (Abstände zwischen benachbarten Elementen)
-    element_gap: z.string(),
-    content_gap: z.string(),
-    // Container-Padding (Innenabstände von Containern)
-    container_padding: z.string(),
-    panel_padding: z.string(),
-    section_padding: z.string(),
-    page_padding: z.string(),
-    // Mobile-spezifische Werte
-    mobile_element_gap: z.string(),
-    mobile_container_padding: z.string(),
-    mobile_section_padding: z.string()
-  })
-  .strict();
-
-const ThemeSchema = z
-  .object({
-    border: ThemeBorderSchema,
-    colors: ThemeColorsSchema,
-    shadows: ThemeShadowsSchema,
-    sizes: ThemeSizesSchema,
-    spacing: ThemeSpacingSchema,
-    typography: ThemeTypographySchema
-  })
-  .strict();
-
-// ========================================
-// C) BASE-KOMPONENTEN
-// ========================================
-
-// Table
-const GradientStopSchema = z
-  .object({
-    p: z.number(),
-    c: z.string()
-  })
-  .strict();
-
-const TableBaseProgressSchema = z
-  .object({
-    height: z.string(),
-    radius: z.string(),
-    trackBg: z.string(),
-    trackBorder: z.string(),
-    textColor: z.string(),
-    gradientStops: z.array(GradientStopSchema)
-  })
-  .strict();
-
-const TableBaseBestandSchema = z
-  .object({
-    invertProgressStops: z.boolean(),
-    textColor: z.string()
-  })
-  .strict();
-
-const TableBaseBehaviorSchema = z
-  .object({
-    minRows: z.number(),
-    emptyRowPlaceholder: z.string()
-  })
-  .strict();
-
-const TableBaseSchema = z
-  .object({
-    wrapperBg: z.string(),
-    wrapperBorder: z.string(),
-    wrapperBorderRadius: z.string(),
-    wrapperShadow: z.string(),
-    headerBg: z.string(),
-    headerText: z.string(),
-    headerFontSize: z.string(),
-    headerFontWeight: z.number(),
-    headerFontMono: z.boolean(),
-    rowHeightPx: z.number(),
-    rowBgOdd: z.string(),
-    rowBgEven: z.string(),
-    rowBgHover: z.string(),
-    rowBorderBottom: z.string(),
-    cellPaddingX: z.string(),
-    cellPaddingY: z.string(),
-    cellText: z.string(),
-    cellFontSize: z.string(),
-    cellFontWeight: z.number(),
-    cellFontMono: z.boolean(),
-    behavior: TableBaseBehaviorSchema,
-    progress: TableBaseProgressSchema,
-    bestand: TableBaseBestandSchema
-  })
-  .strict();
-
-const ComponentsTableSchema = z
-  .object({
-    base: TableBaseSchema
-  })
-  .strict();
-
-// Dialog
-const DialogBaseOverlaySchema = z
-  .object({
-    bg: z.string()
-  })
-  .strict();
-
-const DialogBaseContainerSchema = z
-  .object({
-    bg: z.string(),
-    border: z.string(),
-    borderRadius: z.string(),
-    padding: z.string(),
-    maxWidth: z.string(),
-    width: z.string(),
-    height: z.string(),
-    maxHeight: z.string(),
-    shadow: z.string()
-  })
-  .strict();
-
-const DialogBaseHeaderSchema = z
-  .object({
-    borderBottom: z.string(),
-    padding: z.string(),
-    fontSize: z.string(),
-    fontWeight: z.number()
-  })
-  .strict();
-
-const DialogBaseBodySchema = z
-  .object({
-    padding: z.string(),
-    gap: z.string(),
-    fontSize: z.string(),
-    fontWeight: z.number()
-  })
-  .strict();
-
-const DialogBaseFooterSchema = z
-  .object({
-    borderTop: z.string(),
-    padding: z.string(),
-    marginTop: z.string(),
-    gap: z.string()
-  })
-  .strict();
-
-const DialogBaseSchema = z
-  .object({
-    overlay: DialogBaseOverlaySchema,
-    container: DialogBaseContainerSchema,
-    header: DialogBaseHeaderSchema,
-    body: DialogBaseBodySchema,
-    footer: DialogBaseFooterSchema
-  })
-  .strict();
-
-const ComponentsDialogSchema = z
-  .object({
-    base: DialogBaseSchema
-  })
-  .strict();
-
-// Button
-const ButtonCommonSchema = z
-  .object({
-    bg: z.string(),
-    icon: z.string(),
-    border: z.string(),
-    hoverBg: z.string(),
-    activeBg: z.string(),
-    disabledBg: z.string(),
-    disabledIcon: z.string(),
-    focusRing: z.string(),
-    focusRingOpacity: z.string(),
-    iconSize: z.string()
-  })
-  .strict();
-
-const ButtonRectSchema = z
-  .object({
-    bg: z.string(),
-    text: z.string(),
-    border: z.string(),
-    hoverBg: z.string(),
-    activeBg: z.string(),
-    disabledBg: z.string(),
-    disabledText: z.string(),
-    saveBg: z.string(),
-    saveText: z.string(),
-    saveHoverBg: z.string(),
-    saveActiveBg: z.string(),
-    focusRing: z.string(),
-    focusRingOpacity: z.string(),
-    padding: z.string(),
-    fontSize: z.string(),
-    fontWeight: z.number(),
-    height: z.string(),
-    iconSize: z.string()
-  })
-  .strict();
-
-const ComponentsButtonSchema = z
-  .object({
-    borderRadius: z.string(),
-    nav: ButtonCommonSchema,
-    new: ButtonCommonSchema,
-    act: ButtonCommonSchema,
-    tab: ButtonCommonSchema,
-    rect: ButtonRectSchema,
-    back: ButtonCommonSchema
-  })
-  .strict();
-
-// Badge
-const BadgeBaseSchema = z
-  .object({
-    paddingX: z.number(),
-    paddingY: z.number(),
-    borderRadius: z.string(),
-    fontSize: z.string(),
-    fontWeight: z.number(),
-    display: z.string(),
-    alignItems: z.string(),
-    gap: z.string()
-  })
-  .strict();
-
-const BadgeVariantSchema = z
-  .object({
-    bg: z.string(),
-    text: z.string()
-  })
-  .strict();
-
-const BadgeVariantsSchema = z
-  .object({
-    success: BadgeVariantSchema,
-    error: BadgeVariantSchema,
-    warning: BadgeVariantSchema,
-    info: BadgeVariantSchema,
-    pending: BadgeVariantSchema,
-    neutral: BadgeVariantSchema
-  })
-  .strict();
-
-const ComponentsBadgeSchema = z
-  .object({
-    base: BadgeBaseSchema,
-    variants: BadgeVariantsSchema
-  })
-  .strict();
-
-// Form Input
-const FormInputBaseSchema = z
-  .object({
-    bg: z.string(),
-    border: z.string(),
-    text: z.string(),
-    padding: z.string(),
-    paddingX: z.number(),
-    paddingY: z.number(),
-    borderRadius: z.string(),
-    fontSize: z.string(),
-    fontWeight: z.number(),
-    height: z.string(),
-    borderWidth: z.string()
-  })
-  .strict();
-
-const FormInputStateSchema = z
-  .object({
-    border: z.string(),
-    bg: z.string(),
-    text: z.string(),
-    outline: z.string()
-  })
-  .strict();
-
-const FormInputStatesSchema = z
-  .object({
-    default: FormInputStateSchema,
-    focus: FormInputStateSchema,
-    error: FormInputStateSchema,
-    disabled: FormInputStateSchema
-  })
-  .strict();
-
-const FormInputSchema = z
-  .object({
-    base: FormInputBaseSchema,
-    states: FormInputStatesSchema
-  })
-  .strict();
-
-const ComponentsFormSchema = z
-  .object({
-    input: FormInputSchema
-  })
-  .strict();
-
-// Divider
-const DividerMonthSchema = z
-  .object({
-    bg: z.string(),
-    text: z.string(),
-    border: z.string(),
-    padding: z.string(),
-    paddingY: z.number(),
-    paddingX: z.number(),
-    fontSize: z.string(),
-    fontWeight: z.number(),
-    textTransform: z.string()
-  })
-  .strict();
-
-const DividerHorizontalSchema = z
-  .object({
-    border: z.string(),
-    margin: z.string(),
-    marginY: z.number(),
-    height: z.string(),
-    thickness: z.string(),
-    color: z.string()
-  })
-  .strict();
-
-const ComponentsDividerSchema = z
-  .object({
-    month: DividerMonthSchema,
-    horizontal: DividerHorizontalSchema
-  })
-  .strict();
-
-// Infobox
-const InfoboxBaseSchema = z
-  .object({
-    padding: z.string(),
-    borderRadius: z.string(),
-    fontSize: z.string(),
-    fontWeight: z.number(),
-    borderWidth: z.string()
-  })
-  .strict();
-
-const InfoboxPanelSchema = z
-  .object({
-    bg: z.string(),
-    border: z.string(),
-    borderRadius: z.string(),
-    padding: z.string()
-  })
-  .strict();
-
-const InfoboxVariantSchema = z
-  .object({
-    bg: z.string(),
-    border: z.string(),
-    icon: z.string(),
-    iconColor: z.string()
-  })
-  .strict();
-
-const InfoboxVariantsSchema = z
-  .object({
-    info: InfoboxVariantSchema,
-    success: InfoboxVariantSchema,
-    warning: InfoboxVariantSchema,
-    error: InfoboxVariantSchema
-  })
-  .strict();
-
-const InfoboxFormCompactSchema = z
-  .object({
-    containerWidth: z.string(),
-    inputWidth: z.string(),
-    buttonSize: z.string()
-  })
-  .strict();
-
-const ComponentsInfoboxSchema = z
-  .object({
-    base: InfoboxBaseSchema,
-    panel: InfoboxPanelSchema,
-    variants: InfoboxVariantsSchema,
-    formCompact: InfoboxFormCompactSchema
-  })
-  .strict();
-
-const ComponentsSchema = z
-  .object({
-    table: ComponentsTableSchema,
-    dialog: ComponentsDialogSchema,
-    button: ComponentsButtonSchema,
-    badge: ComponentsBadgeSchema,
-    form: ComponentsFormSchema,
-    divider: ComponentsDividerSchema,
-    infobox: ComponentsInfoboxSchema
-  })
-  .strict();
-
-// ========================================
-// D) PAGES
-// ========================================
-
-const ColumnSchema = z
-  .object({
-    key: z.string(),
     label: z.string(),
-    width: z.string(),
-    type: z.enum(['text', 'number', 'currency', 'date', 'status', 'input', 'actions', 'progress', 'button']),
-    monospace: z.boolean().optional(),
-    buttons: z.array(z.string()).optional()
+    permissions: z.array(z.string())
   })
   .strict();
 
-const TableColumnsSchema = z
+const PermissionsFeatureSchema = z
   .object({
-    columns: z.array(ColumnSchema)
+    roles: z.array(z.string())
   })
   .strict();
 
-const PagesMaterialSchema = z
+const PermissionsScopeSchema = z
   .object({
-    table: TableColumnsSchema
+    scope: z.string(),
+    allowList: z.boolean(),
+    allowSearch: z.boolean(),
+    allowExport: z.boolean()
   })
   .strict();
 
-const PagesKundenOverviewSchema = z
+const PermissionsSchema = z
   .object({
-    table: TableColumnsSchema
+    roles: z.record(z.string(), PermissionsRoleSchema),
+    features: z.record(z.string(), PermissionsFeatureSchema),
+    scopes: z.record(z.string(), PermissionsScopeSchema)
   })
   .strict();
 
-const PagesKundenMatSchema = z
-  .object({
-    table: TableColumnsSchema
-  })
-  .strict();
-
-const PagesKundenNomatSchema = z
-  .object({
-    table: TableColumnsSchema
-  })
-  .strict();
-
-const PagesKundenSchema = z
-  .object({
-    overview: PagesKundenOverviewSchema,
-    mat: PagesKundenMatSchema,
-    nomat: PagesKundenNomatSchema
-  })
-  .strict();
-
-const PagesSchuldnerSchema = z
-  .object({
-    table: TableColumnsSchema
-  })
-  .strict();
-
-const PagesGlaeubigerSchema = z
-  .object({
-    table: TableColumnsSchema
-  })
-  .strict();
-
-const PagesSettingsSchema = z.object({}).strict();
-
-const PagesTitlesSchema = z
-  .object({
-    dashboard: z.string(),
-    material: z.string(),
-    customers: z.string(),
-    creditors: z.string(),
-    debtors: z.string(),
-    settings: z.string()
-  })
-  .strict();
-
-const PagesDashboardCardSchema = z
-  .object({
-    width: z.string(),
-    height: z.string(),
-    gap: z.string(),
-    iconSize: z.string(),
-    padding: z.string()
-  })
-  .strict();
-
-const PagesDashboardSchema = z
-  .object({
-    card: PagesDashboardCardSchema
-  })
-  .strict();
-
-const PagesSchema = z
-  .object({
-    material: PagesMaterialSchema,
-    kunden: PagesKundenSchema,
-    schuldner: PagesSchuldnerSchema,
-    glaeubiger: PagesGlaeubigerSchema,
-    settings: PagesSettingsSchema,
-    dashboard: PagesDashboardSchema,
-    titles: PagesTitlesSchema
-  })
-  .strict();
-
-// ========================================
-// E) CONTENT
-// ========================================
-
-const ContentButtonsSchema = z
-  .object({
-    save: z.string(),
-    cancel: z.string(),
-    delete: z.string(),
-    create: z.string(),
-    edit: z.string(),
-    close: z.string(),
-    record: z.string()
-  })
-  .strict();
-
-const ContentDialogTitlesSchema = z
-  .object({
-    new_material: z.string(),
-    edit_material: z.string(),
-    delete_material: z.string(),
-    bar_transaction: z.string(),
-    kombi_transaction: z.string(),
-    new_customer: z.string(),
-    edit_customer: z.string(),
-    delete_customer: z.string(),
-    new_material_post: z.string(),
-    new_other_post: z.string(),
-    record_payment: z.string(),
-    new_creditor: z.string(),
-    edit_creditor: z.string(),
-    delete_creditor: z.string(),
-    new_debtor: z.string(),
-    edit_debtor: z.string(),
-    delete_debtor: z.string(),
-    history: z.string()
-  })
-  .strict();
-
-const ContentLabelsSchema = z
-  .object({
-    date: z.string(),
-    name: z.string(),
-    designation: z.string(),
-    quantity: z.string(),
-    amount: z.string(),
-    amount_paid: z.string(),
-    payment_amount: z.string(),
-    material: z.string(),
-    note: z.string(),
-    price_per_unit: z.string(),
-    purchase_price: z.string(),
-    purchase_price_total: z.string(),
-    selling_price_unit: z.string(),
-    info: z.string(),
-    due_date: z.string(),
-    open_amount: z.string(),
-    status: z.string(),
-    actions: z.string(),
-    stock: z.string(),
-    revenue: z.string(),
-    profit: z.string(),
-    available: z.string(),
-    bar_sale: z.string(),
-    kombi_booking: z.string(),
-    total_price: z.string(),
-    total: z.string(),
-    price: z.string(),
-    customer: z.string(),
-    price_per_unit_short: z.string(),
-    price_total_short: z.string(),
-    price_per_piece: z.string()
-  })
-  .strict();
-
-const ContentMessagesSchema = z
-  .object({
-    confirm_delete_material: z.string(),
-    confirm_delete_customer: z.string(),
-    confirm_delete_creditor: z.string(),
-    confirm_delete_debtor: z.string()
-  })
-  .strict();
-
-const ContentInputLimitsSchema = z
-  .object({
-    quantity_min: z.number(),
-    quantity_step: z.number(),
-    price_min: z.number(),
-    price_step: z.number()
-  })
-  .strict();
-
-const ContentEmptyStatesSchema = z
-  .object({
-    no_history: z.string(),
-    no_customers: z.string(),
-    no_material_posts: z.string(),
-    no_other_posts: z.string(),
-    no_creditors: z.string(),
-    no_debtors: z.string()
-  })
-  .strict();
-
-const ContentErrorsSchema = z
-  .object({
-    create_failed: z.string(),
-    update_failed: z.string(),
-    delete_failed: z.string(),
-    load_failed: z.string(),
-    booking_failed: z.string(),
-    network_error: z.string()
-  })
-  .strict();
-
-const ContentStatusSchema = z
-  .object({
-    paid: z.string(),
-    partial: z.string(),
-    open: z.string()
-  })
-  .strict();
-
-const ContentTooltipsSchema = z
-  .object({
-    bar_transaction: z.string(),
-    kombi_transaction: z.string(),
-    edit: z.string(),
-    delete: z.string(),
-    new_material: z.string(),
-    new_customer: z.string(),
-    new_creditor: z.string(),
-    new_debtor: z.string(),
-    payment: z.string(),
-    create: z.string(),
-    record: z.string()
-  })
-  .strict();
-
-const ContentValidationSchema = z
-  .object({
-    date_required: z.string(),
-    designation_required: z.string(),
-    quantity_must_be_positive: z.string(),
-    ek_stueck_must_be_positive: z.string(),
-    ek_gesamt_must_be_positive: z.string(),
-    vk_stueck_must_be_positive: z.string()
-  })
-  .strict();
-
-const ContentSchema = z
-  .object({
-    buttons: ContentButtonsSchema,
-    dialog_titles: ContentDialogTitlesSchema,
-    labels: ContentLabelsSchema,
-    messages: ContentMessagesSchema,
-    input_limits: ContentInputLimitsSchema,
-    empty_states: ContentEmptyStatesSchema,
-    errors: ContentErrorsSchema,
-    status: ContentStatusSchema,
-    tooltips: ContentTooltipsSchema,
-    validation: ContentValidationSchema
-  })
-  .strict();
-
-// ========================================
-// F) NAVIGATION
-// ========================================
+// ============================================================
+// NAVIGATION
+// ============================================================
 
 const NavigationItemSchema = z
   .object({
     key: z.string(),
     label: z.string(),
     path: z.string(),
-    icon: z.string()
-  })
-  .strict();
-
-const NavigationIconSchema = z
-  .object({
-    rotateGlaeubiger: z.string()
+    icon: z.string(),
+    iconTransform: z.string().optional()
   })
   .strict();
 
 const NavigationSchema = z
   .object({
-    zIndex: z.number(),
-    borderWidth: z.string(),
-    transition: z.string(),
-    hoverScale: z.string(),
-    normalScale: z.string(),
-    fontSize: z.string(),
-    fontWeight: z.number(),
-    icon: NavigationIconSchema,
-    items: z.array(NavigationItemSchema)
+    items: z.array(z.string()),
+    item: z.array(NavigationItemSchema)
   })
   .strict();
 
-// ========================================
-// F) LAYOUT
-// ========================================
+// ============================================================
+// THEME — COLORS
+// ============================================================
 
-const LayoutNavigationSchema = z
+const ThemeColorShadeSchema = z.record(z.string(), z.string());
+
+const ThemeColorsBlackSchema = ThemeColorShadeSchema;
+const ThemeColorsWhiteSchema = ThemeColorShadeSchema;
+const ThemeColorsNeutralSchema = ThemeColorShadeSchema;
+const ThemeColorsBlueSchema = ThemeColorShadeSchema;
+const ThemeColorsRedSchema = ThemeColorShadeSchema;
+const ThemeColorsGreenSchema = ThemeColorShadeSchema;
+const ThemeColorsYellowSchema = ThemeColorShadeSchema;
+const ThemeColorsOrangeSchema = ThemeColorShadeSchema;
+const ThemeColorsEisgraublauSchema = ThemeColorShadeSchema;
+const ThemeColorsProgressSchema = ThemeColorShadeSchema;
+const ThemeColorsOpacitySchema = ThemeColorShadeSchema;
+
+const ThemeColorsBgSchema = z
   .object({
+    main: z.string(),
+    navigation: z.string(),
+    header: z.string(),
+    body: z.string(),
+    footer: z.string(),
+    dialog: z.string(),
+    card: z.string(),
+    blackout: z.string(),
+    blackoutSoft: z.string(),
+    transparent: z.string(),
+    overlay: z.string(),
+    errorOverlay: z.string(),
+    statusBezahlt: z.string(),
+    statusTeilbezahlt: z.string(),
+    statusOffen: z.string()
+  })
+  .strict();
+
+const ThemeColorsTextSchema = z
+  .object({
+    active: z.string(),
+    inactive: z.string(),
+    entryLight: z.string(),
+    hint: z.string(),
+    error: z.string(),
+    success: z.string(),
+    warning: z.string()
+  })
+  .strict();
+
+const ThemeColorsTableSchema = z
+  .object({
+    headerBg: z.string(),
+    headerDivider: z.string(),
+    row: z.string(),
+    rowAlt: z.string(),
+    rowHover: z.string(),
+    rowSelected: z.string(),
+    rowActive: z.string(),
+    grid: z.string(),
+    divider: z.string(),
+    outerBorder: z.string()
+  })
+  .strict();
+
+const ThemeColorsButtonsRectSchema = z
+  .object({
+    rectActive: z.string(),
+    rectSave: z.string(),
+    rectHover: z.string(),
+    rectInactive: z.string()
+  })
+  .strict();
+
+const ThemeColorsButtonsIconSchema = z
+  .object({
+    iconActive: z.string(),
+    iconHover: z.string(),
+    iconInactive: z.string()
+  })
+  .strict();
+
+const ThemeColorsButtonsTabSchema = z
+  .object({
+    tabActive: z.string(),
+    tabHover: z.string(),
+    tabInactive: z.string()
+  })
+  .strict();
+
+const ThemeColorsButtonsSchema = z
+  .object({
+    rect: ThemeColorsButtonsRectSchema,
+    icon: ThemeColorsButtonsIconSchema,
+    tab: ThemeColorsButtonsTabSchema
+  })
+  .strict();
+
+const ThemeColorsDialogSchema = z
+  .object({
+    entryBorder: z.string(),
+    entryBorderFocus: z.string(),
+    entryBorderDisabled: z.string(),
+    entryHover: z.string(),
+    entryActive: z.string(),
+    entryDisabled: z.string(),
+    entrySelection: z.string(),
+    entryCaret: z.string(),
+    entryError: z.string(),
+    entrySuccess: z.string(),
+    entryWarning: z.string()
+  })
+  .strict();
+
+const ThemeColorsBorderSchema = z
+  .object({
+    default: z.string(),
+    soft: z.string(),
+    strong: z.string(),
+    focus: z.string(),
+    active: z.string(),
+    error: z.string(),
+    success: z.string(),
+    warning: z.string()
+  })
+  .strict();
+
+const ThemeColorsIconSchema = z
+  .object({
+    active: z.string(),
+    inactive: z.string(),
+    book: z.string(),
+    edit: z.string(),
+    delete: z.string()
+  })
+  .strict();
+
+const ThemeColorsCardsSchema = z
+  .object({
+    hover: z.string()
+  })
+  .strict();
+
+const ThemeColorsSchema = z
+  .object({
+    black: ThemeColorsBlackSchema,
+    white: ThemeColorsWhiteSchema,
+    neutral: ThemeColorsNeutralSchema,
+    blue: ThemeColorsBlueSchema,
+    red: ThemeColorsRedSchema,
+    green: ThemeColorsGreenSchema,
+    yellow: ThemeColorsYellowSchema,
+    orange: ThemeColorsOrangeSchema,
+    eisgraublau: ThemeColorsEisgraublauSchema,
+    progress: ThemeColorsProgressSchema,
+    opacity: ThemeColorsOpacitySchema,
+    bg: ThemeColorsBgSchema,
+    text: ThemeColorsTextSchema,
+    table: ThemeColorsTableSchema,
+    buttons: ThemeColorsButtonsSchema,
+    dialog: ThemeColorsDialogSchema,
+    border: ThemeColorsBorderSchema,
+    icon: ThemeColorsIconSchema,
+    cards: ThemeColorsCardsSchema
+  })
+  .strict();
+
+// ============================================================
+// THEME — TYPOGRAPHY
+// ============================================================
+
+const ThemeTypographyFontSchema = z
+  .object({
+    base: z.string(),
+    mono: z.string()
+  })
+  .strict();
+
+const ThemeTypographyFontWeightSchema = z
+  .object({
+    normal: z.number(),
+    medium: z.number(),
+    semibold: z.number(),
+    bold: z.number()
+  })
+  .strict();
+
+const ThemeTypographyFontSizeSchema = z
+  .object({
+    headerTitle: z.string(),
+    headerSubtitle: z.string(),
+    headerMeta: z.string(),
+    footerText: z.string(),
+    footerMeta: z.string(),
+    bodyText: z.string(),
+    bodyTextSmall: z.string(),
+    bodyHint: z.string(),
+    tableHeader: z.string(),
+    tableCell: z.string(),
+    tableCellSmall: z.string(),
+    tableCellMeta: z.string(),
+    dialogTitle: z.string(),
+    dialogSectionTitle: z.string(),
+    dialogLabel: z.string(),
+    dialogInsert: z.string(),
+    dialogHint: z.string(),
+    dialogMessage: z.string(),
+    buttonsRect: z.string(),
+    buttonsTab: z.string(),
+    formLabel: z.string(),
+    formInsert: z.string(),
+    formHint: z.string(),
+    formMessage: z.string()
+  })
+  .strict();
+
+const ThemeTypographySchema = z
+  .object({
+    font: ThemeTypographyFontSchema,
+    fontWeight: ThemeTypographyFontWeightSchema,
+    fontSize: ThemeTypographyFontSizeSchema
+  })
+  .strict();
+
+// ============================================================
+// THEME — BORDER / SPACING / SHADOWS / EFFECTS / BREAKPOINTS / Z-INDEX
+// ============================================================
+
+const ThemeBorderSizesSchema = z
+  .object({
+    thin: z.string(),
+    normal: z.string(),
+    thick: z.string()
+  })
+  .strict();
+
+const ThemeBorderRadiusSchema = z
+  .object({
+    buttonsRect: z.string(),
+    buttonsTab: z.string(),
+    navigation: z.string(),
+    header: z.string(),
+    body: z.string(),
+    footer: z.string()
+  })
+  .strict();
+
+const ThemeBorderSchema = z
+  .object({
+    sizes: ThemeBorderSizesSchema,
+    radius: ThemeBorderRadiusSchema
+  })
+  .strict();
+
+const ThemeSpacingLayoutSchema = z
+  .object({
+    pagePadding: z.string(),
+    areaGap: z.string(),
+    areaPadding: z.string(),
+    bodyInnerGap: z.string()
+  })
+  .strict();
+
+const ThemeSpacingTableSchema = z
+  .object({
+    headerPaddingX: z.string(),
+    headerPaddingY: z.string(),
+    cellPaddingX: z.string(),
+    cellPaddingY: z.string(),
+    actionsGap: z.string()
+  })
+  .strict();
+
+const ThemeSpacingDialogSchema = z
+  .object({
+    padding: z.string(),
+    contentGap: z.string(),
+    fieldGap: z.string(),
+    actionsGap: z.string()
+  })
+  .strict();
+
+const ThemeSpacingButtonsSchema = z
+  .object({
+    rectPaddingX: z.string(),
+    rectPaddingY: z.string(),
+    rectGap: z.string(),
+    iconPaddingX: z.string(),
+    iconPaddingY: z.string(),
+    iconGap: z.string(),
+    tabPaddingX: z.string(),
+    tabPaddingY: z.string(),
+    tabGap: z.string()
+  })
+  .strict();
+
+const ThemeSpacingEntrySchema = z
+  .object({
+    paddingX: z.string(),
+    paddingY: z.string(),
+    labelGap: z.string(),
+    hintGap: z.string()
+  })
+  .strict();
+
+const ThemeSpacingSchema = z
+  .object({
+    layout: ThemeSpacingLayoutSchema,
+    table: ThemeSpacingTableSchema,
+    dialog: ThemeSpacingDialogSchema,
+    buttons: ThemeSpacingButtonsSchema,
+    entry: ThemeSpacingEntrySchema
+  })
+  .strict();
+
+const ThemeShadowsSchema = z
+  .object({
+    area: z.string(),
+    card: z.string(),
+    dialog: z.string(),
+    dropdown: z.string()
+  })
+  .strict();
+
+const ThemeEffectsSchema = z
+  .object({
+    backdropBlur: z.string()
+  })
+  .strict();
+
+const ThemeBreakpointsSchema = z
+  .object({
+    smartphoneMaxWidth: z.string(),
+    pcMinWidth: z.string()
+  })
+  .strict();
+
+const ThemeZIndexSchema = z
+  .object({
+    navigation: z.number(),
+    header: z.number(),
+    overlay: z.number(),
+    dialog: z.number(),
+    tooltip: z.number()
+  })
+  .strict();
+
+const ThemeSchema = z
+  .object({
+    colors: ThemeColorsSchema,
+    typography: ThemeTypographySchema,
+    border: ThemeBorderSchema,
+    spacing: ThemeSpacingSchema,
+    shadows: ThemeShadowsSchema,
+    effects: ThemeEffectsSchema,
+    breakpoints: ThemeBreakpointsSchema,
+    zIndex: ThemeZIndexSchema
+  })
+  .strict();
+
+// ============================================================
+// UI — CONTENT (Text-only sections)
+// ============================================================
+
+const UiLabelsSchema = z.record(z.string(), z.string());
+
+const UiTitlesDialogSchema = z.record(z.string(), z.string());
+
+const UiTitlesSchema = z
+  .object({
+    dashboard: z.string(),
+    material: z.string(),
+    kunden: z.string(),
+    kundenView: z.string(),
+    schuldner: z.string(),
+    glaeubiger: z.string(),
+    settings: z.string(),
+    dialog: UiTitlesDialogSchema
+  })
+  .strict();
+
+const UiButtonsTextSchema = z
+  .object({
+    speichern: z.string(),
+    abbrechen: z.string(),
+    loeschen: z.string(),
+    neu: z.string(),
+    bearbeiten: z.string(),
+    schliessen: z.string(),
+    buchen: z.string(),
+    erstellen: z.string(),
+    zurueck: z.string(),
+    weiter: z.string(),
+    ja: z.string(),
+    nein: z.string()
+  })
+  .strict();
+
+const UiMessagesConfirmSchema = z.record(z.string(), z.string());
+const UiMessagesSuccessSchema = z.record(z.string(), z.string());
+const UiMessagesErrorSchema = z.record(z.string(), z.string());
+const UiMessagesValidationSchema = z.record(z.string(), z.string());
+
+const UiMessagesSchema = z
+  .object({
+    confirm: UiMessagesConfirmSchema,
+    success: UiMessagesSuccessSchema,
+    error: UiMessagesErrorSchema,
+    validation: UiMessagesValidationSchema
+  })
+  .strict();
+
+const UiEmptySchema = z.record(z.string(), z.string());
+const UiLoadingSchema = z.record(z.string(), z.string());
+const UiDescriptionsSchema = z.record(z.string(), z.string());
+
+// ============================================================
+// UI — TOKENS
+// ============================================================
+
+const UiTokensSizeSchema = z
+  .object({
+    touchMin: z.string(),
+    iconAction: z.string(),
+    iconTableAction: z.string(),
+    spinner: z.string()
+  })
+  .strict();
+
+const UiTokensTransitionSchema = z
+  .object({
+    fast: z.string(),
+    opacityFast: z.string(),
+    colors150: z.string()
+  })
+  .strict();
+
+const UiTokensCursorSchema = z
+  .object({
+    default: z.string(),
+    disabled: z.string()
+  })
+  .strict();
+
+const UiTokensRadiusSchema = z
+  .object({
+    sm: z.string(),
+    md: z.string(),
+    lg: z.string()
+  })
+  .strict();
+
+const UiTokensSchema = z
+  .object({
+    size: UiTokensSizeSchema,
+    transition: UiTokensTransitionSchema,
+    cursor: UiTokensCursorSchema,
+    radius: UiTokensRadiusSchema
+  })
+  .strict();
+
+// ============================================================
+// UI — BUTTONS (Component Styles)
+// ============================================================
+
+const UiButtonsNavigationStyleBaseSchema = z
+  .object({
+    display: z.string(),
+    alignItems: z.string(),
+    justifyContent: z.string(),
+    transition: z.string(),
+    cursor: z.string(),
+    outline: z.string(),
+    border: z.string()
+  })
+  .strict();
+
+const UiButtonsNavigationStyleInactiveSchema = z
+  .object({
+    bg: z.string()
+  })
+  .strict();
+
+const UiButtonsNavigationStyleSchema = z
+  .object({
+    base: UiButtonsNavigationStyleBaseSchema,
+    inactive: UiButtonsNavigationStyleInactiveSchema
+  })
+  .strict();
+
+const UiButtonsNavigationSchema = z
+  .object({
+    style: UiButtonsNavigationStyleSchema
+  })
+  .strict();
+
+const UiButtonsActionStyleBaseSchema = z
+  .object({
+    width: z.string(),
+    height: z.string(),
+    bg: z.string(),
+    display: z.string(),
+    alignItems: z.string(),
+    justifyContent: z.string(),
+    transition: z.string(),
+    cursor: z.string(),
+    outline: z.string(),
+    border: z.string()
+  })
+  .strict();
+
+const UiButtonsActionStyleSchema = z
+  .object({
+    base: UiButtonsActionStyleBaseSchema
+  })
+  .strict();
+
+const UiButtonsActionSchema = z
+  .object({
+    style: UiButtonsActionStyleSchema
+  })
+  .strict();
+
+const UiButtonsActStyleBaseSchema = z
+  .object({
+    width: z.string(),
+    height: z.string(),
+    bg: z.string(),
+    display: z.string(),
+    alignItems: z.string(),
+    justifyContent: z.string(),
+    transition: z.string(),
+    cursor: z.string(),
+    outline: z.string(),
+    border: z.string()
+  })
+  .strict();
+
+const UiButtonsActStyleSchema = z
+  .object({
+    base: UiButtonsActStyleBaseSchema
+  })
+  .strict();
+
+const UiButtonsActSchema = z
+  .object({
+    style: UiButtonsActStyleSchema
+  })
+  .strict();
+
+const UiButtonsRectStyleBaseSchema = z
+  .object({
+    minWidth: z.string(),
+    minWidthFull: z.string(),
+    height: z.string(),
+    display: z.string(),
+    alignItems: z.string(),
+    justifyContent: z.string(),
+    transition: z.string(),
+    cursor: z.string(),
+    cursorDisabled: z.string(),
+    opacity: z.number(),
+    opacityDisabled: z.number(),
+    outline: z.string(),
+    border: z.string()
+  })
+  .strict();
+
+const UiButtonsRectStyleSchema = z
+  .object({
+    base: UiButtonsRectStyleBaseSchema
+  })
+  .strict();
+
+const UiButtonsRectSchema = z
+  .object({
+    style: UiButtonsRectStyleSchema
+  })
+  .strict();
+
+const UiButtonsTabStyleBaseSchema = z
+  .object({
+    minWidth: z.string(),
+    height: z.string(),
+    bg: z.string(),
+    display: z.string(),
+    alignItems: z.string(),
+    justifyContent: z.string(),
+    transition: z.string(),
+    cursor: z.string(),
+    outline: z.string(),
+    border: z.string()
+  })
+  .strict();
+
+const UiButtonsTabStyleSchema = z
+  .object({
+    base: UiButtonsTabStyleBaseSchema,
+    inactive: z.object({ bg: z.string() }).strict()
+  })
+  .strict();
+
+const UiButtonsTabSchema = z
+  .object({
+    style: UiButtonsTabStyleSchema
+  })
+  .strict();
+
+const UiButtonsComponentSchema = z
+  .object({
+    navigation: UiButtonsNavigationSchema,
+    action: UiButtonsActionSchema,
+    act: UiButtonsActSchema,
+    rect: UiButtonsRectSchema,
+    tab: UiButtonsTabSchema
+  })
+  .strict();
+
+// ============================================================
+// UI — TABLES (Component Styles)
+// ============================================================
+
+const UiTablesLoadingContainerSchema = z
+  .object({
+    display: z.string(),
+    alignItems: z.string(),
+    justifyContent: z.string(),
+    paddingY: z.string()
+  })
+  .strict();
+
+const UiTablesLoadingSpinnerSchema = z
+  .object({
+    size: z.string(),
+    borderWidth: z.string(),
+    borderColor: z.string(),
+    borderTopColor: z.string(),
+    borderRadius: z.string(),
+    animation: z.string()
+  })
+  .strict();
+
+const UiTablesLoadingSchema = z
+  .object({
+    container: UiTablesLoadingContainerSchema,
+    spinner: UiTablesLoadingSpinnerSchema
+  })
+  .strict();
+
+const UiTablesWrapperStyleSchema = z
+  .object({
+    overflowX: z.string(),
+    overflowY: z.string(),
+    webkitOverflowScrollingMobile: z.string()
+  })
+  .strict();
+
+const UiTablesWrapperSchema = z
+  .object({
+    style: UiTablesWrapperStyleSchema
+  })
+  .strict();
+
+const UiTablesTableStyleSchema = z
+  .object({
+    width: z.string(),
+    minWidthMobile: z.string(),
+    borderCollapse: z.string(),
+    tableLayout: z.string()
+  })
+  .strict();
+
+const UiTablesTableSchema = z
+  .object({
+    style: UiTablesTableStyleSchema
+  })
+  .strict();
+
+const UiTablesHeaderStyleSchema = z
+  .object({
+    textAlign: z.string()
+  })
+  .strict();
+
+const UiTablesHeaderSchema = z
+  .object({
+    style: UiTablesHeaderStyleSchema
+  })
+  .strict();
+
+const UiTablesCellContentSchema = z
+  .object({
+    display: z.string(),
+    flexDirection: z.string(),
+    justifyContent: z.string(),
+    alignItems: z.string(),
+    textAlign: z.string(),
+    width: z.string(),
+    height: z.string(),
+    gap: z.string()
+  })
+  .strict();
+
+const UiTablesCellSchema = z
+  .object({
+    content: UiTablesCellContentSchema
+  })
+  .strict();
+
+const UiTablesComponentSchema = z
+  .object({
+    loading: UiTablesLoadingSchema,
+    wrapper: UiTablesWrapperSchema,
+    table: UiTablesTableSchema,
+    header: UiTablesHeaderSchema,
+    cell: UiTablesCellSchema
+  })
+  .strict();
+
+// ============================================================
+// UI — DIALOGS (Component Styles)
+// ============================================================
+
+const UiDialogsContainerStyleMobileSchema = z
+  .object({
+    position: z.string(),
+    top: z.string(),
+    left: z.string(),
+    right: z.string(),
+    bottom: z.string(),
+    zIndex: z.string(),
+    borderRadius: z.string(),
+    padding: z.string(),
+    overflow: z.string(),
+    display: z.string(),
+    flexDirection: z.string()
+  })
+  .strict();
+
+const UiDialogsContainerStyleDesktopSchema = z
+  .object({
+    position: z.string(),
+    zIndex: z.string(),
+    maxWidth: z.string(),
+    width: z.string(),
+    maxHeight: z.string(),
+    overflow: z.string()
+  })
+  .strict();
+
+const UiDialogsContainerStyleSchema = z
+  .object({
+    mobile: UiDialogsContainerStyleMobileSchema,
+    desktop: UiDialogsContainerStyleDesktopSchema
+  })
+  .strict();
+
+const UiDialogsContainerSchema = z
+  .object({
+    style: UiDialogsContainerStyleSchema
+  })
+  .strict();
+
+const UiDialogsCloseButtonsStyleSchema = z
+  .object({
+    padding: z.string(),
+    borderRadius: z.string(),
     bg: z.string(),
     border: z.string(),
+    cursor: z.string(),
+    minWidthMobile: z.string(),
+    minHeightMobile: z.string(),
+    display: z.string(),
+    alignItems: z.string(),
+    justifyContent: z.string()
+  })
+  .strict();
+
+const UiDialogsCloseButtonsSchema = z
+  .object({
+    style: UiDialogsCloseButtonsStyleSchema
+  })
+  .strict();
+
+const UiDialogsOverlayStyleSchema = z
+  .object({
+    position: z.string(),
+    inset: z.string(),
+    bg: z.string(),
+    cursor: z.string()
+  })
+  .strict();
+
+const UiDialogsOverlaySchema = z
+  .object({
+    style: UiDialogsOverlayStyleSchema
+  })
+  .strict();
+
+const UiDialogsFooterStyleMobileSchema = z
+  .object({
+    justifyContent: z.string(),
+    flexDirection: z.string(),
+    marginTop: z.string(),
+    paddingTop: z.string()
+  })
+  .strict();
+
+const UiDialogsFooterStyleDesktopSchema = z
+  .object({
+    justifyContent: z.string(),
+    flexDirection: z.string(),
+    marginTop: z.string()
+  })
+  .strict();
+
+const UiDialogsFooterStyleSchema = z
+  .object({
+    display: z.string(),
+    mobile: UiDialogsFooterStyleMobileSchema,
+    desktop: UiDialogsFooterStyleDesktopSchema
+  })
+  .strict();
+
+const UiDialogsFooterSchema = z
+  .object({
+    style: UiDialogsFooterStyleSchema
+  })
+  .strict();
+
+const UiDialogsHeaderStyleSchema = z
+  .object({
+    display: z.string(),
+    alignItems: z.string(),
+    justifyContent: z.string()
+  })
+  .strict();
+
+const UiDialogsHeaderSchema = z
+  .object({
+    style: UiDialogsHeaderStyleSchema
+  })
+  .strict();
+
+const UiDialogsBodyStyleMobileSchema = z
+  .object({
+    flex: z.string()
+  })
+  .strict();
+
+const UiDialogsBodyStyleSchema = z
+  .object({
+    display: z.string(),
+    flexDirection: z.string(),
+    mobile: UiDialogsBodyStyleMobileSchema
+  })
+  .strict();
+
+const UiDialogsBodySchema = z
+  .object({
+    style: UiDialogsBodyStyleSchema
+  })
+  .strict();
+
+const UiDialogsComponentSchema = z
+  .object({
+    container: UiDialogsContainerSchema,
+    closeButtons: UiDialogsCloseButtonsSchema,
+    overlay: UiDialogsOverlaySchema,
+    footer: UiDialogsFooterSchema,
+    header: UiDialogsHeaderSchema,
+    body: UiDialogsBodySchema
+  })
+  .strict();
+
+// ============================================================
+// UI — ENTRY (Component Styles)
+// ============================================================
+
+const UiEntryContainerStyleSchema = z
+  .object({
+    display: z.string(),
+    flexDirection: z.string(),
+    gap: z.string()
+  })
+  .strict();
+
+const UiEntryContainerSchema = z
+  .object({
+    style: UiEntryContainerStyleSchema
+  })
+  .strict();
+
+const UiEntryInputFocusSchema = z
+  .object({
+    outline: z.string(),
+    ring: z.string()
+  })
+  .strict();
+
+const UiEntryInputCursorSchema = z
+  .object({
+    default: z.string(),
+    disabled: z.string()
+  })
+  .strict();
+
+const UiEntryInputStyleSchema = z
+  .object({
+    width: z.string(),
+    transition: z.string(),
+    textAlign: z.string(),
+    webkitTapHighlightColorMobile: z.string(),
+    minHeightMobile: z.string()
+  })
+  .strict();
+
+const UiEntryInputSchema = z
+  .object({
+    style: UiEntryInputStyleSchema,
+    focus: UiEntryInputFocusSchema,
+    cursor: UiEntryInputCursorSchema
+  })
+  .strict();
+
+const UiEntrySelectStyleSchema = z
+  .object({
+    appearance: z.string(),
+    backgroundImage: z.string(),
+    backgroundPosition: z.string(),
+    backgroundRepeat: z.string(),
+    backgroundSize: z.string()
+  })
+  .strict();
+
+const UiEntrySelectCursorSchema = z
+  .object({
+    default: z.string(),
+    disabled: z.string()
+  })
+  .strict();
+
+const UiEntrySelectSchema = z
+  .object({
+    style: UiEntrySelectStyleSchema,
+    cursor: UiEntrySelectCursorSchema
+  })
+  .strict();
+
+const UiEntryLabelStyleSchema = z
+  .object({
+    fontSize: z.string(),
+    fontWeight: z.number(),
+    color: z.string()
+  })
+  .strict();
+
+const UiEntryLabelSchema = z
+  .object({
+    style: UiEntryLabelStyleSchema
+  })
+  .strict();
+
+const UiEntryErrorStyleSchema = z
+  .object({
+    fontSize: z.string(),
+    color: z.string()
+  })
+  .strict();
+
+const UiEntryErrorSchema = z
+  .object({
+    style: UiEntryErrorStyleSchema
+  })
+  .strict();
+
+const UiEntryComponentSchema = z
+  .object({
+    container: UiEntryContainerSchema,
+    input: UiEntryInputSchema,
+    select: UiEntrySelectSchema,
+    label: UiEntryLabelSchema,
+    error: UiEntryErrorSchema
+  })
+  .strict();
+
+// ============================================================
+// UI — LAYOUT (Component Styles)
+// ============================================================
+
+const UiLayoutPageContainerStyleSchema = z
+  .object({
+    display: z.string(),
+    flexDirection: z.string(),
+    minHeight: z.string()
+  })
+  .strict();
+
+const UiLayoutPageContainerSchema = z
+  .object({
+    style: UiLayoutPageContainerStyleSchema
+  })
+  .strict();
+
+const UiLayoutNavigationStyleMobileSchema = z
+  .object({
+    position: z.string(),
+    bottom: z.string(),
+    left: z.string(),
+    right: z.string(),
+    zIndex: z.string()
+  })
+  .strict();
+
+const UiLayoutNavigationStyleSchema = z
+  .object({
+    mobile: UiLayoutNavigationStyleMobileSchema
+  })
+  .strict();
+
+const UiLayoutNavigationSchema = z
+  .object({
+    style: UiLayoutNavigationStyleSchema
+  })
+  .strict();
+
+const UiLayoutHeaderStyleSchema = z
+  .object({
+    display: z.string(),
+    alignItems: z.string()
+  })
+  .strict();
+
+const UiLayoutHeaderSchema = z
+  .object({
+    style: UiLayoutHeaderStyleSchema
+  })
+  .strict();
+
+const UiLayoutContentStyleSchema = z
+  .object({
+    flex: z.string(),
+    display: z.string(),
+    flexDirection: z.string(),
+    overflow: z.string()
+  })
+  .strict();
+
+const UiLayoutContentSchema = z
+  .object({
+    style: UiLayoutContentStyleSchema
+  })
+  .strict();
+
+const UiLayoutComponentSchema = z
+  .object({
+    pageContainer: UiLayoutPageContainerSchema,
+    navigation: UiLayoutNavigationSchema,
+    header: UiLayoutHeaderSchema,
+    content: UiLayoutContentSchema
+  })
+  .strict();
+
+// ============================================================
+// UI — PAGES (Component Styles)
+// ============================================================
+
+const UiPagesButtonsContainerStyleSchema = z
+  .object({
+    display: z.string(),
+    justifyContent: z.string(),
+    marginBottom: z.string()
+  })
+  .strict();
+
+const UiPagesButtonsContainerSchema = z
+  .object({
+    style: UiPagesButtonsContainerStyleSchema
+  })
+  .strict();
+
+const UiPagesErrorStyleSchema = z
+  .object({
+    padding: z.string(),
+    bg: z.string(),
+    border: z.string(),
+    borderColor: z.string(),
+    borderRadius: z.string(),
+    color: z.string()
+  })
+  .strict();
+
+const UiPagesErrorSchema = z
+  .object({
+    style: UiPagesErrorStyleSchema
+  })
+  .strict();
+
+const UiPagesMonthNavigationStyleSchema = z
+  .object({
+    display: z.string(),
+    alignItems: z.string(),
+    justifyContent: z.string(),
+    gap: z.string()
+  })
+  .strict();
+
+const UiPagesMonthNavigationSchema = z
+  .object({
+    style: UiPagesMonthNavigationStyleSchema
+  })
+  .strict();
+
+const UiPagesMonthPickerStyleSchema = z
+  .object({
+    position: z.string(),
+    left: z.string(),
+    zIndex: z.string(),
+    marginTop: z.string(),
+    transform: z.string(),
+    minWidth: z.string(),
+    borderRadius: z.string(),
+    border: z.string(),
+    borderColor: z.string(),
+    bg: z.string(),
+    bgOpacity: z.number(),
+    padding: z.string(),
+    boxShadow: z.string(),
+    backdropBlur: z.string()
+  })
+  .strict();
+
+const UiPagesMonthPickerSchema = z
+  .object({
+    style: UiPagesMonthPickerStyleSchema
+  })
+  .strict();
+
+const UiPagesDialogContentStyleSchema = z
+  .object({
+    display: z.string(),
+    flexDirection: z.string(),
+    alignItems: z.string(),
+    textAlign: z.string(),
+    gap: z.string()
+  })
+  .strict();
+
+const UiPagesDialogContentCenteredStyleSchema = z
+  .object({
+    width: z.string(),
+    maxWidth: z.string(),
+    textAlign: z.string()
+  })
+  .strict();
+
+const UiPagesDialogContentCenteredSchema = z
+  .object({
+    style: UiPagesDialogContentCenteredStyleSchema
+  })
+  .strict();
+
+const UiPagesDialogContentSchema = z
+  .object({
+    style: UiPagesDialogContentStyleSchema,
+    centered: UiPagesDialogContentCenteredSchema
+  })
+  .strict();
+
+const UiPagesStatusStyleSchema = z
+  .object({
+    paddingX: z.string(),
+    paddingY: z.string(),
+    borderRadius: z.string(),
+    fontSize: z.string()
+  })
+  .strict();
+
+const UiPagesStatusBezahltSchema = z
+  .object({
+    bg: z.string(),
+    color: z.string()
+  })
+  .strict();
+
+const UiPagesStatusTeilbezahltSchema = z
+  .object({
+    bg: z.string(),
+    color: z.string()
+  })
+  .strict();
+
+const UiPagesStatusOffenSchema = z
+  .object({
+    bg: z.string(),
+    color: z.string()
+  })
+  .strict();
+
+const UiPagesStatusSchema = z
+  .object({
+    style: UiPagesStatusStyleSchema,
+    bezahlt: UiPagesStatusBezahltSchema,
+    teilbezahlt: UiPagesStatusTeilbezahltSchema,
+    offen: UiPagesStatusOffenSchema
+  })
+  .strict();
+
+const UiPagesActionsStyleSchema = z
+  .object({
+    display: z.string(),
+    gap: z.string()
+  })
+  .strict();
+
+const UiPagesActionsSchema = z
+  .object({
+    style: UiPagesActionsStyleSchema
+  })
+  .strict();
+
+const UiPagesDetailHeaderStyleSchema = z
+  .object({
+    display: z.string(),
+    justifyContent: z.string(),
+    alignItems: z.string()
+  })
+  .strict();
+
+const UiPagesDetailHeaderSchema = z
+  .object({
+    style: UiPagesDetailHeaderStyleSchema
+  })
+  .strict();
+
+const UiPagesDetailHeaderLeftStyleSchema = z
+  .object({
+    display: z.string(),
+    alignItems: z.string(),
+    gap: z.string()
+  })
+  .strict();
+
+const UiPagesDetailHeaderLeftSchema = z
+  .object({
+    style: UiPagesDetailHeaderLeftStyleSchema
+  })
+  .strict();
+
+const UiPagesDetailHeaderActionsStyleSchema = z
+  .object({
+    display: z.string(),
+    gap: z.string()
+  })
+  .strict();
+
+const UiPagesDetailHeaderActionsSchema = z
+  .object({
+    style: UiPagesDetailHeaderActionsStyleSchema
+  })
+  .strict();
+
+const UiPagesSectionStyleSchema = z
+  .object({
+    display: z.string(),
+    flexDirection: z.string(),
+    gap: z.string()
+  })
+  .strict();
+
+const UiPagesSectionSchema = z
+  .object({
+    style: UiPagesSectionStyleSchema
+  })
+  .strict();
+
+const UiPagesSectionHeaderStyleSchema = z
+  .object({
+    display: z.string(),
+    justifyContent: z.string(),
+    alignItems: z.string()
+  })
+  .strict();
+
+const UiPagesSectionHeaderSchema = z
+  .object({
+    style: UiPagesSectionHeaderStyleSchema
+  })
+  .strict();
+
+const UiPagesSettingsLoadingStyleSchema = z
+  .object({
+    display: z.string(),
+    alignItems: z.string(),
+    justifyContent: z.string(),
     height: z.string()
   })
   .strict();
 
-const LayoutHeaderSchema = z
+const UiPagesSettingsLoadingSchema = z
+  .object({
+    style: UiPagesSettingsLoadingStyleSchema
+  })
+  .strict();
+
+const UiPagesSettingsMessageStyleSchema = z
+  .object({
+    padding: z.string(),
+    borderRadius: z.string()
+  })
+  .strict();
+
+const UiPagesSettingsMessageErrorSchema = z
   .object({
     bg: z.string(),
-    border: z.string(),
-    borderWidth: z.string(),
-    padding: z.string(),
-    gap: z.string(),
+    color: z.string()
+  })
+  .strict();
+
+const UiPagesSettingsMessageSuccessSchema = z
+  .object({
+    bg: z.string(),
+    color: z.string()
+  })
+  .strict();
+
+const UiPagesSettingsMessageSchema = z
+  .object({
+    style: UiPagesSettingsMessageStyleSchema,
+    error: UiPagesSettingsMessageErrorSchema,
+    success: UiPagesSettingsMessageSuccessSchema
+  })
+  .strict();
+
+const UiPagesSettingsSectionsStyleSchema = z
+  .object({
+    display: z.string(),
+    flexDirection: z.string(),
+    gap: z.string()
+  })
+  .strict();
+
+const UiPagesSettingsSectionsSchema = z
+  .object({
+    style: UiPagesSettingsSectionsStyleSchema
+  })
+  .strict();
+
+const UiPagesSettingsSectionTitleStyleSchema = z
+  .object({
     fontSize: z.string(),
-    fontWeight: z.number()
+    fontWeight: z.string(),
+    marginBottom: z.string()
   })
   .strict();
 
-// ========================================
-// H) CONTENT-KONFIG
-// ========================================
-
-const LayoutContentSchema = z
+const UiPagesSettingsSectionTitleSchema = z
   .object({
-    bg: z.string(),
-    border: z.string(),
-    borderWidth: z.string()
+    style: UiPagesSettingsSectionTitleStyleSchema
   })
   .strict();
 
-// ========================================
-// I) FOOTER-KONFIG
-// ========================================
-
-const LayoutFooterSchema = z
+const UiPagesSettingsUserCardStyleSchema = z
   .object({
-    bg: z.string(),
     border: z.string(),
-    borderWidth: z.string(),
+    borderColor: z.string(),
     borderRadius: z.string(),
-    height: z.string(),
-    padding: z.string(),
+    padding: z.string()
+  })
+  .strict();
+
+const UiPagesSettingsUserCardPendingStyleSchema = z
+  .object({
+    display: z.string(),
+    flexDirection: z.string(),
+    gap: z.string()
+  })
+  .strict();
+
+const UiPagesSettingsUserCardPendingSchema = z
+  .object({
+    style: UiPagesSettingsUserCardPendingStyleSchema
+  })
+  .strict();
+
+const UiPagesSettingsUserCardPendingHeaderStyleSchema = z
+  .object({
+    display: z.string(),
+    justifyContent: z.string(),
+    alignItems: z.string()
+  })
+  .strict();
+
+const UiPagesSettingsUserCardPendingHeaderSchema = z
+  .object({
+    style: UiPagesSettingsUserCardPendingHeaderStyleSchema
+  })
+  .strict();
+
+const UiPagesSettingsUserCardPendingActionsStyleSchema = z
+  .object({
+    display: z.string(),
     gap: z.string(),
-    gridColumns: z.number()
+    alignItems: z.string()
   })
   .strict();
 
-// ========================================
-// J) LAYOUT RULES / RESPONSIVE
-// ========================================
-
-const LayoutRulesSchema = z
+const UiPagesSettingsUserCardPendingActionsSchema = z
   .object({
-    mobileBreakpointPx: z.number(),
-    desktopBreakpointPx: z.number(),
-    sidebarCollapseBelowPx: z.number(),
-    tableHorizontalScrollBelowPx: z.number(),
-    contentMaxWidthPx: z.number(),
-    bottomNavHeightPx: z.number(),
-    bottomNavPadding: z.string(),
-    touchMinSizePx: z.number()
+    style: UiPagesSettingsUserCardPendingActionsStyleSchema
   })
   .strict();
 
-const LayoutSchema = z
+const UiPagesSettingsUserCardActiveStyleSchema = z
   .object({
-    navigation: LayoutNavigationSchema,
-    header: LayoutHeaderSchema,
-    content: LayoutContentSchema,
-    footer: LayoutFooterSchema,
-    rules: LayoutRulesSchema
+    display: z.string(),
+    justifyContent: z.string(),
+    alignItems: z.string()
   })
   .strict();
 
-// ========================================
-// MAIN CONFIG SCHEMA
-// ========================================
+const UiPagesSettingsUserCardActiveSchema = z
+  .object({
+    style: UiPagesSettingsUserCardActiveStyleSchema
+  })
+  .strict();
+
+const UiPagesSettingsUserCardDisabledStyleSchema = z
+  .object({
+    opacity: z.number()
+  })
+  .strict();
+
+const UiPagesSettingsUserCardDisabledSchema = z
+  .object({
+    style: UiPagesSettingsUserCardDisabledStyleSchema
+  })
+  .strict();
+
+const UiPagesSettingsUserCardSchema = z
+  .object({
+    style: UiPagesSettingsUserCardStyleSchema,
+    pending: UiPagesSettingsUserCardPendingSchema,
+    pendingHeader: UiPagesSettingsUserCardPendingHeaderSchema,
+    pendingActions: UiPagesSettingsUserCardPendingActionsSchema,
+    active: UiPagesSettingsUserCardActiveSchema,
+    disabled: UiPagesSettingsUserCardDisabledSchema
+  })
+  .strict();
+
+const UiPagesSettingsSchema = z
+  .object({
+    loading: UiPagesSettingsLoadingSchema,
+    message: UiPagesSettingsMessageSchema,
+    sections: UiPagesSettingsSectionsSchema,
+    sectionTitle: UiPagesSettingsSectionTitleSchema,
+    userCard: UiPagesSettingsUserCardSchema
+  })
+  .strict();
+
+const UiPagesComponentSchema = z
+  .object({
+    buttonsContainer: UiPagesButtonsContainerSchema,
+    error: UiPagesErrorSchema,
+    monthNavigation: UiPagesMonthNavigationSchema,
+    monthPicker: UiPagesMonthPickerSchema,
+    dialogContent: UiPagesDialogContentSchema,
+    status: UiPagesStatusSchema,
+    actions: UiPagesActionsSchema,
+    detailHeader: UiPagesDetailHeaderSchema,
+    detailHeaderLeft: UiPagesDetailHeaderLeftSchema,
+    detailHeaderActions: UiPagesDetailHeaderActionsSchema,
+    section: UiPagesSectionSchema,
+    sectionHeader: UiPagesSectionHeaderSchema,
+    settings: UiPagesSettingsSchema
+  })
+  .strict();
+
+// ============================================================
+// UI — INFOBOX (Component Styles)
+// ============================================================
+
+const UiInfoboxContainerStyleSchema = z
+  .object({
+    display: z.string(),
+    gapMobile: z.string(),
+    gapDesktop: z.string(),
+    borderWidth: z.string(),
+    borderStyle: z.string(),
+    borderRadius: z.string(),
+    paddingMobile: z.string(),
+    paddingDesktop: z.string(),
+    widthMobile: z.string()
+  })
+  .strict();
+
+const UiInfoboxContainerSchema = z
+  .object({
+    style: UiInfoboxContainerStyleSchema
+  })
+  .strict();
+
+const UiInfoboxIconStyleSchema = z
+  .object({
+    widthMobile: z.string(),
+    widthDesktop: z.string(),
+    heightMobile: z.string(),
+    heightDesktop: z.string(),
+    flexShrink: z.string(),
+    marginTop: z.string()
+  })
+  .strict();
+
+const UiInfoboxIconSchema = z
+  .object({
+    style: UiInfoboxIconStyleSchema
+  })
+  .strict();
+
+const UiInfoboxTitleStyleSchema = z
+  .object({
+    marginBottom: z.string()
+  })
+  .strict();
+
+const UiInfoboxTitleSchema = z
+  .object({
+    style: UiInfoboxTitleStyleSchema
+  })
+  .strict();
+
+const UiInfoboxContentStyleSchema = z
+  .object({
+    flex: z.string()
+  })
+  .strict();
+
+const UiInfoboxContentSchema = z
+  .object({
+    style: UiInfoboxContentStyleSchema
+  })
+  .strict();
+
+const UiInfoboxComponentSchema = z
+  .object({
+    container: UiInfoboxContainerSchema,
+    icon: UiInfoboxIconSchema,
+    title: UiInfoboxTitleSchema,
+    content: UiInfoboxContentSchema
+  })
+  .strict();
+
+// ============================================================
+// UI — DIVIDERS (Component Styles)
+// ============================================================
+
+const UiDividersMonthStyleSchema = z
+  .object({
+    padding: z.string(),
+    fontWeight: z.number(),
+    fontSize: z.string(),
+    textTransform: z.string(),
+    textAlign: z.string()
+  })
+  .strict();
+
+const UiDividersMonthSchema = z
+  .object({
+    style: UiDividersMonthStyleSchema
+  })
+  .strict();
+
+const UiDividersHorizontalStyleSchema = z
+  .object({
+    border: z.string(),
+    borderTop: z.string(),
+    borderColor: z.string(),
+    marginTop: z.string(),
+    marginBottom: z.string()
+  })
+  .strict();
+
+const UiDividersHorizontalSchema = z
+  .object({
+    style: UiDividersHorizontalStyleSchema
+  })
+  .strict();
+
+const UiDividersComponentSchema = z
+  .object({
+    month: UiDividersMonthSchema,
+    horizontal: UiDividersHorizontalSchema
+  })
+  .strict();
+
+// ============================================================
+// UI SCHEMA (Combining text + component styles)
+// Note: ui.buttons combines both text labels AND component styles
+// ============================================================
+
+const UiSchema = z
+  .object({
+    labels: UiLabelsSchema,
+    titles: UiTitlesSchema,
+    buttons: UiButtonsTextSchema.merge(UiButtonsComponentSchema),
+    messages: UiMessagesSchema,
+    empty: UiEmptySchema,
+    loading: UiLoadingSchema,
+    descriptions: UiDescriptionsSchema,
+    tokens: UiTokensSchema,
+    tables: UiTablesComponentSchema,
+    dialogs: UiDialogsComponentSchema,
+    entry: UiEntryComponentSchema,
+    layout: UiLayoutComponentSchema,
+    pages: UiPagesComponentSchema,
+    infobox: UiInfoboxComponentSchema,
+    dividers: UiDividersComponentSchema
+  })
+  .strict();
+
+// ============================================================
+// COMPONENTS — ICON
+// ============================================================
+
+const ComponentsIconNavSchema = z
+  .object({
+    buttonsSize: z.string(),
+    iconSize: z.string(),
+    radius: z.string()
+  })
+  .strict();
+
+const ComponentsIconDashSchema = z
+  .object({
+    buttonsSize: z.string(),
+    iconSize: z.string(),
+    radius: z.string()
+  })
+  .strict();
+
+const ComponentsIconActSchema = z
+  .object({
+    buttonsSize: z.string(),
+    iconSize: z.string(),
+    radius: z.string()
+  })
+  .strict();
+
+const ComponentsIconSchema = z
+  .object({
+    home: z.string(),
+    logout: z.string(),
+    settings: z.string(),
+    kunden: z.string(),
+    material: z.string(),
+    schuldner: z.string(),
+    glaeubiger: z.string(),
+    plus: z.string(),
+    bar: z.string(),
+    rechnung: z.string(),
+    billianz: z.string(),
+    bearbeiten: z.string(),
+    loeschen: z.string(),
+    zurueckBlaettern: z.string(),
+    vorBlaettern: z.string(),
+    wartend: z.string(),
+    in_bearbeitung: z.string(),
+    erledigt: z.string(),
+    bestand_0_aber_aussenstaende: z.string(),
+    nav: ComponentsIconNavSchema,
+    dash: ComponentsIconDashSchema,
+    act: ComponentsIconActSchema
+  })
+  .strict();
+
+// ============================================================
+// COMPONENTS — PROGRESSBAR
+// ============================================================
+
+const ComponentsProgressbarScaleRuleSchema = z
+  .object({
+    themeScalePath: z.string(),
+    min: z.number().optional(),
+    max: z.number().optional(),
+    step: z.number().optional(),
+    direction: z.string().optional(),
+    clampColorAtMaxScaleKey: z.string().optional(),
+    showValueInsideBar: z.boolean().optional(),
+    unit: z.string().optional()
+  })
+  .strict();
+
+const ComponentsProgressbarScaleSchema = z.record(z.string(), ComponentsProgressbarScaleRuleSchema);
+
+const ComponentsProgressbarSchema = z
+  .object({
+    height: z.string(),
+    radius: z.string(),
+    padding: z.string(),
+    scale: ComponentsProgressbarScaleSchema
+  })
+  .strict();
+
+// ============================================================
+// COMPONENTS — ENTRY
+// ============================================================
+
+const ComponentsEntrySchema = z
+  .object({
+    height: z.string(),
+    width: z.string(),
+    radius: z.string(),
+    paddingX: z.string(),
+    paddingY: z.string()
+  })
+  .strict();
+
+// ============================================================
+// COMPONENTS — TABLE
+// ============================================================
+
+const ComponentsTableColumnsConfigSchema = z
+  .object({
+    order: z.array(z.string()),
+    labels: z.record(z.string(), z.string())
+  })
+  .strict();
+
+const ComponentsTableColumnsSchema = z.record(z.string(), ComponentsTableColumnsConfigSchema);
+
+const ComponentsTableFormatSchema = z
+  .object({
+    type: z.string(),
+    align: z.string(),
+    sortable: z.boolean(),
+    currency: z.string().optional(),
+    minDecimals: z.number().optional(),
+    maxDecimals: z.number().optional(),
+    padToMaxIfFraction: z.boolean().optional(),
+    trimTrailingZeros: z.boolean().optional(),
+    rounding: z.string().optional(),
+    step: z.number().optional()
+  })
+  .strict();
+
+const ComponentsTableFormatsSchema = z.record(z.string(), ComponentsTableFormatSchema);
+
+const ComponentsTableSchema = z
+  .object({
+    headerHeight: z.string(),
+    rowHeight: z.string(),
+    actionsColumnWidth: z.string(),
+    columns: ComponentsTableColumnsSchema,
+    format: ComponentsTableFormatsSchema
+  })
+  .strict();
+
+// ============================================================
+// COMPONENTS — STATUS
+// ============================================================
+
+const ComponentsStatusRuleWhenSchema = z.record(z.string(), z.union([z.boolean(), z.number()]));
+
+const ComponentsStatusRuleSchema = z
+  .object({
+    when: ComponentsStatusRuleWhenSchema
+  })
+  .strict();
+
+const ComponentsStatusRulesSchema = z.record(z.string(), ComponentsStatusRuleSchema);
+
+const ComponentsStatusConfigSchema = z
+  .object({
+    order: z.array(z.string()),
+    rule: ComponentsStatusRulesSchema
+  })
+  .strict();
+
+const ComponentsStatusSchema = z.record(z.string(), ComponentsStatusConfigSchema);
+
+// ============================================================
+// COMPONENTS — DIALOG
+// ============================================================
+
+const ComponentsDialogEntryTypeSchema = z
+  .object({
+    control: z.string(),
+    format: z.string(),
+    optionsSource: z.string().optional(),
+    optionLabelField: z.string().optional(),
+    optionValueField: z.string().optional()
+  })
+  .strict();
+
+const ComponentsDialogEntryTypesSchema = z.record(z.string(), ComponentsDialogEntryTypeSchema);
+
+const ComponentsDialogGridConfigSchema = z
+  .object({
+    columns: z.number()
+  })
+  .strict();
+
+const ComponentsDialogGridSchema = z.record(z.string(), ComponentsDialogGridConfigSchema);
+
+const ComponentsDialogFormFieldSchema = z
+  .object({
+    entryType: z.string(),
+    label: z.string(),
+    visibleOn: z.array(z.string()),
+    editableOn: z.array(z.string()),
+    gridSpanPc: z.number(),
+    gridSpanSmartphone: z.number()
+  })
+  .strict();
+
+const ComponentsDialogFormFieldsSchema = z.record(z.string(), ComponentsDialogFormFieldSchema);
+
+const ComponentsDialogFormConfigSchema = z
+  .object({
+    gridPc: z.string(),
+    gridSmartphone: z.string(),
+    order: z.array(z.string()),
+    field: ComponentsDialogFormFieldsSchema
+  })
+  .strict();
+
+const ComponentsDialogFormSchema = z.record(z.string(), ComponentsDialogFormConfigSchema);
+
+const ComponentsDialogSchema = z
+  .object({
+    version: z.number(),
+    entryType: ComponentsDialogEntryTypesSchema,
+    grid: ComponentsDialogGridSchema,
+    form: ComponentsDialogFormSchema
+  })
+  .strict();
+
+// ============================================================
+// COMPONENTS SCHEMA
+// ============================================================
+
+const ComponentsSchema = z
+  .object({
+    icon: ComponentsIconSchema,
+    progressbar: ComponentsProgressbarSchema,
+    entry: ComponentsEntrySchema,
+    table: ComponentsTableSchema,
+    status: ComponentsStatusSchema,
+    dialog: ComponentsDialogSchema
+  })
+  .strict();
+
+// ============================================================
+// CONFIG SCHEMA (Root)
+// ============================================================
 
 export const ConfigSchema = z
   .object({
-    // A) App Metadata
     app: AppSchema,
-    auth: AuthSchema,
-
-    // B) Theme Primitives
-    theme: ThemeSchema,
-
-    // C) Base Components
-    components: ComponentsSchema,
-
-    // D) Pages
-    pages: PagesSchema,
-
-    // E) Content
-    content: ContentSchema,
-
-    // F) Navigation
+    permissions: PermissionsSchema,
     navigation: NavigationSchema,
-
-    // G-I) Layout
-    layout: LayoutSchema
+    theme: ThemeSchema,
+    ui: UiSchema,
+    components: ComponentsSchema
   })
   .strict();
 
-/**
- * TypeScript Types
- */
 export type AppConfig = z.infer<typeof ConfigSchema>;
-export type TablePage = z.infer<typeof TableColumnsSchema>;
-export type Column = z.infer<typeof ColumnSchema>;

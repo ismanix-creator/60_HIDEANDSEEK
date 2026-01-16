@@ -22,25 +22,9 @@
 import type { MonthDividerProps } from '@/types/ui.types';
 import { appConfig } from '@/config';
 
-const dividerConfig = appConfig.divider;
-
 const colorsConfig = appConfig.theme.colors;
-
-// Helper: Tailwind-Scale (0-32) auf theme.spacing (xxs-xxl) mappen
-const spacingBase = (key: number | string): string => {
-  const keyNum = typeof key === 'number' ? key : parseInt(String(key), 10);
-  if (isNaN(keyNum)) return appConfig.theme.spacing.content_gap; // fallback
-
-  if (keyNum <= 0) return appConfig.theme.spacing.tight;
-  if (keyNum === 1) return appConfig.theme.spacing.compact;
-  if (keyNum === 2) return appConfig.theme.spacing.compact;
-  if (keyNum === 3) return appConfig.theme.spacing.element_gap;
-  if (keyNum === 4) return appConfig.theme.spacing.content_gap;
-  if (keyNum === 5) return appConfig.theme.spacing.content_gap;
-  if (keyNum === 6) return appConfig.theme.spacing.panel_padding;
-  if (keyNum === 8) return appConfig.theme.spacing.section_padding;
-  return appConfig.theme.spacing.page_padding; // 10+
-};
+const monthDividerStyle = appConfig.ui.dividers.month.style;
+const horizontalDividerStyle = appConfig.ui.dividers.horizontal.style;
 
 // ═══════════════════════════════════════════════════════
 // HELPERS
@@ -59,18 +43,6 @@ const monthNames = [
   'November',
   'Dezember'
 ];
-
-function getColorValue(colorPath: string): string {
-  const parts = colorPath.split('.');
-  if (parts.length === 2) {
-    const [category, shade] = parts;
-    const colorCategory = colorsConfig[category as keyof typeof colorsConfig];
-    if (colorCategory && typeof colorCategory === 'object') {
-      return (colorCategory as Record<string, string>)[shade] || colorPath;
-    }
-  }
-  return colorPath;
-}
 
 // ═══════════════════════════════════════════════════════
 // COMPONENTS
@@ -94,13 +66,13 @@ export function MonthDivider({ month, year }: MonthDividerProps) {
   return (
     <div
       style={{
-        backgroundColor: getColorValue(dividerConfig.month.bg),
-        color: getColorValue(dividerConfig.month.text),
-        padding: `${dividerConfig.month.paddingY * 0.25}rem ${dividerConfig.month.paddingX * 0.25}rem`,
-        fontWeight: dividerConfig.month.fontWeight,
-        fontSize: dividerConfig.month.fontSize,
-        textTransform: dividerConfig.month.textTransform as 'uppercase',
-        textAlign: 'center'
+        backgroundColor: colorsConfig.bg.card,
+        color: colorsConfig.text.active,
+        padding: monthDividerStyle.padding,
+        fontWeight: monthDividerStyle.fontWeight,
+        fontSize: monthDividerStyle.fontSize,
+        textTransform: monthDividerStyle.textTransform as React.CSSProperties['textTransform'],
+        textAlign: monthDividerStyle.textAlign as React.CSSProperties['textAlign']
       }}
     >
       {displayMonth} {displayYear}
@@ -109,13 +81,16 @@ export function MonthDivider({ month, year }: MonthDividerProps) {
 }
 
 export function HorizontalDivider() {
+  const borderTopColor = horizontalDividerStyle.borderColor.replace('border.', '');
+  const resolvedBorderColor = colorsConfig.border[borderTopColor as keyof typeof colorsConfig.border];
+
   return (
     <hr
       style={{
-        border: 'none',
-        borderTop: `${dividerConfig.horizontal.thickness} solid ${getColorValue(dividerConfig.horizontal.color)}`,
-        marginTop: spacingBase(dividerConfig.horizontal.marginY),
-        marginBottom: spacingBase(dividerConfig.horizontal.marginY)
+        border: horizontalDividerStyle.border,
+        borderTop: `${horizontalDividerStyle.borderTop} ${resolvedBorderColor}`,
+        marginTop: horizontalDividerStyle.marginTop,
+        marginBottom: horizontalDividerStyle.marginBottom
       }}
     />
   );

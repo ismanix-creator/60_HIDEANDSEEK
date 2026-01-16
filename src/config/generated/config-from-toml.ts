@@ -3,1186 +3,118 @@
  * @description Generated config from config.toml (do not edit)
  * @version     2.5.0
  * @created     2026-01-06 19:14:38 CET
- * @updated     2026-01-14 11:26:16 CET
+ * @updated     2026-01-16 00:38:34 CET
  * @author      Akki Scholze
  */
 
 export const configFromToml = {
   "app": {
-    "name": "Material-Tracker",
-    "version": "1.2.0",
-    "description": "Material-Verwaltung mit Kundeninteraktionen und Schuldentracking"
-  },
-  "auth": {
-    "enabled": false,
-    "mode": "password_required",
-    "admin_bootstrap_user_id": "admin"
-  },
-  "theme": {
-    "spacing": {
-      "tight": "0.125rem",
-      "compact": "0.25rem",
-      "element_gap": "0.5rem",
-      "content_gap": "1rem",
-      "container_padding": "1rem",
-      "panel_padding": "1.5rem",
-      "section_padding": "2rem",
-      "page_padding": "3rem",
-      "mobile_element_gap": "0.5rem",
-      "mobile_container_padding": "1rem",
-      "mobile_section_padding": "1.5rem"
+    "meta": {
+      "name": "Material Tracker",
+      "version": "0.2.0",
+      "lastUpdated": "2026-01-16T01:20:11+01:00"
     },
-    "border": {
-      "radius_none": "0",
-      "radius_sm": "0.125rem",
-      "radius_md": "0.25rem",
-      "radius_lg": "0.5rem",
-      "radius_xl": "1rem",
-      "radius_full": "9999px"
+    "locale": {
+      "language": "de-DE",
+      "currency": "EUR",
+      "timezone": "Europe/Berlin",
+      "dateFormat": "dd.MM.yyyy",
+      "timeFormat": "HH:mm",
+      "decimalSeparator": ",",
+      "thousandSeparator": "."
     },
-    "colors": {
-      "black": {
-        "50": "#f8f8f8",
-        "100": "#f0f0f0",
-        "200": "#e0e0e0",
-        "300": "#c0c0c0",
-        "400": "#a0a0a0",
-        "500": "#808080",
-        "600": "#606060",
-        "700": "#404040",
-        "800": "#202020",
-        "900": "#000000"
-      },
-      "blue": {
-        "50": "#e3f2fd",
-        "100": "#bbdefb",
-        "200": "#90caf9",
-        "300": "#64b5f6",
-        "400": "#42a5f5",
-        "500": "#2196f3",
-        "600": "#1e88e5",
-        "700": "#1976d2",
-        "800": "#1565c0",
-        "900": "#0d47a1"
-      },
-      "bluegray": {
-        "50": "#f8fafc",
-        "100": "#f1f5f9",
-        "200": "#e2e8f0",
-        "300": "#cbd5e1",
-        "400": "#94a3b8",
-        "500": "#64748b",
-        "600": "#475569",
-        "700": "#334155",
-        "800": "#1e293b",
-        "900": "#0f172a"
-      },
-      "green": {
-        "50": "#f1f8e9",
-        "100": "#dcedc8",
-        "200": "#c5e1a5",
-        "300": "#aed581",
-        "400": "#9ccc65",
-        "500": "#8bc34a",
-        "600": "#7cb342",
-        "700": "#689f38",
-        "800": "#558b2f",
-        "900": "#33691e"
-      },
-      "gold": {
-        "50": "#fffef0",
-        "100": "#fffde7",
-        "200": "#fffdcf",
-        "300": "#fffacd",
-        "400": "#fff59d",
-        "500": "#ffd54f",
-        "600": "#ffca28",
-        "700": "#ffc107",
-        "800": "#ffb300",
-        "900": "#ff8f00"
-      },
-      "orange": {
-        "50": "#fff3e0",
-        "100": "#ffe0b2",
-        "200": "#ffcc80",
-        "300": "#ffb74d",
-        "400": "#ffa726",
-        "500": "#ff9800",
-        "600": "#fb8c00",
-        "700": "#f57c00",
-        "800": "#e65100",
-        "900": "#d84315"
-      },
-      "red": {
-        "50": "#ffebee",
-        "100": "#ffcdd2",
-        "200": "#ef9a9a",
-        "300": "#e57373",
-        "400": "#ef5350",
-        "500": "#f44336",
-        "600": "#e53935",
-        "700": "#d32f2f",
-        "800": "#c62828",
-        "900": "#b71c1c"
-      },
-      "graublau": {
-        "50": "#fafafa",
-        "100": "#f4f5f6",
-        "200": "#e4e6e7",
-        "300": "#d2d4d7",
-        "400": "#a0a3a7",
-        "500": "#707378",
-        "600": "#505357",
-        "700": "#3d4044",
-        "800": "#24272a",
-        "900": "#15171b"
-      },
-      "gray": {
-        "50": "#fafafa",
-        "100": "#f5f5f5",
-        "200": "#eeeeee",
-        "300": "#e0e0e0",
-        "400": "#bdbdbd",
-        "500": "#9e9e9e",
-        "600": "#757575",
-        "700": "#616161",
-        "800": "#424242",
-        "900": "#212121"
-      },
-      "opacity": {
-        "0": "rgba(0, 0, 0, 0)",
-        "10": "rgba(0, 0, 0, 0.1)",
-        "20": "rgba(0, 0, 0, 0.2)",
-        "30": "rgba(0, 0, 0, 0.3)",
-        "40": "rgba(0, 0, 0, 0.4)",
-        "50": "rgba(0, 0, 0, 0.5)",
-        "60": "rgba(0, 0, 0, 0.6)",
-        "70": "rgba(0, 0, 0, 0.7)",
-        "75": "rgba(0, 0, 0, 0.75)",
-        "80": "rgba(0, 0, 0, 0.8)",
-        "90": "rgba(0, 0, 0, 0.9)",
-        "100": "rgba(0, 0, 0, 1)"
-      },
-      "ui": {
-        "background": "{black.800}",
-        "backgroundAlt": "{graublau.900}",
-        "backgroundCard": "{gray.900}",
-        "border": "{gray.700}"
-      },
-      "text": {
-        "primary": "{gray.50}",
-        "secondary": "{gray.400}",
-        "tertiary": "{gray.500}"
-      },
-      "button": {
-        "gray": "{gray.700}",
-        "active": "{gray.600}"
-      },
-      "info": {
-        "light": "{blue.400}",
-        "main": "{blue.500}",
-        "dark": "{blue.700}"
-      },
-      "success": {
-        "light": "{green.500}",
-        "main": "{green.600}",
-        "dark": "{green.800}"
-      },
-      "error": {
-        "light": "{red.400}",
-        "main": "{red.500}",
-        "dark": "{red.700}"
-      },
-      "status": {
-        "error": "{red.500}",
-        "warning": "{gold.700}",
-        "success": "{green.600}",
-        "info": "{blue.500}"
-      },
-      "warning": {
-        "light": "{gold.600}",
-        "main": "{gold.700}",
-        "dark": "{orange.700}"
-      }
+    "database": {
+      "name": "material-tracker.db",
+      "version": 1
     },
-    "shadows": {
-      "sm": "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-      "md": "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-      "lg": "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-      "xl": "0 20px 25px -5px rgba(0, 0, 0, 0.1)",
-      "none": "none"
-    },
-    "sizes": {
-      "touchMinSizePx": 44,
-      "sidebarWidthPx": 200
-    },
-    "typography": {
-      "fontFamily": {
-        "base": "Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif",
-        "mono": "Inter Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, monospace"
-      },
-      "fontSize": {
-        "xs": "0.75rem",
-        "sm": "0.875rem",
-        "md": "1rem",
-        "lg": "1.25rem",
-        "xl": "1.5rem"
-      },
-      "fontWeight": {
-        "normal": 400,
-        "medium": 500,
-        "semibold": 600,
-        "bold": 700
-      }
+    "server": {
+      "host": "127.0.0.1",
+      "port": 3001
     }
   },
-  "components": {
-    "table": {
-      "base": {
-        "wrapperBg": "{black.800}",
-        "wrapperBorder": "{gray.700}",
-        "wrapperBorderRadius": "0.5rem",
-        "wrapperShadow": "md",
-        "headerBg": "{gray.900}",
-        "headerText": "{gray.50}",
-        "headerFontSize": "13px",
-        "headerFontWeight": 500,
-        "headerFontMono": true,
-        "rowHeightPx": 50,
-        "rowBgOdd": "{black.900}",
-        "rowBgEven": "{gray.800}",
-        "rowBgHover": "{gray.700}",
-        "rowBorderBottom": "{gray.700}",
-        "cellPaddingX": "1rem",
-        "cellPaddingY": "0.75rem",
-        "cellText": "{gray.50}",
-        "cellFontSize": "12px",
-        "cellFontWeight": 400,
-        "cellFontMono": true,
-        "behavior": {
-          "minRows": 0,
-          "emptyRowPlaceholder": ""
-        },
-        "progress": {
-          "height": "12px",
-          "radius": "0.5rem",
-          "trackBg": "{gray.800}",
-          "trackBorder": "{gray.700}",
-          "textColor": "{gray.50}",
-          "gradientStops": [
-            {
-              "p": 0,
-              "c": "{gray.600}"
-            },
-            {
-              "p": 5,
-              "c": "{red.700}"
-            },
-            {
-              "p": 20,
-              "c": "{red.500}"
-            },
-            {
-              "p": 40,
-              "c": "{orange.500}"
-            },
-            {
-              "p": 60,
-              "c": "{gold.700}"
-            },
-            {
-              "p": 75,
-              "c": "{gold.600}"
-            },
-            {
-              "p": 85,
-              "c": "{gold.400}"
-            },
-            {
-              "p": 90,
-              "c": "{green.700}"
-            },
-            {
-              "p": 95,
-              "c": "{green.600}"
-            },
-            {
-              "p": 100,
-              "c": "{green.400}"
-            }
-          ]
-        },
-        "bestand": {
-          "invertProgressStops": true,
-          "textColor": "{gray.50}"
-        }
-      }
-    },
-    "dialog": {
-      "base": {
-        "overlay": {
-          "bg": "{opacity.75}"
-        },
-        "container": {
-          "bg": "{gray.700}",
-          "border": "{gray.600}",
-          "borderRadius": "0.5rem",
-          "padding": "0",
-          "maxWidth": "90vw",
-          "width": "600px",
-          "height": "80vh",
-          "maxHeight": "80vh",
-          "shadow": "xl"
-        },
-        "header": {
-          "borderBottom": "{gray.600}",
-          "padding": "1.5rem",
-          "fontSize": "20px",
-          "fontWeight": 600
-        },
-        "body": {
-          "padding": "1.5rem",
-          "gap": "1rem",
-          "fontSize": "14px",
-          "fontWeight": 400
-        },
-        "footer": {
-          "borderTop": "{gray.600}",
-          "padding": "1rem 1.5rem",
-          "marginTop": "0",
-          "gap": "0.5rem"
-        }
-      }
-    },
-    "button": {
-      "borderRadius": "0.25rem",
-      "nav": {
-        "bg": "transparent",
-        "icon": "{gray.50}",
-        "border": "transparent",
-        "hoverBg": "{black.800}",
-        "activeBg": "{black.900}",
-        "disabledBg": "transparent",
-        "disabledIcon": "{gray.600}",
-        "focusRing": "{blue.500}",
-        "focusRingOpacity": "{opacity.40}",
-        "iconSize": "48px"
+  "permissions": {
+    "roles": {
+      "admin": {
+        "label": "Administrator (PC)",
+        "permissions": [
+          "*"
+        ]
       },
-      "new": {
-        "bg": "transparent",
-        "icon": "{gray.50}",
-        "border": "transparent",
-        "hoverBg": "{black.800}",
-        "activeBg": "{black.900}",
-        "disabledBg": "transparent",
-        "disabledIcon": "{gray.600}",
-        "focusRing": "{green.500}",
-        "focusRingOpacity": "{opacity.40}",
-        "iconSize": "32px"
-      },
-      "act": {
-        "bg": "transparent",
-        "icon": "{gray.50}",
-        "border": "transparent",
-        "hoverBg": "{black.800}",
-        "activeBg": "{black.900}",
-        "disabledBg": "transparent",
-        "disabledIcon": "{gray.600}",
-        "focusRing": "{blue.500}",
-        "focusRingOpacity": "{opacity.40}",
-        "iconSize": "20px"
-      },
-      "tab": {
-        "bg": "transparent",
-        "icon": "{gray.50}",
-        "border": "transparent",
-        "hoverBg": "{black.800}",
-        "activeBg": "{black.900}",
-        "disabledBg": "transparent",
-        "disabledIcon": "{gray.600}",
-        "focusRing": "{blue.500}",
-        "focusRingOpacity": "{opacity.40}",
-        "iconSize": "20px"
-      },
-      "rect": {
-        "bg": "{black.700}",
-        "text": "{gray.50}",
-        "border": "transparent",
-        "hoverBg": "{black.800}",
-        "activeBg": "{black.900}",
-        "disabledBg": "{black.800}",
-        "disabledText": "{gray.500}",
-        "saveBg": "{green.600}",
-        "saveText": "{gray.50}",
-        "saveHoverBg": "{green.700}",
-        "saveActiveBg": "{green.800}",
-        "focusRing": "{blue.500}",
-        "focusRingOpacity": "{opacity.40}",
-        "padding": "0.75rem 1.5rem",
-        "fontSize": "16px",
-        "fontWeight": 500,
-        "height": "2.5rem",
-        "iconSize": "20px"
-      },
-      "back": {
-        "bg": "transparent",
-        "icon": "{gray.50}",
-        "border": "transparent",
-        "hoverBg": "{black.800}",
-        "activeBg": "{black.900}",
-        "disabledBg": "transparent",
-        "disabledIcon": "{gray.600}",
-        "focusRing": "{blue.500}",
-        "focusRingOpacity": "{opacity.40}",
-        "iconSize": "32px"
-      }
-    },
-    "badge": {
-      "base": {
-        "paddingX": 2,
-        "paddingY": 1,
-        "borderRadius": "0.25rem",
-        "fontSize": "12px",
-        "fontWeight": 500,
-        "display": "inline-flex",
-        "alignItems": "center",
-        "gap": "0.25rem"
-      },
-      "variants": {
-        "success": {
-          "bg": "{green.600}",
-          "text": "{gray.50}"
-        },
-        "error": {
-          "bg": "{red.500}",
-          "text": "{gray.50}"
-        },
-        "warning": {
-          "bg": "{gold.700}",
-          "text": "{black.800}"
-        },
-        "info": {
-          "bg": "{blue.500}",
-          "text": "{gray.50}"
-        },
-        "pending": {
-          "bg": "{gray.500}",
-          "text": "{gray.50}"
-        },
-        "neutral": {
-          "bg": "{gray.800}",
-          "text": "{gray.50}"
-        }
-      }
-    },
-    "form": {
-      "input": {
-        "base": {
-          "bg": "{black.900}",
-          "border": "{gray.700}",
-          "text": "{gray.50}",
-          "padding": "0.5rem 0.75rem",
-          "paddingX": 3,
-          "paddingY": 2,
-          "borderRadius": "0.25rem",
-          "fontSize": "14px",
-          "fontWeight": 400,
-          "height": "2.5rem",
-          "borderWidth": "1px"
-        },
-        "states": {
-          "default": {
-            "border": "{gray.700}",
-            "bg": "{black.900}",
-            "text": "{gray.50}",
-            "outline": "none"
-          },
-          "focus": {
-            "border": "{blue.500}",
-            "bg": "{black.900}",
-            "outline": "2px solid {blue.500}",
-            "text": "{gray.50}"
-          },
-          "error": {
-            "border": "{red.500}",
-            "bg": "{black.900}",
-            "outline": "2px solid {red.500}",
-            "text": "{gray.50}"
-          },
-          "disabled": {
-            "border": "{gray.700}",
-            "bg": "{gray.800}",
-            "text": "{gray.600}",
-            "outline": "none"
-          }
-        }
-      }
-    },
-    "divider": {
-      "month": {
-        "bg": "{black.800}",
-        "text": "{gray.50}",
-        "border": "{gray.700}",
-        "padding": "0.5rem 1rem",
-        "paddingY": 2,
-        "paddingX": 4,
-        "fontSize": "14px",
-        "fontWeight": 600,
-        "textTransform": "uppercase"
-      },
-      "horizontal": {
-        "border": "{gray.700}",
-        "margin": "1rem 0",
-        "marginY": 4,
-        "height": "1px",
-        "thickness": "1px",
-        "color": "{gray.700}"
-      }
-    },
-    "infobox": {
-      "base": {
-        "padding": "1rem",
-        "borderRadius": "0.5rem",
-        "fontSize": "14px",
-        "fontWeight": 400,
-        "borderWidth": "1px"
-      },
-      "panel": {
-        "bg": "{black.800}",
-        "border": "{gray.700}",
-        "borderRadius": "0.5rem",
-        "padding": "1rem"
-      },
-      "variants": {
-        "info": {
-          "bg": "{blue.800}",
-          "border": "{blue.500}",
-          "icon": "info",
-          "iconColor": "{blue.500}"
-        },
-        "success": {
-          "bg": "{green.800}",
-          "border": "{green.600}",
-          "icon": "check-circle",
-          "iconColor": "{green.600}"
-        },
-        "warning": {
-          "bg": "{orange.800}",
-          "border": "{gold.700}",
-          "icon": "alert-triangle",
-          "iconColor": "{gold.700}"
-        },
-        "error": {
-          "bg": "{red.800}",
-          "border": "{red.500}",
-          "icon": "x-circle",
-          "iconColor": "{red.500}"
-        }
-      },
-      "formCompact": {
-        "containerWidth": "300px",
-        "inputWidth": "100px",
-        "buttonSize": "md"
-      }
-    }
-  },
-  "pages": {
-    "material": {
-      "table": {
-        "columns": [
-          {
-            "key": "datum",
-            "label": "Datum",
-            "width": "8%",
-            "type": "date"
-          },
-          {
-            "key": "bezeichnung",
-            "label": "Bezeichnung",
-            "width": "12%",
-            "type": "text"
-          },
-          {
-            "key": "notiz",
-            "label": "Notiz",
-            "width": "10%",
-            "type": "text"
-          },
-          {
-            "key": "ek_stueck",
-            "label": "EK/Stück",
-            "width": "7%",
-            "type": "currency",
-            "monospace": false
-          },
-          {
-            "key": "ek_gesamt",
-            "label": "EK Gesamt",
-            "width": "7%",
-            "type": "currency",
-            "monospace": false
-          },
-          {
-            "key": "vk_stueck",
-            "label": "VK/Stück",
-            "width": "7%",
-            "type": "currency",
-            "monospace": false
-          },
-          {
-            "key": "menge",
-            "label": "Menge",
-            "width": "6%",
-            "type": "number",
-            "monospace": false
-          },
-          {
-            "key": "bestand",
-            "label": "Bestand",
-            "width": "6%",
-            "type": "progress",
-            "monospace": false
-          },
-          {
-            "key": "einnahmen",
-            "label": "Einnahmen",
-            "width": "7%",
-            "type": "currency",
-            "monospace": false
-          },
-          {
-            "key": "aussenstaende",
-            "label": "Aussenstände",
-            "width": "7%",
-            "type": "currency",
-            "monospace": false
-          },
-          {
-            "key": "theor_einnahmen",
-            "label": "Theor. Einnahmen",
-            "width": "7%",
-            "type": "currency",
-            "monospace": false
-          },
-          {
-            "key": "gewinn",
-            "label": "Gewinn",
-            "width": "7%",
-            "type": "currency",
-            "monospace": false
-          },
-          {
-            "key": "status",
-            "label": "Status",
-            "width": "6%",
-            "type": "status"
-          },
-          {
-            "key": "actions",
-            "label": "Aktionen",
-            "width": "7%",
-            "type": "actions",
-            "buttons": [
-              "bar",
-              "kombi",
-              "edit",
-              "delete"
-            ]
-          }
+      "customer": {
+        "label": "Kunde (Self-Service)",
+        "permissions": [
+          "kunden.view"
         ]
       }
     },
-    "kunden": {
-      "overview": {
-        "table": {
-          "columns": [
-            {
-              "key": "name",
-              "label": "Name",
-              "width": "25%",
-              "type": "text"
-            },
-            {
-              "key": "anzahl_posten",
-              "label": "Anzahl offene Posten",
-              "width": "15%",
-              "type": "number",
-              "monospace": false
-            },
-            {
-              "key": "summe_offen",
-              "label": "Summe Betrag offener Posten",
-              "width": "20%",
-              "type": "currency",
-              "monospace": false
-            },
-            {
-              "key": "fortschritt",
-              "label": "Fortschritt",
-              "width": "15%",
-              "type": "progress"
-            },
-            {
-              "key": "status",
-              "label": "Status",
-              "width": "15%",
-              "type": "status"
-            },
-            {
-              "key": "actions",
-              "label": "Aktionen",
-              "width": "10%",
-              "type": "actions",
-              "buttons": [
-                "view",
-                "edit",
-                "delete"
-              ]
-            }
-          ]
-        }
+    "features": {
+      "kunden.view": {
+        "roles": [
+          "admin",
+          "customer"
+        ]
       },
-      "mat": {
-        "table": {
-          "columns": [
-            {
-              "key": "datum",
-              "label": "Datum",
-              "width": "10%",
-              "type": "date"
-            },
-            {
-              "key": "material",
-              "label": "Material",
-              "width": "15%",
-              "type": "text"
-            },
-            {
-              "key": "menge",
-              "label": "Menge",
-              "width": "8%",
-              "type": "number",
-              "monospace": false
-            },
-            {
-              "key": "vk_stueck",
-              "label": "VK/Stück",
-              "width": "10%",
-              "type": "currency",
-              "monospace": false
-            },
-            {
-              "key": "gesamt",
-              "label": "Gesamt",
-              "width": "10%",
-              "type": "currency",
-              "monospace": false
-            },
-            {
-              "key": "bezahlt",
-              "label": "Bezahlt",
-              "width": "10%",
-              "type": "currency",
-              "monospace": false
-            },
-            {
-              "key": "offen",
-              "label": "Offen",
-              "width": "10%",
-              "type": "currency",
-              "monospace": false
-            },
-            {
-              "key": "fortschritt",
-              "label": "Fortschritt",
-              "width": "12%",
-              "type": "progress"
-            },
-            {
-              "key": "zahlungen",
-              "label": "Zahlungen",
-              "width": "8%",
-              "type": "button",
-              "buttons": [
-                "payment_history"
-              ]
-            },
-            {
-              "key": "actions",
-              "label": "Aktionen",
-              "width": "7%",
-              "type": "actions",
-              "buttons": [
-                "edit",
-                "delete"
-              ]
-            }
-          ]
-        }
+      "kunden.create": {
+        "roles": [
+          "admin"
+        ]
       },
-      "nomat": {
-        "table": {
-          "columns": [
-            {
-              "key": "datum",
-              "label": "Datum",
-              "width": "12%",
-              "type": "date"
-            },
-            {
-              "key": "notiz",
-              "label": "Notiz",
-              "width": "25%",
-              "type": "text"
-            },
-            {
-              "key": "gesamt",
-              "label": "Gesamt",
-              "width": "12%",
-              "type": "currency",
-              "monospace": false
-            },
-            {
-              "key": "bezahlt",
-              "label": "Bezahlt",
-              "width": "12%",
-              "type": "currency",
-              "monospace": false
-            },
-            {
-              "key": "offen",
-              "label": "Offen",
-              "width": "12%",
-              "type": "currency",
-              "monospace": false
-            },
-            {
-              "key": "fortschritt",
-              "label": "Fortschritt",
-              "width": "12%",
-              "type": "progress"
-            },
-            {
-              "key": "zahlungen",
-              "label": "Zahlungen",
-              "width": "8%",
-              "type": "button",
-              "buttons": [
-                "payment_history"
-              ]
-            },
-            {
-              "key": "actions",
-              "label": "Aktionen",
-              "width": "7%",
-              "type": "actions",
-              "buttons": [
-                "edit",
-                "delete"
-              ]
-            }
-          ]
-        }
-      }
-    },
-    "schuldner": {
-      "table": {
-        "columns": [
-          {
-            "key": "datum",
-            "label": "Datum",
-            "width": "10%",
-            "type": "date"
-          },
-          {
-            "key": "name",
-            "label": "Wer?!",
-            "width": "20%",
-            "type": "text"
-          },
-          {
-            "key": "notiz",
-            "label": "Notiz",
-            "width": "15%",
-            "type": "text"
-          },
-          {
-            "key": "gesamt",
-            "label": "Gesamt",
-            "width": "13%",
-            "type": "currency",
-            "monospace": false
-          },
-          {
-            "key": "offen",
-            "label": "Offen",
-            "width": "13%",
-            "type": "currency",
-            "monospace": false
-          },
-          {
-            "key": "fortschritt",
-            "label": "Fortschritt",
-            "width": "12%",
-            "type": "progress"
-          },
-          {
-            "key": "actions",
-            "label": "Aktionen",
-            "width": "12%",
-            "type": "actions",
-            "buttons": [
-              "edit",
-              "delete",
-              "payment"
-            ]
-          }
+      "kunden.edit": {
+        "roles": [
+          "admin"
+        ]
+      },
+      "kunden.delete": {
+        "roles": [
+          "admin"
+        ]
+      },
+      "kunden.zahlung": {
+        "roles": [
+          "admin"
+        ]
+      },
+      "kunden.posten.create": {
+        "roles": [
+          "admin"
+        ]
+      },
+      "kunden.posten.delete": {
+        "roles": [
+          "admin"
         ]
       }
     },
-    "glaeubiger": {
-      "table": {
-        "columns": [
-          {
-            "key": "datum",
-            "label": "Datum",
-            "width": "10%",
-            "type": "date"
-          },
-          {
-            "key": "name",
-            "label": "Wer?!",
-            "width": "20%",
-            "type": "text"
-          },
-          {
-            "key": "notiz",
-            "label": "Notiz",
-            "width": "15%",
-            "type": "text"
-          },
-          {
-            "key": "gesamt",
-            "label": "Gesamt",
-            "width": "13%",
-            "type": "currency",
-            "monospace": false
-          },
-          {
-            "key": "offen",
-            "label": "Offen",
-            "width": "13%",
-            "type": "currency",
-            "monospace": false
-          },
-          {
-            "key": "fortschritt",
-            "label": "Fortschritt",
-            "width": "12%",
-            "type": "progress"
-          },
-          {
-            "key": "actions",
-            "label": "Aktionen",
-            "width": "12%",
-            "type": "actions",
-            "buttons": [
-              "edit",
-              "delete",
-              "payment"
-            ]
-          }
-        ]
+    "scopes": {
+      "kunden.view": {
+        "scope": "self",
+        "allowList": false,
+        "allowSearch": false,
+        "allowExport": false
       }
-    },
-    "settings": {},
-    "dashboard": {
-      "card": {
-        "width": "240px",
-        "height": "240px",
-        "gap": "1.5rem",
-        "iconSize": "160px",
-        "padding": "1rem",
-        "hoverTransform": "translateY(-4px)",
-        "marginTop": "0.5rem"
-      },
-      "icon": {
-        "positionRelative": "relative",
-        "positionAbsolute": "absolute",
-        "bottom": "-4px",
-        "right": "-8px",
-        "width": "12px",
-        "height": "12px",
-        "strokeWidth": 3
-      }
-    },
-    "titles": {
-      "dashboard": "Dashboard",
-      "material": "Material",
-      "customers": "Kunden",
-      "creditors": "Gläubiger",
-      "debtors": "Schuldner",
-      "settings": "Einstellungen"
-    }
-  },
-  "content": {
-    "buttons": {
-      "save": "Speichern",
-      "cancel": "Abbrechen",
-      "delete": "Löschen",
-      "create": "Erstellen",
-      "edit": "Bearbeiten",
-      "close": "Schließen",
-      "record": "Verbuchen",
-      "go_to_setup": "Zur Setup-Seite"
-    },
-    "dialog_titles": {
-      "new_material": "Neues Material",
-      "edit_material": "Material bearbeiten",
-      "delete_material": "Material löschen",
-      "bar_transaction": "BAR-Bewegung",
-      "kombi_transaction": "KOMBI-Bewegung",
-      "new_customer": "Neuer Kunde",
-      "edit_customer": "Kunde bearbeiten",
-      "delete_customer": "Kunde löschen",
-      "new_material_post": "Neuer Material-Posten",
-      "new_other_post": "Neuer sonstiger Posten",
-      "record_payment": "Zahlung verbuchen",
-      "new_creditor": "Neuer Gläubiger",
-      "edit_creditor": "Gläubiger bearbeiten",
-      "delete_creditor": "Gläubiger löschen",
-      "new_debtor": "Neuer Schuldner",
-      "edit_debtor": "Schuldner bearbeiten",
-      "delete_debtor": "Schuldner löschen",
-      "history": "Historie"
-    },
-    "labels": {
-      "date": "Datum",
-      "name": "Name",
-      "designation": "Bezeichnung",
-      "quantity": "Menge",
-      "amount": "Betrag",
-      "amount_paid": "Bezahlt",
-      "payment_amount": "Zahlungsbetrag",
-      "material": "Material",
-      "note": "Notiz (optional)",
-      "price_per_unit": "VK Stück (Mindest-VK)",
-      "purchase_price": "EK Stück",
-      "purchase_price_total": "EK Gesamt",
-      "selling_price_unit": "VK Stück",
-      "info": "Info (optional)",
-      "due_date": "Fälligkeit (optional)",
-      "open_amount": "Offener Betrag",
-      "status": "Status",
-      "actions": "Aktionen",
-      "stock": "Bestand",
-      "revenue": "Einnahmen",
-      "profit": "Gewinn",
-      "available": "Verfügbar",
-      "bar_sale": "Bar-Verkauf",
-      "kombi_booking": "KOMBI-Buchung",
-      "total_price": "Preis Gesamt",
-      "total": "Gesamt",
-      "price": "Preis",
-      "customer": "Kunde",
-      "price_per_unit_short": "Preis/Stück",
-      "price_total_short": "Preis Gesamt",
-      "price_per_piece": "Preis pro Stück",
-      "loading": "Laden...",
-      "pending_users": "Pending Users",
-      "active_users": "Aktive Users",
-      "disabled_users": "Deaktivierte Users",
-      "administrator": "Administrator",
-      "not_available": "N/A",
-      "admin_setup": "Admin Setup",
-      "material_posts": "Material-Posten",
-      "other_posts": "Sonstige Posten"
-    },
-    "descriptions": {
-      "admin_setup_access": "Zugang zur initialen System-Konfiguration",
-      "no_pending_users": "Keine pending users",
-      "no_active_users": "Keine aktiven users",
-      "bootstrap_description": "First-run admin setup. Only available if admin account is in bootstrap status.",
-      "signup_description": "Register as a customer. Your account will be pending until admin approves.",
-      "auth_required": "Login erforderlich",
-      "auth_disabled_dev": "Auth deaktiviert (dev mode)"
-    },
-    "messages": {
-      "confirm_delete_material": "Möchten Sie das Material \"{name}\" wirklich löschen?",
-      "confirm_delete_customer": "Möchten Sie den Kunden \"{name}\" wirklich löschen?",
-      "confirm_delete_creditor": "Möchten Sie den Gläubiger \"{name}\" wirklich löschen?",
-      "confirm_delete_debtor": "Möchten Sie den Schuldner \"{name}\" wirklich löschen?",
-      "bootstrap_success": "Admin bootstrap successful! You can now login.",
-      "login_failed": "Login failed",
-      "logging_in": "Logging in...",
-      "login": "Login"
-    },
-    "input_limits": {
-      "quantity_min": 0,
-      "quantity_step": 1,
-      "price_min": 0,
-      "price_step": 0.01
-    },
-    "empty_states": {
-      "no_history": "Keine Historie vorhanden",
-      "no_customers": "Keine Kunden vorhanden",
-      "no_material_posts": "Keine Material-Posten vorhanden",
-      "no_other_posts": "Keine sonstigen Posten vorhanden",
-      "no_creditors": "Keine Gläubiger vorhanden",
-      "no_debtors": "Keine Schuldner vorhanden"
-    },
-    "errors": {
-      "create_failed": "Fehler beim Erstellen",
-      "update_failed": "Fehler beim Aktualisieren",
-      "delete_failed": "Fehler beim Löschen",
-      "load_failed": "Fehler beim Laden",
-      "booking_failed": "Fehler beim Buchen",
-      "network_error": "Netzwerkfehler"
-    },
-    "status": {
-      "paid": "Bezahlt",
-      "partial": "Teilweise",
-      "open": "Offen"
-    },
-    "tooltips": {
-      "bar_transaction": "BAR",
-      "kombi_transaction": "KOMBI",
-      "edit": "Bearbeiten",
-      "delete": "Löschen",
-      "new_material": "Neues Material",
-      "new_customer": "Neuer Kunde",
-      "new_creditor": "Neuer Gläubiger",
-      "new_debtor": "Neuer Schuldner",
-      "payment": "Zahlung",
-      "create": "Erstellen",
-      "record": "Verbuchen"
-    },
-    "validation": {
-      "date_required": "Datum erforderlich",
-      "designation_required": "Bezeichnung erforderlich",
-      "quantity_must_be_positive": "Menge muss größer 0 sein",
-      "ek_stueck_must_be_positive": "EK Stück muss größer 0 sein",
-      "ek_gesamt_must_be_positive": "EK Gesamt muss größer 0 sein",
-      "vk_stueck_must_be_positive": "VK Stück muss größer 0 sein"
     }
   },
   "navigation": {
-    "zIndex": 1000,
-    "borderWidth": "1px",
-    "transition": "background-color 0.15s ease, transform 0.15s ease",
-    "hoverScale": "1.05",
-    "normalScale": "1",
-    "fontSize": "14px",
-    "fontWeight": 500,
-    "icon": {
-      "rotateGlaeubiger": "rotate(180deg) scaleX(-1)"
-    },
     "items": [
+      "dashboard",
+      "material",
+      "kunden",
+      "schuldner",
+      "glaeubiger",
+      "settings"
+    ],
+    "item": [
+      {
+        "key": "dashboard",
+        "label": "Dashboard",
+        "path": "/",
+        "icon": "home"
+      },
       {
         "key": "material",
         "label": "Material",
         "path": "/material",
-        "icon": "package"
+        "icon": "boxes"
       },
       {
         "key": "kunden",
@@ -1200,61 +132,2098 @@ export const configFromToml = {
         "key": "glaeubiger",
         "label": "Gläubiger",
         "path": "/glaeubiger",
-        "icon": "hand-coins"
+        "icon": "hand-coins",
+        "iconTransform": "scaleX(-1)"
       },
       {
         "key": "settings",
         "label": "Einstellungen",
         "path": "/settings",
         "icon": "settings"
-      },
-      {
-        "key": "logout",
-        "label": "Logout",
-        "path": "/logout",
-        "icon": "log-out"
       }
     ]
   },
-  "layout": {
-    "navigation": {
-      "bg": "{ui.backgroundAlt}",
-      "border": "{ui.border}",
-      "height": "auto"
+  "theme": {
+    "colors": {
+      "black": {
+        "50": "#3A3A3A",
+        "100": "#333333",
+        "200": "#2D2D2D",
+        "300": "#272727",
+        "400": "#222222",
+        "500": "#1E1E1E",
+        "600": "#1A1A1A",
+        "700": "#151515",
+        "800": "#101010",
+        "900": "#0B0B0B"
+      },
+      "white": {
+        "50": "#EDEDED",
+        "100": "#F0F0F0",
+        "200": "#F2F2F2",
+        "300": "#F5F5F5",
+        "400": "#F7F7F7",
+        "500": "#FAFAFA",
+        "600": "#FCFCFC",
+        "700": "#FDFDFD",
+        "800": "#FEFEFE",
+        "900": "#FFFFFF"
+      },
+      "neutral": {
+        "700": "#404040",
+        "800": "#262626",
+        "900": "#171717"
+      },
+      "blue": {
+        "500": "#3B82F6",
+        "600": "#2563EB",
+        "700": "#1D4ED8"
+      },
+      "red": {
+        "50": "#FDECEC",
+        "100": "#FEE2E2",
+        "200": "#F9B8B8",
+        "300": "#FCA5A5",
+        "350": "#F37B7B",
+        "400": "#F06A6A",
+        "500": "#E74C3C",
+        "600": "#D93F30",
+        "650": "#D13A2C",
+        "700": "#C93427",
+        "800": "#B62B20",
+        "900": "#7F1D1D"
+      },
+      "green": {
+        "50": "#EAF7EF",
+        "100": "#DCFCE7",
+        "200": "#AFE2C1",
+        "300": "#86EFAC",
+        "350": "#66C78E",
+        "400": "#4FBF7E",
+        "500": "#27AE60",
+        "600": "#1FA155",
+        "650": "#1C974F",
+        "700": "#188C4A",
+        "800": "#127640",
+        "900": "#14532D"
+      },
+      "yellow": {
+        "50": "#FFF8E1",
+        "100": "#FFEFBC",
+        "200": "#FFE38A",
+        "300": "#FDE047",
+        "350": "#FFCA36",
+        "400": "#FFC21F",
+        "500": "#F1C40F",
+        "600": "#DDAF0A",
+        "650": "#CFA406",
+        "700": "#C09806",
+        "800": "#A47F03",
+        "900": "#7E6000"
+      },
+      "orange": {
+        "50": "#FFF1E6",
+        "100": "#FFE0CC",
+        "200": "#FFC6A3",
+        "300": "#FFA86E",
+        "350": "#FF9C56",
+        "400": "#FF8F3D",
+        "500": "#F39C12",
+        "600": "#E08A06",
+        "650": "#D48303",
+        "700": "#C97800",
+        "800": "#AD6500",
+        "900": "#844B00"
+      },
+      "eisgraublau": {
+        "50": "#E9EFF2",
+        "100": "#D6E0E6",
+        "200": "#B9CBD4",
+        "300": "#93AFBC",
+        "350": "#86A4B2",
+        "400": "#7898A8",
+        "500": "#6F8896",
+        "600": "#5D7483",
+        "650": "#546A78",
+        "700": "#4C616E",
+        "800": "#3E4F5A",
+        "900": "#2F3D45"
+      },
+      "progress": {
+        "0": "#7a7a7a",
+        "5": "#7a0000",
+        "10": "#7a0000",
+        "15": "#7a0000",
+        "20": "#821300",
+        "25": "#8b2600",
+        "30": "#933800",
+        "35": "#9b4b00",
+        "40": "#a45e00",
+        "45": "#ac7100",
+        "50": "#b58400",
+        "55": "#bd9700",
+        "60": "#c5a900",
+        "65": "#cebc00",
+        "70": "#d6cf00",
+        "75": "#b2c403",
+        "80": "#8fb805",
+        "85": "#6bac08",
+        "90": "#47a10b",
+        "95": "#24960d",
+        "100": "#008a10"
+      },
+      "opacity": {
+        "0": "rgba(0, 0, 0, 0)",
+        "10": "rgba(0, 0, 0, 0.1)",
+        "20": "rgba(0, 0, 0, 0.2)",
+        "30": "rgba(0, 0, 0, 0.3)",
+        "40": "rgba(0, 0, 0, 0.4)",
+        "50": "rgba(0, 0, 0, 0.5)",
+        "60": "rgba(0, 0, 0, 0.6)",
+        "70": "rgba(0, 0, 0, 0.7)",
+        "75": "rgba(0, 0, 0, 0.75)",
+        "80": "rgba(0, 0, 0, 0.8)",
+        "90": "rgba(0, 0, 0, 0.9)",
+        "100": "rgba(0, 0, 0, 1)"
+      },
+      "bg": {
+        "main": "eisgraublau.800",
+        "navigation": "eisgraublau.650",
+        "header": "eisgraublau.650",
+        "body": "eisgraublau.800",
+        "footer": "eisgraublau.650",
+        "dialog": "eisgraublau.800",
+        "card": "eisgraublau.800",
+        "blackout": "black.700",
+        "blackoutSoft": "black.500",
+        "transparent": "transparent",
+        "overlay": "rgba(0, 0, 0, 0.7)",
+        "errorOverlay": "rgba(239, 68, 68, 0.1)",
+        "statusBezahlt": "rgba(34, 197, 94, 0.2)",
+        "statusTeilbezahlt": "rgba(234, 179, 8, 0.2)",
+        "statusOffen": "rgba(239, 68, 68, 0.2)"
+      },
+      "text": {
+        "active": "white.900",
+        "inactive": "white.200",
+        "entryLight": "black.900",
+        "hint": "black.400",
+        "error": "red.650",
+        "success": "green.650",
+        "warning": "yellow.650"
+      },
+      "table": {
+        "headerBg": "eisgraublau.650",
+        "headerDivider": "black.500",
+        "row": "eisgraublau.800",
+        "rowAlt": "eisgraublau.650",
+        "rowHover": "black.500",
+        "rowSelected": "black.700",
+        "rowActive": "black.700",
+        "grid": "black.500",
+        "divider": "black.500",
+        "outerBorder": "black.700"
+      },
+      "buttons": {
+        "rect": {
+          "rectActive": "eisgraublau.500",
+          "rectSave": "green.650",
+          "rectHover": "eisgraublau.650",
+          "rectInactive": "black.700"
+        },
+        "icon": {
+          "iconActive": "eisgraublau.500",
+          "iconHover": "eisgraublau.650",
+          "iconInactive": "black.700"
+        },
+        "tab": {
+          "tabActive": "eisgraublau.500",
+          "tabHover": "eisgraublau.650",
+          "tabInactive": "black.700"
+        }
+      },
+      "dialog": {
+        "entryBorder": "black.500",
+        "entryBorderFocus": "eisgraublau.650",
+        "entryBorderDisabled": "black.700",
+        "entryHover": "eisgraublau.500",
+        "entryActive": "eisgraublau.650",
+        "entryDisabled": "black.700",
+        "entrySelection": "eisgraublau.350",
+        "entryCaret": "white.900",
+        "entryError": "red.650",
+        "entrySuccess": "green.650",
+        "entryWarning": "yellow.650"
+      },
+      "border": {
+        "default": "black.500",
+        "soft": "black.400",
+        "strong": "black.700",
+        "focus": "eisgraublau.650",
+        "active": "eisgraublau.500",
+        "error": "red.650",
+        "success": "green.650",
+        "warning": "yellow.650"
+      },
+      "icon": {
+        "active": "white.900",
+        "inactive": "white.200",
+        "book": "green.650",
+        "edit": "yellow.650",
+        "delete": "red.650"
+      },
+      "cards": {
+        "hover": "black.500"
+      }
     },
-    "header": {
-      "bg": "{ui.backgroundAlt}",
-      "border": "{ui.border}",
-      "borderWidth": "1px",
-      "padding": "1rem",
-      "gap": "1rem",
-      "fontSize": "2rem",
-      "fontWeight": 700
+    "typography": {
+      "font": {
+        "base": "Inter",
+        "mono": "JetBrains Mono"
+      },
+      "fontWeight": {
+        "normal": 400,
+        "medium": 500,
+        "semibold": 600,
+        "bold": 700
+      },
+      "fontSize": {
+        "headerTitle": "1.75rem",
+        "headerSubtitle": "1.25rem",
+        "headerMeta": "1rem",
+        "footerText": "1rem",
+        "footerMeta": "0.875rem",
+        "bodyText": "1.25rem",
+        "bodyTextSmall": "1rem",
+        "bodyHint": "1rem",
+        "tableHeader": "1.5rem",
+        "tableCell": "1.25rem",
+        "tableCellSmall": "1rem",
+        "tableCellMeta": "0.875rem",
+        "dialogTitle": "1.75rem",
+        "dialogSectionTitle": "1.25rem",
+        "dialogLabel": "1.25rem",
+        "dialogInsert": "1.25rem",
+        "dialogHint": "1rem",
+        "dialogMessage": "1rem",
+        "buttonsRect": "1.25rem",
+        "buttonsTab": "1rem",
+        "formLabel": "1.25rem",
+        "formInsert": "1.25rem",
+        "formHint": "1rem",
+        "formMessage": "1rem"
+      }
     },
-    "content": {
-      "bg": "{ui.background}",
-      "border": "transparent",
-      "borderWidth": "0"
+    "border": {
+      "sizes": {
+        "thin": "1px",
+        "normal": "2px",
+        "thick": "3px"
+      },
+      "radius": {
+        "buttonsRect": "12px",
+        "buttonsTab": "10px",
+        "navigation": "16px",
+        "header": "16px",
+        "body": "16px",
+        "footer": "16px"
+      }
     },
-    "footer": {
-      "bg": "{ui.backgroundAlt}",
-      "border": "{ui.border}",
-      "borderWidth": "1px",
-      "borderRadius": "0.5rem",
-      "height": "auto",
-      "padding": "1rem",
-      "gap": "0.75rem",
-      "gridColumns": 3
+    "spacing": {
+      "layout": {
+        "pagePadding": "16px",
+        "areaGap": "16px",
+        "areaPadding": "16px",
+        "bodyInnerGap": "12px"
+      },
+      "table": {
+        "headerPaddingX": "12px",
+        "headerPaddingY": "12px",
+        "cellPaddingX": "12px",
+        "cellPaddingY": "10px",
+        "actionsGap": "12px"
+      },
+      "dialog": {
+        "padding": "16px",
+        "contentGap": "12px",
+        "fieldGap": "10px",
+        "actionsGap": "12px"
+      },
+      "buttons": {
+        "rectPaddingX": "14px",
+        "rectPaddingY": "10px",
+        "rectGap": "10px",
+        "iconPaddingX": "14px",
+        "iconPaddingY": "14px",
+        "iconGap": "10px",
+        "tabPaddingX": "14px",
+        "tabPaddingY": "14px",
+        "tabGap": "10px"
+      },
+      "entry": {
+        "paddingX": "12px",
+        "paddingY": "10px",
+        "labelGap": "6px",
+        "hintGap": "6px"
+      }
     },
-    "rules": {
-      "mobileBreakpointPx": 767,
-      "desktopBreakpointPx": 1024,
-      "sidebarCollapseBelowPx": 767,
-      "tableHorizontalScrollBelowPx": 767,
-      "contentMaxWidthPx": 1600,
-      "bottomNavHeightPx": 60,
-      "bottomNavPadding": "80px",
-      "touchMinSizePx": 48
+    "shadows": {
+      "area": "0 10px 24px rgba(0, 0, 0, 0.25)",
+      "card": "0 8px 18px rgba(0, 0, 0, 0.22)",
+      "dialog": "0 16px 40px rgba(0, 0, 0, 0.35)",
+      "dropdown": "0 12px 24px rgba(0, 0, 0, 0.35)"
+    },
+    "effects": {
+      "backdropBlur": "blur(8px)"
+    },
+    "breakpoints": {
+      "smartphoneMaxWidth": "767px",
+      "pcMinWidth": "768px"
+    },
+    "zIndex": {
+      "navigation": 100,
+      "header": 100,
+      "overlay": 150,
+      "dialog": 200,
+      "tooltip": 300
+    }
+  },
+  "ui": {
+    "labels": {
+      "datum": "Datum",
+      "name": "Name",
+      "bezeichnung": "Bezeichnung",
+      "notiz": "Notiz",
+      "menge": "Menge",
+      "betrag": "Betrag",
+      "bezahlt": "Bezahlt",
+      "offen": "Offen",
+      "gesamt": "Gesamt",
+      "fortschritt": "Fortschritt",
+      "status": "Status",
+      "aktionen": "Aktionen",
+      "ekStck": "EK/Stck",
+      "ekGesamt": "EK Gesamt",
+      "vkStck": "VK/Stck",
+      "einnahmen": "Einnahmen",
+      "aussenstaende": "Außenstände",
+      "theorEinnahmen": "Theor. Einnahmen",
+      "gewinn": "Gewinn",
+      "bestand": "Bestand"
+    },
+    "titles": {
+      "dashboard": "Dashboard",
+      "material": "Material",
+      "kunden": "Kunden",
+      "kundenView": "Kundendetails",
+      "schuldner": "Schuldner",
+      "glaeubiger": "Gläubiger",
+      "settings": "Einstellungen",
+      "dialog": {
+        "newMaterial": "Neues Material",
+        "editMaterial": "Material bearbeiten",
+        "deleteMaterial": "Material löschen",
+        "newKunde": "Neuer Kunde",
+        "editKunde": "Kunde bearbeiten",
+        "deleteKunde": "Kunde löschen",
+        "newPostenMat": "Neuer Material-Posten",
+        "editPostenMat": "Material-Posten bearbeiten",
+        "deletePostenMat": "Material-Posten löschen",
+        "newPostenNoMat": "Neuer sonstiger Posten",
+        "editPostenNoMat": "Sonstiger Posten bearbeiten",
+        "deletePostenNoMat": "Sonstiger Posten löschen",
+        "newSchuldner": "Neuer Schuldner",
+        "editSchuldner": "Schuldner bearbeiten",
+        "deleteSchuldner": "Schuldner löschen",
+        "newGlaeubiger": "Neuer Gläubiger",
+        "editGlaeubiger": "Gläubiger bearbeiten",
+        "deleteGlaeubiger": "Gläubiger löschen",
+        "barBuchen": "Bar-Zahlung buchen",
+        "rechnungErstellen": "Rechnung erstellen",
+        "zahlungBuchen": "Zahlung buchen",
+        "historie": "Historie"
+      }
+    },
+    "buttons": {
+      "speichern": "Speichern",
+      "abbrechen": "Abbrechen",
+      "loeschen": "Löschen",
+      "neu": "Neu",
+      "bearbeiten": "Bearbeiten",
+      "schliessen": "Schließen",
+      "buchen": "Buchen",
+      "erstellen": "Erstellen",
+      "zurueck": "Zurück",
+      "weiter": "Weiter",
+      "ja": "Ja",
+      "nein": "Nein",
+      "navigation": {
+        "style": {
+          "base": {
+            "display": "flex",
+            "alignItems": "center",
+            "justifyContent": "center",
+            "transition": "all 0.2s ease",
+            "cursor": "pointer",
+            "outline": "none",
+            "border": "none"
+          },
+          "inactive": {
+            "bg": "transparent"
+          }
+        }
+      },
+      "action": {
+        "style": {
+          "base": {
+            "width": "40px",
+            "height": "40px",
+            "bg": "bg.card",
+            "display": "flex",
+            "alignItems": "center",
+            "justifyContent": "center",
+            "transition": "all 0.2s ease",
+            "cursor": "pointer",
+            "outline": "none",
+            "border": "none"
+          }
+        }
+      },
+      "act": {
+        "style": {
+          "base": {
+            "width": "32px",
+            "height": "32px",
+            "bg": "transparent",
+            "display": "flex",
+            "alignItems": "center",
+            "justifyContent": "center",
+            "transition": "opacity 0.2s ease",
+            "cursor": "pointer",
+            "outline": "none",
+            "border": "none"
+          }
+        }
+      },
+      "rect": {
+        "style": {
+          "base": {
+            "minWidth": "120px",
+            "minWidthFull": "100%",
+            "height": "44px",
+            "display": "inline-flex",
+            "alignItems": "center",
+            "justifyContent": "center",
+            "transition": "all 0.2s ease",
+            "cursor": "pointer",
+            "cursorDisabled": "not-allowed",
+            "opacity": 1,
+            "opacityDisabled": 0.5,
+            "outline": "none",
+            "border": "none"
+          }
+        }
+      },
+      "tab": {
+        "style": {
+          "base": {
+            "minWidth": "100px",
+            "height": "40px",
+            "bg": "transparent",
+            "display": "inline-flex",
+            "alignItems": "center",
+            "justifyContent": "center",
+            "transition": "all 0.2s ease",
+            "cursor": "pointer",
+            "outline": "none",
+            "border": "none"
+          },
+          "inactive": {
+            "bg": "transparent"
+          }
+        }
+      }
+    },
+    "messages": {
+      "confirm": {
+        "deleteMaterial": "Möchten Sie dieses Material wirklich löschen?",
+        "deleteKunde": "Möchten Sie diesen Kunden wirklich löschen?",
+        "deletePosten": "Möchten Sie diesen Posten wirklich löschen?",
+        "deleteSchuldner": "Möchten Sie diesen Schuldner wirklich löschen?",
+        "deleteGlaeubiger": "Möchten Sie diesen Gläubiger wirklich löschen?",
+        "deleteHistorie": "Möchten Sie diesen Historie-Eintrag wirklich löschen?"
+      },
+      "success": {
+        "created": "Erfolgreich erstellt",
+        "updated": "Erfolgreich aktualisiert",
+        "deleted": "Erfolgreich gelöscht",
+        "booked": "Erfolgreich gebucht"
+      },
+      "error": {
+        "createFailed": "Fehler beim Erstellen",
+        "updateFailed": "Fehler beim Aktualisieren",
+        "deleteFailed": "Fehler beim Löschen",
+        "bookFailed": "Fehler beim Buchen",
+        "loadFailed": "Fehler beim Laden",
+        "networkError": "Netzwerkfehler",
+        "validationError": "Validierungsfehler"
+      },
+      "validation": {
+        "required": "Pflichtfeld",
+        "invalidFormat": "Ungültiges Format",
+        "minValue": "Mindestwert unterschritten",
+        "maxValue": "Maximalwert überschritten",
+        "invalidDate": "Ungültiges Datum",
+        "invalidNumber": "Ungültige Zahl"
+      }
+    },
+    "empty": {
+      "material": "Keine Materialien vorhanden",
+      "kunden": "Keine Kunden vorhanden",
+      "postenMat": "Keine Material-Posten vorhanden",
+      "postenNoMat": "Keine sonstigen Posten vorhanden",
+      "schuldner": "Keine Schuldner vorhanden",
+      "glaeubiger": "Keine Gläubiger vorhanden",
+      "historie": "Keine Historie-Einträge vorhanden",
+      "searchResults": "Keine Ergebnisse gefunden"
+    },
+    "loading": {
+      "default": "Wird geladen...",
+      "material": "Materialien werden geladen...",
+      "kunden": "Kunden werden geladen...",
+      "posten": "Posten werden geladen...",
+      "schuldner": "Schuldner werden geladen...",
+      "glaeubiger": "Gläubiger werden geladen...",
+      "historie": "Historie wird geladen...",
+      "saving": "Wird gespeichert...",
+      "deleting": "Wird gelöscht..."
+    },
+    "descriptions": {
+      "material": "Verwaltung aller Materialien mit EK/VK-Preisen und Bestandsübersicht",
+      "kunden": "Kundenverwaltung mit offenen Posten und Zahlungshistorie",
+      "schuldner": "Personen, die mir Geld schulden",
+      "glaeubiger": "Personen, denen ich Geld schulde",
+      "settings": "App-Einstellungen und Konfiguration"
+    },
+    "tokens": {
+      "size": {
+        "touchMin": "44px",
+        "iconAction": "40px",
+        "iconTableAction": "32px",
+        "spinner": "32px"
+      },
+      "transition": {
+        "fast": "all 0.2s ease",
+        "opacityFast": "opacity 0.2s ease",
+        "colors150": "colors 0.15s"
+      },
+      "cursor": {
+        "default": "pointer",
+        "disabled": "not-allowed"
+      },
+      "radius": {
+        "sm": "0.25rem",
+        "md": "0.375rem",
+        "lg": "0.5rem"
+      }
+    },
+    "tables": {
+      "loading": {
+        "container": {
+          "display": "flex",
+          "alignItems": "center",
+          "justifyContent": "center",
+          "paddingY": "2rem"
+        },
+        "spinner": {
+          "size": "32px",
+          "borderWidth": "2px",
+          "borderColor": "blue.500",
+          "borderTopColor": "transparent",
+          "borderRadius": "50%",
+          "animation": "spin 1s linear infinite"
+        }
+      },
+      "wrapper": {
+        "style": {
+          "overflowX": "auto",
+          "overflowY": "hidden",
+          "webkitOverflowScrollingMobile": "touch"
+        }
+      },
+      "table": {
+        "style": {
+          "width": "100%",
+          "minWidthMobile": "800px",
+          "borderCollapse": "collapse",
+          "tableLayout": "fixed"
+        }
+      },
+      "header": {
+        "style": {
+          "textAlign": "center",
+          "paddingY": "12px",
+          "paddingX": "16px",
+          "paddingXEdge": "20px"
+        }
+      },
+      "cell": {
+        "style": {
+          "paddingY": "12px",
+          "paddingX": "16px",
+          "paddingXEdge": "20px",
+          "borderTopWidth": "2px"
+        },
+        "content": {
+          "display": "flex",
+          "flexDirection": "column",
+          "justifyContent": "center",
+          "alignItems": "center",
+          "textAlign": "center",
+          "width": "100%",
+          "height": "100%",
+          "gap": "0px"
+        }
+      }
+    },
+    "dialogs": {
+      "container": {
+        "style": {
+          "mobile": {
+            "position": "fixed",
+            "top": "0",
+            "left": "0",
+            "right": "0",
+            "bottom": "0",
+            "zIndex": "200",
+            "borderRadius": "0",
+            "padding": "20px",
+            "overflow": "auto",
+            "display": "flex",
+            "flexDirection": "column"
+          },
+          "desktop": {
+            "position": "relative",
+            "zIndex": "200",
+            "maxWidth": "800px",
+            "width": "90%",
+            "maxHeight": "90vh",
+            "overflow": "auto"
+          }
+        }
+      },
+      "closeButtons": {
+        "style": {
+          "padding": "8px",
+          "borderRadius": "0.375rem",
+          "bg": "transparent",
+          "border": "none",
+          "cursor": "pointer",
+          "minWidthMobile": "44px",
+          "minHeightMobile": "44px",
+          "display": "flex",
+          "alignItems": "center",
+          "justifyContent": "center"
+        }
+      },
+      "overlay": {
+        "style": {
+          "position": "absolute",
+          "inset": "0",
+          "bg": "overlay",
+          "cursor": "pointer"
+        }
+      },
+      "footer": {
+        "style": {
+          "display": "flex",
+          "mobile": {
+            "justifyContent": "stretch",
+            "flexDirection": "column",
+            "marginTop": "auto",
+            "paddingTop": "20px"
+          },
+          "desktop": {
+            "justifyContent": "center",
+            "flexDirection": "row",
+            "marginTop": "16px"
+          }
+        }
+      },
+      "header": {
+        "style": {
+          "display": "flex",
+          "alignItems": "center",
+          "justifyContent": "space-between"
+        }
+      },
+      "body": {
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "mobile": {
+            "flex": "1"
+          }
+        }
+      }
+    },
+    "entry": {
+      "container": {
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": "0.25rem"
+        }
+      },
+      "input": {
+        "style": {
+          "width": "100%",
+          "transition": "colors 0.15s",
+          "textAlign": "center",
+          "webkitTapHighlightColorMobile": "transparent",
+          "minHeightMobile": "44px",
+          "fontSizeMobile": "16px",
+          "fontSizeDesktop": "0.875rem",
+          "paddingXMobile": "16px",
+          "paddingXDesktop": "12px",
+          "paddingYMobile": "12px",
+          "paddingYDesktop": "10px",
+          "borderWidth": "1px",
+          "borderStyle": "solid",
+          "stepCurrency": "0.01"
+        },
+        "focus": {
+          "outline": "none",
+          "ring": "2px"
+        },
+        "cursor": {
+          "default": "pointer",
+          "disabled": "not-allowed"
+        }
+      },
+      "select": {
+        "style": {
+          "appearance": "none",
+          "backgroundImage": "url('data:image/svg+xml,%3csvg xmlns=\\'http://www.w3.org/2000/svg\\' fill=\\'none\\' viewBox=\\'0 0 20 20\\'%3e%3cpath stroke=\\'%236b7280\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'1.5\\' d=\\'M6 8l4 4 4-4\\'/%3e%3c/svg%3e')",
+          "backgroundPosition": "right 0.5rem center",
+          "backgroundRepeat": "no-repeat",
+          "backgroundSize": "1.5em 1.5em"
+        },
+        "cursor": {
+          "default": "pointer",
+          "disabled": "not-allowed"
+        }
+      },
+      "label": {
+        "style": {
+          "fontSizeMobile": "0.9375rem",
+          "fontSizeDesktop": "0.875rem",
+          "fontWeight": 500,
+          "color": "neutral.700",
+          "requiredMarginLeft": "0.25rem"
+        }
+      },
+      "error": {
+        "style": {
+          "fontSize": "0.75rem",
+          "color": "text.error"
+        }
+      }
+    },
+    "layout": {
+      "pageContainer": {
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "minHeight": "100vh"
+        }
+      },
+      "navigation": {
+        "style": {
+          "mobile": {
+            "position": "fixed",
+            "bottom": "0",
+            "left": "0",
+            "right": "0",
+            "zIndex": "100"
+          }
+        }
+      },
+      "header": {
+        "style": {
+          "display": "grid",
+          "alignItems": "center"
+        }
+      },
+      "content": {
+        "style": {
+          "flex": "1",
+          "display": "flex",
+          "flexDirection": "column",
+          "overflow": "hidden"
+        }
+      }
+    },
+    "pages": {
+      "buttonsContainer": {
+        "style": {
+          "display": "flex",
+          "justifyContent": "flex-end",
+          "marginBottom": "16px"
+        }
+      },
+      "error": {
+        "style": {
+          "padding": "1rem",
+          "bg": "errorOverlay",
+          "border": "1px solid",
+          "borderColor": "border.error",
+          "borderRadius": "0.375rem",
+          "color": "text.error"
+        }
+      },
+      "monthNavigation": {
+        "style": {
+          "display": "flex",
+          "alignItems": "center",
+          "justifyContent": "center",
+          "gap": "0.75rem"
+        }
+      },
+      "monthPicker": {
+        "style": {
+          "position": "absolute",
+          "left": "50%",
+          "zIndex": "10",
+          "marginTop": "0.5rem",
+          "transform": "translateX(-50%)",
+          "minWidth": "14rem",
+          "borderRadius": "0.5rem",
+          "border": "1px solid",
+          "borderColor": "neutral.700",
+          "bg": "neutral.900",
+          "bgOpacity": 0.9,
+          "padding": "0.5rem",
+          "boxShadow": "theme.shadows.dropdown",
+          "backdropBlur": "theme.effects.backdropBlur"
+        }
+      },
+      "dialogContent": {
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "alignItems": "center",
+          "textAlign": "center",
+          "gap": "1rem"
+        },
+        "centered": {
+          "style": {
+            "width": "100%",
+            "maxWidth": "32rem",
+            "textAlign": "center"
+          }
+        }
+      },
+      "status": {
+        "style": {
+          "paddingX": "0.5rem",
+          "paddingY": "0.25rem",
+          "borderRadius": "0.25rem",
+          "fontSize": "0.875rem"
+        },
+        "bezahlt": {
+          "bg": "statusBezahlt",
+          "color": "green.300"
+        },
+        "teilbezahlt": {
+          "bg": "statusTeilbezahlt",
+          "color": "yellow.300"
+        },
+        "offen": {
+          "bg": "statusOffen",
+          "color": "red.300"
+        }
+      },
+      "actions": {
+        "style": {
+          "display": "flex",
+          "gap": "0.5rem"
+        }
+      },
+      "detailHeader": {
+        "style": {
+          "display": "flex",
+          "justifyContent": "space-between",
+          "alignItems": "center"
+        }
+      },
+      "detailHeaderLeft": {
+        "style": {
+          "display": "flex",
+          "alignItems": "center",
+          "gap": "1rem"
+        }
+      },
+      "detailHeaderActions": {
+        "style": {
+          "display": "flex",
+          "gap": "0.5rem"
+        }
+      },
+      "section": {
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": "0.5rem"
+        }
+      },
+      "sectionHeader": {
+        "style": {
+          "display": "flex",
+          "justifyContent": "space-between",
+          "alignItems": "center"
+        }
+      },
+      "settings": {
+        "loading": {
+          "style": {
+            "display": "flex",
+            "alignItems": "center",
+            "justifyContent": "center",
+            "height": "16rem"
+          }
+        },
+        "message": {
+          "style": {
+            "padding": "1rem",
+            "borderRadius": "0.375rem"
+          },
+          "error": {
+            "bg": "red.100",
+            "color": "red.900"
+          },
+          "success": {
+            "bg": "green.100",
+            "color": "green.900"
+          }
+        },
+        "sections": {
+          "style": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "2rem"
+          }
+        },
+        "sectionTitle": {
+          "style": {
+            "fontSize": "1.25rem",
+            "fontWeight": "bold",
+            "marginBottom": "1rem"
+          }
+        },
+        "userCard": {
+          "style": {
+            "border": "1px solid",
+            "borderColor": "border.default",
+            "borderRadius": "0.375rem",
+            "padding": "1rem"
+          },
+          "pending": {
+            "style": {
+              "display": "flex",
+              "flexDirection": "column",
+              "gap": "0.5rem"
+            }
+          },
+          "pendingHeader": {
+            "style": {
+              "display": "flex",
+              "justifyContent": "space-between",
+              "alignItems": "flex-start"
+            }
+          },
+          "pendingActions": {
+            "style": {
+              "display": "flex",
+              "gap": "0.5rem",
+              "alignItems": "center"
+            }
+          },
+          "active": {
+            "style": {
+              "display": "flex",
+              "justifyContent": "space-between",
+              "alignItems": "center"
+            }
+          },
+          "disabled": {
+            "style": {
+              "opacity": 0.5
+            }
+          }
+        }
+      }
+    },
+    "infobox": {
+      "variants": {
+        "info": {
+          "bg": "bg.card",
+          "border": "border.default",
+          "iconColor": "text.active"
+        },
+        "success": {
+          "bg": "bg.card",
+          "border": "border.default",
+          "iconColor": "text.success"
+        },
+        "warning": {
+          "bg": "bg.card",
+          "border": "border.default",
+          "iconColor": "text.warning"
+        },
+        "error": {
+          "bg": "bg.card",
+          "border": "border.default",
+          "iconColor": "text.error"
+        }
+      },
+      "container": {
+        "style": {
+          "display": "flex",
+          "gapMobile": "8px",
+          "gapDesktop": "12px",
+          "borderWidth": "1px",
+          "borderStyle": "solid",
+          "borderRadius": "12px",
+          "paddingMobile": "12px",
+          "paddingDesktop": "16px",
+          "widthMobile": "100%"
+        }
+      },
+      "icon": {
+        "style": {
+          "widthMobile": "1rem",
+          "widthDesktop": "1.25rem",
+          "heightMobile": "1rem",
+          "heightDesktop": "1.25rem",
+          "flexShrink": "0",
+          "marginTop": "4px"
+        }
+      },
+      "title": {
+        "style": {
+          "marginBottom": "4px"
+        }
+      },
+      "content": {
+        "style": {
+          "flex": "1"
+        }
+      }
+    },
+    "dividers": {
+      "month": {
+        "style": {
+          "padding": "8px 12px",
+          "fontWeight": 600,
+          "fontSize": "0.875rem",
+          "textTransform": "uppercase",
+          "textAlign": "center"
+        }
+      },
+      "horizontal": {
+        "style": {
+          "border": "none",
+          "borderTop": "1px solid",
+          "borderColor": "border.default",
+          "marginTop": "12px",
+          "marginBottom": "12px"
+        }
+      }
+    }
+  },
+  "components": {
+    "icon": {
+      "home": "home",
+      "logout": "log-out",
+      "settings": "settings",
+      "kunden": "users",
+      "material": "boxes",
+      "schuldner": "hand-coins",
+      "glaeubiger": "hand-coins",
+      "plus": "plus",
+      "bar": "banknote",
+      "rechnung": "layers-plus",
+      "billianz": "chart-candlestick",
+      "bearbeiten": "pencil",
+      "loeschen": "trash-2",
+      "zurueckBlaettern": "arrow-left",
+      "vorBlaettern": "arrow-right",
+      "wartend": "history",
+      "in_bearbeitung": "loader-pinwheel",
+      "erledigt": "shield-check",
+      "bestand_0_aber_aussenstaende": "database-x",
+      "nav": {
+        "buttonsSize": "48px",
+        "iconSize": "36px",
+        "radius": "16px"
+      },
+      "dash": {
+        "buttonsSize": "64px",
+        "iconSize": "48px",
+        "radius": "16px"
+      },
+      "act": {
+        "buttonsSize": "20px",
+        "iconSize": "20px",
+        "radius": "12px"
+      }
+    },
+    "progressbar": {
+      "height": "18px",
+      "radius": "12px",
+      "padding": "2px",
+      "scale": {
+        "progressPercent": {
+          "themeScalePath": "theme.colors.progress",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "direction": "normal",
+          "showValueInsideBar": true,
+          "unit": "%"
+        },
+        "progressPercent110": {
+          "themeScalePath": "theme.colors.progress",
+          "min": 0,
+          "max": 110,
+          "step": 5,
+          "direction": "normal",
+          "clampColorAtMaxScaleKey": "100",
+          "showValueInsideBar": true,
+          "unit": "%"
+        },
+        "stock": {
+          "themeScalePath": "theme.colors.progress",
+          "direction": "inverted",
+          "showValueInsideBar": true,
+          "unit": ""
+        }
+      }
+    },
+    "entry": {
+      "height": "44px",
+      "width": "200px",
+      "radius": "12px"
+    },
+    "table": {
+      "headerHeight": "52px",
+      "rowHeight": "48px",
+      "actionsColumnWidth": "80px",
+      "columns": {
+        "material": {
+          "order": [
+            "datum",
+            "bezeichnung",
+            "notiz",
+            "ekStck",
+            "ekGesamt",
+            "vkStck",
+            "menge",
+            "einnahmen",
+            "aussenstaende",
+            "theorEinnahmen",
+            "gewinn",
+            "status",
+            "bestand",
+            "aktionen"
+          ],
+          "labels": {
+            "datum": "Datum",
+            "bezeichnung": "Bezeichnung",
+            "notiz": "Notiz",
+            "ekStck": "EK/Stck",
+            "ekGesamt": "EK Gesamt",
+            "vkStck": "VK/Stck",
+            "menge": "Menge",
+            "einnahmen": "Einnahmen",
+            "aussenstaende": "Außenstände",
+            "theorEinnahmen": "theor. Einnahmen",
+            "gewinn": "Gewinn",
+            "status": "Status",
+            "bestand": "Bestand",
+            "aktionen": "Aktionen"
+          }
+        },
+        "kundenOverview": {
+          "order": [
+            "name",
+            "notiz",
+            "summeBetragPostenMat",
+            "summeOffenPostenMat",
+            "summeBetragPostenNoMat",
+            "summeOffenPostenNoMat",
+            "fortschritt",
+            "status",
+            "aktionen"
+          ],
+          "labels": {
+            "name": "Name",
+            "notiz": "Notiz",
+            "summeBetragPostenMat": "Summe Betrag PostenMat",
+            "summeOffenPostenMat": "Summe offen PostenMat",
+            "summeBetragPostenNoMat": "Summe Betrag PostenNoMat",
+            "summeOffenPostenNoMat": "Summe offen PostenNoMat",
+            "fortschritt": "Fortschritt",
+            "status": "Status",
+            "aktionen": "Aktionen"
+          }
+        },
+        "kundenViewPostenMat": {
+          "order": [
+            "datum",
+            "bezeichnung",
+            "notiz",
+            "menge",
+            "vkStck",
+            "gesamt",
+            "bezahlt",
+            "offen",
+            "fortschritt",
+            "status",
+            "aktionen"
+          ],
+          "labels": {
+            "datum": "Datum",
+            "bezeichnung": "Bezeichnung",
+            "notiz": "Notiz",
+            "menge": "Menge",
+            "vkStck": "VK/Stck",
+            "gesamt": "Gesamt",
+            "bezahlt": "Bezahlt",
+            "offen": "Offen",
+            "fortschritt": "Fortschritt",
+            "status": "Status",
+            "aktionen": "Aktionen"
+          }
+        },
+        "kundenViewPostenNoMat": {
+          "order": [
+            "datum",
+            "notiz",
+            "gesamt",
+            "bezahlt",
+            "offen",
+            "fortschritt",
+            "status",
+            "aktionen"
+          ],
+          "labels": {
+            "datum": "Datum",
+            "notiz": "Notiz",
+            "gesamt": "Gesamt",
+            "bezahlt": "Bezahlt",
+            "offen": "Offen",
+            "fortschritt": "Fortschritt",
+            "status": "Status",
+            "aktionen": "Aktionen"
+          }
+        },
+        "schuldner": {
+          "order": [
+            "datum",
+            "name",
+            "notiz",
+            "betrag",
+            "bezahlt",
+            "offen",
+            "fortschritt",
+            "status",
+            "aktionen"
+          ],
+          "labels": {
+            "datum": "Datum",
+            "name": "Name",
+            "notiz": "Notiz",
+            "betrag": "Betrag",
+            "bezahlt": "Bezahlt",
+            "offen": "Offen",
+            "fortschritt": "Fortschritt",
+            "status": "Status",
+            "aktionen": "Aktionen"
+          }
+        },
+        "glaeubiger": {
+          "order": [
+            "datum",
+            "name",
+            "notiz",
+            "betrag",
+            "bezahlt",
+            "offen",
+            "fortschritt",
+            "status",
+            "aktionen"
+          ],
+          "labels": {
+            "datum": "Datum",
+            "name": "Name",
+            "notiz": "Notiz",
+            "betrag": "Betrag",
+            "bezahlt": "Bezahlt",
+            "offen": "Offen",
+            "fortschritt": "Fortschritt",
+            "status": "Status",
+            "aktionen": "Aktionen"
+          }
+        }
+      },
+      "format": {
+        "moneyEur": {
+          "type": "money",
+          "align": "center",
+          "sortable": false,
+          "currency": "EUR",
+          "minDecimals": 0,
+          "maxDecimals": 2,
+          "padToMaxIfFraction": true,
+          "trimTrailingZeros": true
+        },
+        "qtyHalf": {
+          "type": "quantity",
+          "align": "center",
+          "sortable": false,
+          "rounding": "floorToStep",
+          "step": 0.5,
+          "minDecimals": 0,
+          "maxDecimals": 1,
+          "trimTrailingZeros": true
+        },
+        "date": {
+          "type": "date",
+          "align": "center",
+          "sortable": true
+        },
+        "text": {
+          "type": "text",
+          "align": "center",
+          "sortable": false
+        },
+        "status": {
+          "type": "status",
+          "align": "center",
+          "sortable": false
+        },
+        "actions": {
+          "type": "actions",
+          "align": "center",
+          "sortable": false
+        }
+      }
+    },
+    "status": {
+      "common": {
+        "order": [
+          "wartend",
+          "in_bearbeitung",
+          "erledigt"
+        ],
+        "rule": {
+          "wartend": {
+            "when": {
+              "started": false
+            }
+          },
+          "in_bearbeitung": {
+            "when": {
+              "started": true,
+              "erledigt": false
+            }
+          },
+          "erledigt": {
+            "when": {
+              "erledigt": true
+            }
+          }
+        }
+      },
+      "material": {
+        "order": [
+          "wartend",
+          "in_bearbeitung",
+          "bestand_0_aber_aussenstaende",
+          "erledigt"
+        ],
+        "rule": {
+          "wartend": {
+            "when": {
+              "started": false
+            }
+          },
+          "in_bearbeitung": {
+            "when": {
+              "started": true,
+              "bestand_gt": 0
+            }
+          },
+          "bestand_0_aber_aussenstaende": {
+            "when": {
+              "bestand": 0,
+              "aussenstaende_gt": 0
+            }
+          },
+          "erledigt": {
+            "when": {
+              "bestand": 0,
+              "aussenstaende": 0
+            }
+          }
+        }
+      }
+    },
+    "dialog": {
+      "version": 1,
+      "entryType": {
+        "date": {
+          "control": "date",
+          "format": "components.table.format.date"
+        },
+        "text": {
+          "control": "text",
+          "format": "components.table.format.text"
+        },
+        "note": {
+          "control": "textarea",
+          "format": "components.table.format.text"
+        },
+        "moneyEur": {
+          "control": "money",
+          "format": "components.table.format.moneyEur"
+        },
+        "qtyHalf": {
+          "control": "quantity",
+          "format": "components.table.format.qtyHalf"
+        },
+        "materialSelect": {
+          "control": "select",
+          "format": "components.table.format.text",
+          "optionsSource": "material",
+          "optionLabelField": "bezeichnung",
+          "optionValueField": "id"
+        },
+        "kundeSelect": {
+          "control": "select",
+          "format": "components.table.format.text",
+          "optionsSource": "kunde",
+          "optionLabelField": "name",
+          "optionValueField": "id"
+        }
+      },
+      "grid": {
+        "oneColumn": {
+          "columns": 1
+        },
+        "twoColumn": {
+          "columns": 2
+        },
+        "threeColumn": {
+          "columns": 3
+        }
+      },
+      "form": {
+        "material": {
+          "gridPc": "twoColumn",
+          "gridSmartphone": "oneColumn",
+          "order": [
+            "datum",
+            "bezeichnung",
+            "notiz",
+            "ek_stck",
+            "ek_gesamt",
+            "vk_stck",
+            "menge"
+          ],
+          "field": {
+            "datum": {
+              "entryType": "date",
+              "label": "Datum",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "bezeichnung": {
+              "entryType": "text",
+              "label": "Bezeichnung",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "notiz": {
+              "entryType": "note",
+              "label": "Notiz",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 2,
+              "gridSpanSmartphone": 1
+            },
+            "ek_stck": {
+              "entryType": "moneyEur",
+              "label": "EK / Stck",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "ek_gesamt": {
+              "entryType": "moneyEur",
+              "label": "EK gesamt",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "vk_stck": {
+              "entryType": "moneyEur",
+              "label": "VK / Stck",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "menge": {
+              "entryType": "qtyHalf",
+              "label": "Menge",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            }
+          }
+        },
+        "kunde": {
+          "gridPc": "oneColumn",
+          "gridSmartphone": "oneColumn",
+          "order": [
+            "name",
+            "notiz"
+          ],
+          "field": {
+            "name": {
+              "entryType": "text",
+              "label": "Name",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "notiz": {
+              "entryType": "note",
+              "label": "Notiz",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            }
+          }
+        },
+        "kundenviewPostenMat": {
+          "gridPc": "twoColumn",
+          "gridSmartphone": "oneColumn",
+          "order": [
+            "datum",
+            "vk_stck",
+            "gesamt",
+            "menge"
+          ],
+          "field": {
+            "datum": {
+              "entryType": "date",
+              "label": "Datum",
+              "visibleOn": [
+                "edit"
+              ],
+              "editableOn": [
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "vk_stck": {
+              "entryType": "moneyEur",
+              "label": "VK / Stck",
+              "visibleOn": [
+                "edit"
+              ],
+              "editableOn": [
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "gesamt": {
+              "entryType": "moneyEur",
+              "label": "Gesamt",
+              "visibleOn": [
+                "edit"
+              ],
+              "editableOn": [
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "menge": {
+              "entryType": "qtyHalf",
+              "label": "Menge",
+              "visibleOn": [
+                "edit"
+              ],
+              "editableOn": [
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            }
+          }
+        },
+        "kundenviewPostenNoMat": {
+          "gridPc": "oneColumn",
+          "gridSmartphone": "oneColumn",
+          "order": [
+            "datum",
+            "notiz",
+            "gesamt"
+          ],
+          "field": {
+            "datum": {
+              "entryType": "date",
+              "label": "Datum",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "notiz": {
+              "entryType": "note",
+              "label": "Notiz",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "gesamt": {
+              "entryType": "moneyEur",
+              "label": "Gesamt",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            }
+          }
+        },
+        "schuldner": {
+          "gridPc": "twoColumn",
+          "gridSmartphone": "oneColumn",
+          "order": [
+            "datum",
+            "name",
+            "notiz",
+            "betrag"
+          ],
+          "field": {
+            "datum": {
+              "entryType": "date",
+              "label": "Datum",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "name": {
+              "entryType": "text",
+              "label": "Name",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "notiz": {
+              "entryType": "note",
+              "label": "Notiz",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 2,
+              "gridSpanSmartphone": 1
+            },
+            "betrag": {
+              "entryType": "moneyEur",
+              "label": "Betrag",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            }
+          }
+        },
+        "glaeubiger": {
+          "gridPc": "twoColumn",
+          "gridSmartphone": "oneColumn",
+          "order": [
+            "datum",
+            "name",
+            "notiz",
+            "betrag"
+          ],
+          "field": {
+            "datum": {
+              "entryType": "date",
+              "label": "Datum",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "name": {
+              "entryType": "text",
+              "label": "Name",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "notiz": {
+              "entryType": "note",
+              "label": "Notiz",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 2,
+              "gridSpanSmartphone": 1
+            },
+            "betrag": {
+              "entryType": "moneyEur",
+              "label": "Betrag",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            }
+          }
+        },
+        "historieEdit": {
+          "gridPc": "twoColumn",
+          "gridSmartphone": "oneColumn",
+          "order": [
+            "bar",
+            "menge"
+          ],
+          "field": {
+            "bar": {
+              "entryType": "moneyEur",
+              "label": "Bar",
+              "visibleOn": [
+                "edit"
+              ],
+              "editableOn": [
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "menge": {
+              "entryType": "qtyHalf",
+              "label": "Menge",
+              "visibleOn": [
+                "edit"
+              ],
+              "editableOn": [
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            }
+          }
+        },
+        "materialBar": {
+          "gridPc": "oneColumn",
+          "gridSmartphone": "oneColumn",
+          "order": [
+            "material",
+            "datum",
+            "bar",
+            "notiz"
+          ],
+          "field": {
+            "material": {
+              "entryType": "materialSelect",
+              "label": "Material",
+              "visibleOn": [
+                "new"
+              ],
+              "editableOn": [
+                "new"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "datum": {
+              "entryType": "date",
+              "label": "Datum",
+              "visibleOn": [
+                "new"
+              ],
+              "editableOn": [
+                "new"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "bar": {
+              "entryType": "moneyEur",
+              "label": "Bar",
+              "visibleOn": [
+                "new"
+              ],
+              "editableOn": [
+                "new"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "notiz": {
+              "entryType": "note",
+              "label": "Notiz",
+              "visibleOn": [
+                "new"
+              ],
+              "editableOn": [
+                "new"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            }
+          }
+        },
+        "materialRechnung": {
+          "gridPc": "twoColumn",
+          "gridSmartphone": "oneColumn",
+          "order": [
+            "kunde",
+            "datum",
+            "material",
+            "menge",
+            "vk_stck",
+            "notiz"
+          ],
+          "field": {
+            "kunde": {
+              "entryType": "kundeSelect",
+              "label": "Kunde",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "datum": {
+              "entryType": "date",
+              "label": "Datum",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "material": {
+              "entryType": "materialSelect",
+              "label": "Material",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "menge": {
+              "entryType": "qtyHalf",
+              "label": "Menge",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "vk_stck": {
+              "entryType": "moneyEur",
+              "label": "VK / Stck",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 1,
+              "gridSpanSmartphone": 1
+            },
+            "notiz": {
+              "entryType": "note",
+              "label": "Notiz",
+              "visibleOn": [
+                "new",
+                "edit"
+              ],
+              "editableOn": [
+                "new",
+                "edit"
+              ],
+              "gridSpanPc": 2,
+              "gridSpanSmartphone": 1
+            }
+          }
+        }
+      }
     }
   }
 } as const;

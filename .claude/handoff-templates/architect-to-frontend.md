@@ -1,19 +1,23 @@
 # Handoff: Architect → Frontend Specialist
 
 ---
+
 **handoff_version**: 1.0.0
 **from_agent**: architect
 **to_agent**: frontend_specialist
 **timestamp**: {TIMESTAMP}
 **task_id**: {TASK_ID}
+
 ---
 
 ## Task-Summary
+
 **Feature**: {FEATURE_NAME}
 **Priority**: {High/Medium/Low}
 **Estimated-Effort**: {HOURS}h
 
 ## Context-Files (Must-Read)
+
 - [src/pages/{Page}.tsx](src/pages/{Page}.tsx) - Existing Page (falls relevant)
 - [src/components/ui/{Component}.tsx](src/components/ui/{Component}.tsx) - Reference Component
 - [config.toml](config.toml) - UI-Config (colors, labels, spacing)
@@ -22,11 +26,13 @@
 ## Implementation-Specs
 
 ### Component-Design
+
 - **Component-Name**: {ComponentName}
 - **Location**: `src/{components|pages}/{category}/{ComponentName}.tsx`
 - **Type**: {Page|Layout|UI-Component}
 
 ### Props-Interface
+
 ```typescript
 export interface {ComponentName}Props {
   propA: string;
@@ -36,6 +42,7 @@ export interface {ComponentName}Props {
 ```
 
 ### UI-Design
+
 - **Layout**: {Beschreibung des Layouts}
 - **Responsive**: Mobile-First, Breakpoints: {sm|md|lg|xl}
 - **Icons**: Lucide React - {icon-name}
@@ -43,6 +50,7 @@ export interface {ComponentName}Props {
 - **Spacing**: appConfig.spacing.{key}
 
 ### Config-Integration
+
 ```toml
 # config.toml
 [labels.{module}]
@@ -55,15 +63,18 @@ button_new = "{Deutsch}"
 ```
 
 ### State-Management
+
 - **State-Type**: {Local (useState)|Context|Props}
 - **Hooks**: {useApi|useResponsive|custom}
 
 ### API-Integration (falls nötig)
+
 - **Endpoint**: `{METHOD} /api/{path}`
 - **Request**: {Beschreibung}
 - **Response**: `ApiResponse<{Type}>`
 
 ## Acceptance-Criteria
+
 - [ ] Component in `src/{path}/{ComponentName}.tsx` erstellt
 - [ ] TypeScript-Props-Interface definiert
 - [ ] Config-driven (KEINE Hardcodes für UI-Texte, Colors, Spacing)
@@ -76,16 +87,20 @@ button_new = "{Deutsch}"
 - [ ] ESLint/Prettier compliant
 
 ## Next-Agent
+
 - **Agent**: testing_specialist
 - **Handoff-Trigger**: Frontend-Implementation complete
 - **Context**: Geänderte Components, neue Pages
 
 ## Blockers
+
 {Bekannte Blocker oder "None identified"}
 
 ## Questions
+
 {Offene Fragen oder "None"}
 
 ---
+
 **signature**: architect_agent_v1.0.0
 **checksum**: {GENERATED}

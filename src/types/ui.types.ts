@@ -1,12 +1,14 @@
 /**
  * @file        ui.types.ts
  * @description TypeScript Type Definitions für UI-Komponenten
- * @version     0.5.1
+ * @version     0.7.0
  * @created     2026-01-07 01:18:02 CET
- * @updated     2026-01-12 10:45:00 CET
+ * @updated     2026-01-14 05:51:00 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.7.0 - 2026-01-14 05:51:00 CET - Extended CellType with progress/stock/statusMaterial/statusCommon, added TableColumn properties for ProgressBar and StatusIcon
+ *   0.6.0 - 2026-01-16 02:12:35 CET - Added ProgressBarProps type
  *   0.5.1 - 2026-01-12 - PageLayoutProps: Added optional footerColumns (Footer Grid)
  *   0.4.0 - 2026-01-11 23:30:00 CET - PageLayoutProps: Added optional footer prop
  *   0.3.0 - 2026-01-11 18:00:00 CET - Button types refactored: nav/new/act/rect/tab (replaced icon kind)
@@ -20,13 +22,42 @@ import type { ReactNode, CSSProperties } from 'react';
 // TABLE TYPES
 // ═══════════════════════════════════════════════════════
 
-export type CellType = 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input';
+export type CellType =
+  | 'text'
+  | 'number'
+  | 'currency'
+  | 'date'
+  | 'status'
+  | 'actions'
+  | 'input'
+  | 'progress'
+  | 'stock'
+  | 'statusMaterial'
+  | 'statusCommon';
+
+export type TableActionType = 'bar' | 'rechnung' | 'zahlung' | 'edit' | 'delete';
+
+export interface TableAction {
+  type: TableActionType;
+  onClick: () => void;
+}
 
 export interface TableColumn<T = unknown> {
   key: string;
   label: string;
   type?: CellType;
   render?: (row: T) => ReactNode;
+  actions?: (row: T) => TableAction[];
+  // Progress bar properties
+  progressValue?: (row: T) => number;
+  progressVariant?: 'progressPercent' | 'progressPercent110' | 'stock';
+  // Stock bar properties
+  stockCurrent?: (row: T) => number;
+  stockMax?: (row: T) => number;
+  // Status properties
+  statusData?: (
+    row: T
+  ) => { bestand: number; aussenstaende: number; started: boolean } | { started: boolean; erledigt: boolean };
   width?: string;
   align?: 'left' | 'center' | 'right';
   sortable?: boolean;
@@ -183,18 +214,48 @@ export interface MonthDividerProps {
 }
 
 // ═══════════════════════════════════════════════════════
+// PROGRESSBAR TYPES
+// ═══════════════════════════════════════════════════════
+
+export interface ProgressBarProps {
+  /**
+   * Variante der ProgressBar:
+   * - 'progressPercent': Fortschritt 0→100% (default scale)
+   * - 'progressPercent110': Fortschritt 0→110% (erweiterte Skala)
+   * - 'stock': Bestand (inverted: 100→0)
+   */
+  variant: 'progressPercent' | 'progressPercent110' | 'stock';
+
+  /**
+   * Aktueller Wert (für progressPercent/progressPercent110)
+   */
+  value?: number;
+
+  /**
+   * Aktueller Bestand (für stock-Variante)
+   */
+  current?: number;
+
+  /**
+   * Maximaler Bestand (für stock-Variante)
+   */
+  max?: number;
+
+  /**
+   * Optionale CSS-Klasse
+   */
+  className?: string;
+}
+
+// ═══════════════════════════════════════════════════════
 // LAYOUT TYPES
 // ═══════════════════════════════════════════════════════
 
-export interface PageLayoutProps {
+export interface MainAppProps {
   title: string;
-  icon?: string | ReactNode;
-  actions?: ReactNode;
   children: ReactNode;
   footer?: ReactNode;
   footerColumns?: number;
-  showBackButton?: boolean;
-  hideNavigation?: boolean;
 }
 
 export interface NavItem {

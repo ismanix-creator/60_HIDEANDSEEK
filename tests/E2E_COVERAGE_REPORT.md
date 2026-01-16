@@ -21,12 +21,12 @@
 
 ### Bestehende Tests (vor Phase 4.3)
 
-| Datei | Tests | Status | Beschreibung |
-|-------|-------|--------|--------------|
-| `tests/e2e/smoke.spec.ts` | 5 | 4/5 ✅ | Smoke Tests (HTML, Root, Body, JS-Fehler) |
-| `tests/e2e/example.spec.ts` | 6 | 5/6 ✅ | Navigation Tests (Material, Kunden, Gläubiger, Schuldner) |
-| `tests/e2e/glaeubiger-schuldner.spec.ts` | 2 | 2/2 ✅ | Gläubiger/Schuldner Seiten laden |
-| `tests/e2e/components-visual.spec.ts` | 7 | 6/7 ✅ | Visual Regression Tests (Components) |
+| Datei                                    | Tests | Status | Beschreibung                                              |
+| ---------------------------------------- | ----- | ------ | --------------------------------------------------------- |
+| `tests/e2e/smoke.spec.ts`                | 5     | 4/5 ✅ | Smoke Tests (HTML, Root, Body, JS-Fehler)                 |
+| `tests/e2e/example.spec.ts`              | 6     | 5/6 ✅ | Navigation Tests (Material, Kunden, Gläubiger, Schuldner) |
+| `tests/e2e/glaeubiger-schuldner.spec.ts` | 2     | 2/2 ✅ | Gläubiger/Schuldner Seiten laden                          |
+| `tests/e2e/components-visual.spec.ts`    | 7     | 6/7 ✅ | Visual Regression Tests (Components)                      |
 
 **Bestehende Tests gesamt:** 20 Tests, **17/20 bestanden** ✅
 
@@ -34,11 +34,11 @@
 
 ### Neue Tests (Phase 4.3)
 
-| Datei | Tests | Status | Beschreibung |
-|-------|-------|--------|--------------|
-| `tests/e2e/material-crud.spec.ts` | 5 | 0/3 ❌ 2 skipped | Material CRUD Flow |
-| `tests/e2e/kunden-crud.spec.ts` | 5 | 0/3 ❌ 2 skipped | Kunden CRUD Flow |
-| `tests/e2e/buchung-flows.spec.ts` | 4 | 0/4 ❌ | Buchungs-Flows (Integration) |
+| Datei                             | Tests | Status           | Beschreibung                 |
+| --------------------------------- | ----- | ---------------- | ---------------------------- |
+| `tests/e2e/material-crud.spec.ts` | 5     | 0/3 ❌ 2 skipped | Material CRUD Flow           |
+| `tests/e2e/kunden-crud.spec.ts`   | 5     | 0/3 ❌ 2 skipped | Kunden CRUD Flow             |
+| `tests/e2e/buchung-flows.spec.ts` | 4     | 0/4 ❌           | Buchungs-Flows (Integration) |
 
 **Neue Tests gesamt:** 14 Tests (10 aktiv, 4 skipped), **0/10 bestanden** ❌
 
@@ -48,13 +48,13 @@
 
 ### Material-Flow
 
-| Feature | Test vorhanden | Status |
-|---------|----------------|--------|
-| Material erstellen | ✅ | ❌ Fehlgeschlagen (Button nicht gefunden) |
-| Material Dialog abbrechen | ✅ | ❌ Fehlgeschlagen (Button nicht gefunden) |
-| Material bearbeiten | ✅ (skipped) | ⏸️ TODO (API nicht implementiert) |
-| Material löschen | ✅ (skipped) | ⏸️ TODO (API nicht implementiert) |
-| Material Validierung | ✅ | ❌ Fehlgeschlagen (Button nicht gefunden) |
+| Feature                   | Test vorhanden | Status                                    |
+| ------------------------- | -------------- | ----------------------------------------- |
+| Material erstellen        | ✅             | ❌ Fehlgeschlagen (Button nicht gefunden) |
+| Material Dialog abbrechen | ✅             | ❌ Fehlgeschlagen (Button nicht gefunden) |
+| Material bearbeiten       | ✅ (skipped)   | ⏸️ TODO (API nicht implementiert)         |
+| Material löschen          | ✅ (skipped)   | ⏸️ TODO (API nicht implementiert)         |
+| Material Validierung      | ✅             | ❌ Fehlgeschlagen (Button nicht gefunden) |
 
 **Coverage:** 5/5 Tests erstellt, 0/3 bestanden
 
@@ -62,13 +62,13 @@
 
 ### Kunden-Flow
 
-| Feature | Test vorhanden | Status |
-|---------|----------------|--------|
-| Kunde erstellen | ✅ | ❌ Fehlgeschlagen (Button nicht gefunden) |
-| Kunde Dialog abbrechen | ✅ | ❌ Fehlgeschlagen (Button nicht gefunden) |
-| Kunde bearbeiten | ✅ (skipped) | ⏸️ TODO (API nicht implementiert) |
-| Kunde löschen | ✅ (skipped) | ⏸️ TODO (API nicht implementiert) |
-| Kunde Validierung | ✅ | ❌ Fehlgeschlagen (Button nicht gefunden) |
+| Feature                | Test vorhanden | Status                                    |
+| ---------------------- | -------------- | ----------------------------------------- |
+| Kunde erstellen        | ✅             | ❌ Fehlgeschlagen (Button nicht gefunden) |
+| Kunde Dialog abbrechen | ✅             | ❌ Fehlgeschlagen (Button nicht gefunden) |
+| Kunde bearbeiten       | ✅ (skipped)   | ⏸️ TODO (API nicht implementiert)         |
+| Kunde löschen          | ✅ (skipped)   | ⏸️ TODO (API nicht implementiert)         |
+| Kunde Validierung      | ✅             | ❌ Fehlgeschlagen (Button nicht gefunden) |
 
 **Coverage:** 5/5 Tests erstellt, 0/3 bestanden
 
@@ -76,11 +76,11 @@
 
 ### Gläubiger-Flow
 
-| Feature | Test vorhanden | Status |
-|---------|----------------|--------|
-| Gläubiger-Seite lädt | ✅ (bestehend) | ✅ Bestanden |
-| Gläubiger Infobox/Tabelle | ✅ (neu) | ❌ Fehlgeschlagen (Container nicht gefunden) |
-| Bar-Buchung → Gläubiger | ✅ (neu) | ❌ Fehlgeschlagen (Button nicht gefunden) |
+| Feature                   | Test vorhanden | Status                                       |
+| ------------------------- | -------------- | -------------------------------------------- |
+| Gläubiger-Seite lädt      | ✅ (bestehend) | ✅ Bestanden                                 |
+| Gläubiger Infobox/Tabelle | ✅ (neu)       | ❌ Fehlgeschlagen (Container nicht gefunden) |
+| Bar-Buchung → Gläubiger   | ✅ (neu)       | ❌ Fehlgeschlagen (Button nicht gefunden)    |
 
 **Coverage:** 3/3 Tests erstellt, 1/3 bestanden
 
@@ -88,11 +88,11 @@
 
 ### Schuldner-Flow
 
-| Feature | Test vorhanden | Status |
-|---------|----------------|--------|
-| Schuldner-Seite lädt | ✅ (bestehend) | ✅ Bestanden |
-| Schuldner Infobox/Tabelle | ✅ (neu) | ❌ Fehlgeschlagen (Container nicht gefunden) |
-| Kombi-Buchung → Schuldner | ✅ (neu) | ❌ Fehlgeschlagen (Button nicht gefunden) |
+| Feature                   | Test vorhanden | Status                                       |
+| ------------------------- | -------------- | -------------------------------------------- |
+| Schuldner-Seite lädt      | ✅ (bestehend) | ✅ Bestanden                                 |
+| Schuldner Infobox/Tabelle | ✅ (neu)       | ❌ Fehlgeschlagen (Container nicht gefunden) |
+| Kombi-Buchung → Schuldner | ✅ (neu)       | ❌ Fehlgeschlagen (Button nicht gefunden)    |
 
 **Coverage:** 3/3 Tests erstellt, 1/3 bestanden
 
@@ -103,6 +103,7 @@
 ### Hauptproblem: Button/Component nicht gefunden
 
 **Häufigster Fehler:**
+
 ```
 Error: expect(locator).toBeVisible() failed
 Locator: getByRole('button', { name: /neues material/i })
@@ -112,10 +113,12 @@ Error: element(s) not found
 ```
 
 **Ursache:**
+
 - Button "Neues Material" / "Neuer Kunde" ist **nicht auf den Seiten vorhanden**
 - Oder: Button hat andere Labels/Roles als erwartet
 
 **Betroffene Tests:**
+
 - `material-crud.spec.ts` (3/3 Tests)
 - `kunden-crud.spec.ts` (3/3 Tests)
 - `buchung-flows.spec.ts` (2/4 Tests)
@@ -125,6 +128,7 @@ Error: element(s) not found
 ### Sekundärproblem: Container nicht gefunden
 
 **Fehler:**
+
 ```
 Error: expect(locator).toBeVisible() failed
 Locator: locator('div.space-y-4, div.container')
@@ -134,10 +138,12 @@ Error: element(s) not found
 ```
 
 **Ursache:**
+
 - Gläubiger/Schuldner-Seiten haben keine `div.space-y-4` oder `div.container` Klassen
 - Oder: Seiten sind leer / haben andere Struktur
 
 **Betroffene Tests:**
+
 - `buchung-flows.spec.ts` (2/4 Tests: Gläubiger/Schuldner Infobox)
 - `components-visual.spec.ts` (1/7 Tests: Material Page)
 
@@ -146,11 +152,13 @@ Error: element(s) not found
 ### Tertiärproblem: ngrok CSP-Warnungen
 
 **Fehler:**
+
 ```
 Loading the font 'https://assets.ngrok.com/fonts/...' violates CSP directive
 ```
 
 **Ursache:**
+
 - ngrok lädt eigene Fonts/Assets (CSP-Violations)
 - Betrifft `smoke.spec.ts › Keine kritischen JS-Fehler beim Laden`
 
@@ -247,12 +255,14 @@ Loading the font 'https://assets.ngrok.com/fonts/...' violates CSP directive
 ## Fazit
 
 **Phase 4.3 abgeschlossen:**
+
 - ✅ **14 neue E2E-Tests erstellt**
 - ✅ **Coverage für Material/Kunden/Gläubiger/Schuldner Flows**
 - ❌ **0/10 neue Tests bestanden** (App-Fehler: Buttons/Container fehlen)
 - ✅ **16/20 bestehende Tests bestanden** (83% Pass-Rate)
 
 **Gesamtbewertung:**
+
 - Tests sind **korrekt geschrieben** (folgen Best Practices)
 - Fehler liegen in der **App-Implementierung** (Buttons/Container fehlen)
 - Nach App-Fixes werden Tests grün ✅

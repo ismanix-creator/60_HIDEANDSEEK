@@ -99,7 +99,14 @@ type LayoutAreaExtended = {
   gap?: string;
 };
 
-export function PageLayout({ title, icon, actions, children, footer, footerColumns, showBackButton, hideNavigation = false }: PageLayoutProps) {
+export interface MainAppProps {
+  title: string;
+  children: ReactNode;
+  footer?: ReactNode;
+  footerColumns?: number;
+}
+
+export function MainApp({ title, children, footer, footerColumns }: MainAppProps) {
   const { isMobile } = useResponsive();
 
   const navigationArea = layout.navigation as LayoutAreaExtended;
@@ -133,13 +140,16 @@ export function PageLayout({ title, icon, actions, children, footer, footerColum
     : {
         backgroundColor: getColorValue(navigationArea.bg),
         borderBottom: `${navigationArea.borderWidth} solid ${getColorValue(navigationArea.border)}`,
-        padding: navigationArea.padding || `${appConfig.theme.spacing.element_gap} ${appConfig.theme.spacing.content_gap}`
+        padding:
+          navigationArea.padding || `${appConfig.theme.spacing.element_gap} ${appConfig.theme.spacing.content_gap}`
       };
 
   const headerStyle: CSSProperties = {
     backgroundColor: getColorValue(headerArea.bg),
     borderBottom: `${headerArea.borderWidth} solid ${getColorValue(headerArea.border)}`,
-    padding: isMobile ? appConfig.theme.spacing.mobile_container_padding : headerArea.padding || appConfig.theme.spacing.section_padding,
+    padding: isMobile
+      ? appConfig.theme.spacing.mobile_container_padding
+      : headerArea.padding || appConfig.theme.spacing.section_padding,
     display: 'grid',
     gridTemplateColumns: headerArea.gridColumns ? `repeat(${headerArea.gridColumns}, minmax(0, 1fr))` : '1fr auto',
     alignItems: 'center',
@@ -152,7 +162,9 @@ export function PageLayout({ title, icon, actions, children, footer, footerColum
     display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden',
-    padding: isMobile ? appConfig.theme.spacing.mobile_container_padding : contentArea.padding || appConfig.theme.spacing.container_padding,
+    padding: isMobile
+      ? appConfig.theme.spacing.mobile_container_padding
+      : contentArea.padding || appConfig.theme.spacing.container_padding,
     backgroundColor: getColorValue(contentArea.bg),
     minHeight: contentArea.minHeight,
     height: contentArea.height,
@@ -168,7 +180,9 @@ export function PageLayout({ title, icon, actions, children, footer, footerColum
     backgroundColor: getColorValue(footerArea.bg),
     borderTop: `${footerArea.borderWidth} solid ${getColorValue(footerArea.border)}`,
     borderRadius: footerArea.borderRadius,
-    padding: isMobile ? footerArea.padding || appConfig.theme.spacing.mobile_container_padding : footerArea.padding || appConfig.theme.spacing.container_padding,
+    padding: isMobile
+      ? footerArea.padding || appConfig.theme.spacing.mobile_container_padding
+      : footerArea.padding || appConfig.theme.spacing.container_padding,
     height: footerArea.height,
     gap: footerArea.gap
   };

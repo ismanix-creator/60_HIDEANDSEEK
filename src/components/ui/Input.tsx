@@ -31,59 +31,13 @@ import type { InputProps } from '@/types/ui.types';
 import { appConfig } from '@/config';
 import { useResponsive } from '@/hooks/useResponsive';
 
-const inputConfig = appConfig.components.input;
-
+const inputConfig = appConfig.components.entry;
+const inputStyleConfig = appConfig.ui.entry.input.style;
+const labelStyleConfig = appConfig.ui.entry.label.style;
+const errorStyleConfig = appConfig.ui.entry.error.style;
 const colorsConfig = appConfig.theme.colors;
-
-// ═══════════════════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════════════════
-type ColorLookup = Record<string, string>;
-
-function isColorLookup(value: unknown): value is ColorLookup {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-    return false;
-  }
-  return Object.values(value).every((shade) => typeof shade === 'string');
-}
-
-function getColorValue(colorPath: string): string {
-  // Token-Refs: {blue.500}, {red.500} etc. sind STRINGS
-  if (colorPath.startsWith('{') && colorPath.endsWith('}')) {
-    const tokenPath = colorPath.slice(1, -1); // Remove { }
-    const parts = tokenPath.split('.');
-    if (parts.length === 2) {
-      const [category, shade] = parts;
-      const entry = Object.entries(colorsConfig).find(([key]) => key === category);
-      if (entry) {
-        const colorCategory: unknown = entry[1];
-        if (isColorLookup(colorCategory)) {
-          const shadeValue = colorCategory[shade];
-          if (typeof shadeValue === 'string') {
-            return shadeValue;
-          }
-        }
-      }
-    }
-    return colorPath;
-  }
-
-  const parts = colorPath.split('.');
-  if (parts.length === 2) {
-    const [category, shade] = parts;
-    const entry = Object.entries(colorsConfig).find(([key]) => key === category);
-    if (entry) {
-      const colorCategory: unknown = entry[1];
-      if (isColorLookup(colorCategory)) {
-        const shadeValue = colorCategory[shade];
-        if (typeof shadeValue === 'string') {
-          return shadeValue;
-        }
-      }
-    }
-  }
-  return colorPath;
-}
+const borderSizes = appConfig.theme.border.sizes;
+const spacingEntry = appConfig.theme.spacing.entry;
 
 // ═══════════════════════════════════════════════════════
 // COMPONENT
@@ -110,33 +64,35 @@ export function Input({
   // Password type is handled separately (not in config, but valid HTML input type)
   // Use base config for all input types (no type-specific config)
   const state = error ? 'error' : disabled ? 'disabled' : 'default';
-  const stateStyles = inputConfig.states[state];
+  const entryColors = appConfig.theme.colors.dialog;
+
+  // State-based colors
+  const stateColors = {
+    default: { border: entryColors.entryBorder, bg: colorsConfig.bg.card, text: colorsConfig.text.active },
+    error: { border: entryColors.entryError, bg: colorsConfig.bg.card, text: colorsConfig.text.error },
+    disabled: {
+      border: entryColors.entryBorderDisabled,
+      bg: entryColors.entryDisabled,
+      text: colorsConfig.text.inactive
+    }
+  };
+  const stateStyles = stateColors[state];
 
   // Determine actual HTML input type
   const inputType = type === 'currency' ? 'number' : type === 'password' ? 'password' : type;
-
-  // Touch-Target Minimum (44px) auf Mobile
-  const minTouchTarget = `${appConfig.layout.rules.touchMinSizePx}px`;
-
-  // Mobile: fontSize 16px verhindert iOS Auto-Zoom bei Focus
-  const fontSize = isMobile ? '16px' : '0.875rem';
-
-  // Mobile: Größere Padding-Werte
-  const paddingX = isMobile ? '16px' : inputConfig.base.paddingX;
-  const paddingY = isMobile ? '12px' : inputConfig.base.paddingY;
 
   return (
     <div className={`flex flex-col gap-1 ${className}`}>
       {label && (
         <label
           style={{
-            fontSize: isMobile ? '0.9375rem' : '0.875rem',
-            fontWeight: 500,
-            color: colorsConfig.text.secondary
+            fontSize: labelStyleConfig.fontSize,
+            fontWeight: labelStyleConfig.fontWeight,
+            color: colorsConfig.text.hint
           }}
         >
           {label}
-          {required && <span style={{ color: colorsConfig.red[500], marginLeft: '0.25rem' }}>*</span>}
+          {required && <span style={{ color: colorsConfig.text.error, marginLeft: spacingEntry.labelGap }}>*</span>}
         </label>
       )}
       <input
@@ -153,33 +109,32 @@ export function Input({
         autoFocus={autoFocus}
         minLength={minLength}
         className={`
-          w-full transition-colors duration-150
-          focus:outline-none focus:ring-2
-          ${disabled ? 'cursor-not-allowed' : ''}
+          w-full
           ${type === 'currency' || type === 'number' ? 'font-mono' : ''}
           text-center
         `.trim()}
         style={{
-          // Mobile: minHeight für Touch-Target
-          height: inputConfig.base.height,
-          minHeight: isMobile ? minTouchTarget : undefined,
-          paddingLeft: paddingX,
-          paddingRight: paddingX,
-          paddingTop: paddingY,
-          paddingBottom: paddingY,
-          borderRadius: inputConfig.base.borderRadius,
-          borderWidth: inputConfig.base.borderWidth,
+          height: inputConfig.height,
+          minHeight: isMobile ? inputStyleConfig.minHeightMobile : undefined,
+          paddingLeft: isMobile ? '16px' : spacingEntry.paddingX,
+          paddingRight: isMobile ? '16px' : spacingEntry.paddingX,
+          paddingTop: isMobile ? '12px' : spacingEntry.paddingY,
+          paddingBottom: isMobile ? '12px' : spacingEntry.paddingY,
+          borderRadius: inputConfig.radius,
+          borderWidth: borderSizes.thin,
           borderStyle: 'solid',
-          borderColor: getColorValue(stateStyles.border || 'ui.border'),
-          backgroundColor: getColorValue(stateStyles.bg || inputConfig.base.bg),
-          color: getColorValue(stateStyles.text || inputConfig.base.text),
-          // Mobile: fontSize 16px verhindert iOS Auto-Zoom
-          fontSize: fontSize,
-          // Touch-freundlich
-          WebkitTapHighlightColor: isMobile ? 'transparent' : undefined
+          borderColor: stateStyles.border,
+          backgroundColor: stateStyles.bg,
+          color: stateStyles.text,
+          fontSize: isMobile ? '16px' : '0.875rem',
+          WebkitTapHighlightColor: isMobile ? inputStyleConfig.webkitTapHighlightColorMobile : undefined,
+          transition: appConfig.ui.tokens.transition.colors150,
+          textAlign: inputStyleConfig.textAlign as React.CSSProperties['textAlign'],
+          outline: appConfig.ui.entry.input.focus.outline,
+          cursor: disabled ? appConfig.ui.entry.input.cursor.disabled : undefined
         }}
       />
-      {error && <span style={{ fontSize: '0.75rem', color: colorsConfig.red[500] }}>{error}</span>}
+      {error && <span style={{ fontSize: errorStyleConfig.fontSize, color: colorsConfig.red[500] }}>{error}</span>}
     </div>
   );
 }

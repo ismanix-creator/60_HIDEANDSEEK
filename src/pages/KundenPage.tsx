@@ -19,17 +19,16 @@
  */
 
 import { useState, useEffect } from 'react';
-import { PageLayout } from '@/components/layout/PageLayout';
+import { MainApp } from '@/components/layout/mainapp';
 import { Table, isEmptyRow } from '@/components/ui/Table';
 import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
-import { Badge } from '@/components/ui/Badge';
 import { useApi } from '@/hooks/useApi';
 import { formatCurrency, formatDate } from '@/utils/format';
 import { appConfig } from '@/config';
-import { UserPlus, Pencil, Trash2, DollarSign } from 'lucide-react';
+import { ChevronLeft, ChevronRight, User } from 'lucide-react';
 import type {
   Kunde,
   KundeWithSummary,
@@ -68,6 +67,7 @@ export function KundenPage() {
   const [createPostenMatDialogOpen, setCreatePostenMatDialogOpen] = useState(false);
   const [createPostenNoMatDialogOpen, setCreatePostenNoMatDialogOpen] = useState(false);
   const [zahlungDialogOpen, setZahlungDialogOpen] = useState(false);
+  const [kundenPickerOpen, setKundenPickerOpen] = useState(false);
 
   // Form States
   const [kundeFormData, setKundeFormData] = useState<CreateKundeRequest>({ name: '' });
@@ -369,41 +369,21 @@ export function KundenPage() {
         return (k: KundeWithSummary) => formatCurrency(k.offen);
       case 'status':
         return (k: KundeWithSummary) => (
-          <Badge variant={k.status === 'bezahlt' ? 'success' : k.status === 'teilbezahlt' ? 'warning' : 'error'}>
+          <span
+            className={`px-2 py-1 rounded text-sm ${
+              k.status === 'bezahlt'
+                ? 'bg-green-500/20 text-green-300'
+                : k.status === 'teilbezahlt'
+                  ? 'bg-yellow-500/20 text-yellow-300'
+                  : 'bg-red-500/20 text-red-300'
+            }`}
+          >
             {k.status === 'bezahlt'
               ? 'Bezahlt'
               : k.status === 'teilbezahlt'
                 ? 'Teilbezahlt'
-                : appConfig.labels.open_amount}
-          </Badge>
-        );
-      case 'actions':
-        return (k: KundeWithSummary) => (
-          <div className="flex gap-2">
-            <Button
-              kind="act"
-              disabled={isEmptyRow(k)}
-              onClick={() => {
-                setView('detail');
-                setSelectedKunde(k);
-                setKundeFormData({ name: k.name });
-                setEditKundeDialogOpen(true);
-              }}
-            >
-              <Pencil />
-            </Button>
-            <Button
-              kind="act"
-              disabled={isEmptyRow(k)}
-              onClick={() => {
-                setView('detail');
-                setSelectedKunde(k);
-                setDeleteKundeDialogOpen(true);
-              }}
-            >
-              <Trash2 />
-            </Button>
-          </div>
+                : 'Offen'}
+          </span>
         );
       default:
         return undefined;
@@ -414,7 +394,20 @@ export function KundenPage() {
     key: col.key,
     label: col.label,
     type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
-    render: getOverviewColumnRender(col.key)
+    render: col.key === 'actions' ? undefined : getOverviewColumnRender(col.key),
+    actions: col.key === 'actions' ? (k: KundeWithSummary) => [
+      { type: 'edit' as const, onClick: () => {
+        setView('detail');
+        setSelectedKunde(k);
+        setKundeFormData({ name: k.name });
+        setEditKundeDialogOpen(true);
+      }},
+      { type: 'delete' as const, onClick: () => {
+        setView('detail');
+        setSelectedKunde(k);
+        setDeleteKundeDialogOpen(true);
+      }}
+    ] : undefined
   }));
 
   // Detail Columns
@@ -437,23 +430,21 @@ export function KundenPage() {
         return (p: KundenPostenMat) => formatCurrency(p.offen);
       case 'status':
         return (p: KundenPostenMat) => (
-          <Badge variant={p.status === 'bezahlt' ? 'success' : p.status === 'teilbezahlt' ? 'warning' : 'error'}>
+          <span
+            className={`px-2 py-1 rounded text-sm ${
+              p.status === 'bezahlt'
+                ? 'bg-green-500/20 text-green-300'
+                : p.status === 'teilbezahlt'
+                  ? 'bg-yellow-500/20 text-yellow-300'
+                  : 'bg-red-500/20 text-red-300'
+            }`}
+          >
             {p.status === 'bezahlt'
               ? 'Bezahlt'
               : p.status === 'teilbezahlt'
                 ? 'Teilbezahlt'
-                : appConfig.labels.open_amount}
-          </Badge>
-        );
-      case 'actions':
-        return (p: KundenPostenMat) => (
-          <div className="flex gap-2">
-            {!isEmptyRow(p) && p.offen > 0 && (
-              <Button kind="act" onClick={() => openZahlungDialog(p, 'mat')}>
-                <DollarSign />
-              </Button>
-            )}
-          </div>
+                : 'Offen'}
+          </span>
         );
       default:
         return undefined;
@@ -464,7 +455,13 @@ export function KundenPage() {
     key: col.key,
     label: col.label,
     type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
-    render: getPostenMatColumnRender(col.key)
+    render: col.key === 'actions' ? undefined : getPostenMatColumnRender(col.key),
+    actions: col.key === 'actions' ? (p: KundenPostenMat) => {
+      if (!isEmptyRow(p) && p.offen > 0) {
+        return [{ type: 'zahlung' as const, onClick: () => openZahlungDialog(p, 'mat') }];
+      }
+      return [];
+    } : undefined
   }));
 
   const getPostenNoMatColumnRender = (key: string) => {
@@ -479,23 +476,21 @@ export function KundenPage() {
         return (p: KundenPostenNoMat) => formatCurrency(p.offen);
       case 'status':
         return (p: KundenPostenNoMat) => (
-          <Badge variant={p.status === 'bezahlt' ? 'success' : p.status === 'teilbezahlt' ? 'warning' : 'error'}>
+          <span
+            className={`px-2 py-1 rounded text-sm ${
+              p.status === 'bezahlt'
+                ? 'bg-green-500/20 text-green-300'
+                : p.status === 'teilbezahlt'
+                  ? 'bg-yellow-500/20 text-yellow-300'
+                  : 'bg-red-500/20 text-red-300'
+            }`}
+          >
             {p.status === 'bezahlt'
               ? 'Bezahlt'
               : p.status === 'teilbezahlt'
                 ? 'Teilbezahlt'
-                : appConfig.labels.open_amount}
-          </Badge>
-        );
-      case 'actions':
-        return (p: KundenPostenNoMat) => (
-          <div className="flex gap-2">
-            {!isEmptyRow(p) && p.offen > 0 && (
-              <Button kind="act" onClick={() => openZahlungDialog(p, 'nomat')}>
-                <DollarSign />
-              </Button>
-            )}
-          </div>
+                : 'Offen'}
+          </span>
         );
       default:
         return undefined;
@@ -506,24 +501,27 @@ export function KundenPage() {
     key: col.key,
     label: col.label,
     type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
-    render: getPostenNoMatColumnRender(col.key)
+    render: col.key === 'actions' ? undefined : getPostenNoMatColumnRender(col.key),
+    actions: col.key === 'actions' ? (p: KundenPostenNoMat) => {
+      if (!isEmptyRow(p) && p.offen > 0) {
+        return [{ type: 'zahlung' as const, onClick: () => openZahlungDialog(p, 'nomat') }];
+      }
+      return [];
+    } : undefined
   }));
 
   // Render Overview
   if (view === 'overview') {
     return (
-      <PageLayout
-        title={appConfig.page_titles.customers}
-        showBackButton={true}
-        actions={
-          <Button kind="new" onClick={() => setCreateKundeDialogOpen(true)}>
-            <UserPlus />
-          </Button>
-        }
-      >
+      <MainApp title={appConfig.page_titles.customers}>
         <div className="space-y-4">
           {/* Error */}
           {error && <div className="p-4 bg-red-500/10 border border-red-500 rounded text-red-400">{error}</div>}
+
+          {/* Button-Reihe über der Tabelle */}
+          <div className="flex justify-end mb-4">
+            <Button.Action type="new" onClick={() => setCreateKundeDialogOpen(true)} />
+          </div>
 
           {/* Table */}
           <Table
@@ -544,16 +542,14 @@ export function KundenPage() {
             title={appConfig.components.dialog_titles.new_customer}
             actions={
               <>
-                <Button
-                  kind="rect"
+                <Button.Rect
+                  type="cancel"
                   onClick={() => {
                     setCreateKundeDialogOpen(false);
                     setKundeFormData({ name: '' });
                   }}
-                >
-                  {appConfig.components.buttons.cancel}
-                </Button>
-                <Button onClick={() => void handleCreateKunde()}>{appConfig.components.buttons.create}</Button>
+                />
+                <Button.Rect onClick={() => void handleCreateKunde()}>{appConfig.components.buttons.create}</Button.Rect>
               </>
             }
           >
@@ -564,25 +560,74 @@ export function KundenPage() {
             />
           </Dialog>
         </div>
-      </PageLayout>
+      </MainApp>
     );
   }
 
   // Render Detail
   return (
-    <PageLayout title={`Kunde: ${selectedKunde?.name || ''}`} showBackButton={true}>
+    <MainApp title={`Kunde: ${selectedKunde?.name || ''}`}>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <Button kind="rect" onClick={handleBackToOverview}>
-              ← {appConfig.components.buttons.cancel}
-            </Button>
-            <h2 className="text-2xl font-semibold text-neutral-50">{selectedKunde?.name}</h2>
+        {/* Error */}
+        {error && <div className="p-4 bg-red-500/10 border border-red-500 rounded text-red-400">{error}</div>}
+
+        {/* Button-Reihe: Navigation (Zurück/Prev/Picker/Next) + Edit/Delete */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <Button.Action 
+              type="back" 
+              onClick={handleBackToOverview}
+            />
+            <Button.Action 
+              type="prevMonth" 
+              onClick={() => {
+                const currentIndex = kunden.findIndex((k) => k.id === selectedKunde?.id);
+                if (currentIndex > 0) {
+                  handleRowClick(kunden[currentIndex - 1]);
+                }
+              }} 
+            />
+            <div className="relative">
+              <Button.Rect 
+                onClick={() => setKundenPickerOpen((open) => !open)}
+              >
+                <User size={18} />
+                <span>{selectedKunde?.name || 'Kunde auswählen'}</span>
+              </Button.Rect>
+              {kundenPickerOpen && (
+                <div className="absolute top-full left-0 mt-2 w-64 bg-neutral-800 border border-neutral-700 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+                  {kunden.map((k) => (
+                    <button
+                      key={k.id}
+                      type="button"
+                      onClick={() => {
+                        handleRowClick(k);
+                        setKundenPickerOpen(false);
+                      }}
+                      className={`w-full px-4 py-3 text-left text-sm transition-colors ${
+                        k.id === selectedKunde?.id
+                          ? 'bg-neutral-600 text-white font-medium'
+                          : 'text-neutral-300 hover:bg-neutral-700 hover:text-white'
+                      }`}
+                    >
+                      {k.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <Button.Action 
+              type="nextMonth" 
+              onClick={() => {
+                const currentIndex = kunden.findIndex((k) => k.id === selectedKunde?.id);
+                if (currentIndex < kunden.length - 1) {
+                  handleRowClick(kunden[currentIndex + 1]);
+                }
+              }} 
+            />
           </div>
           <div className="flex gap-2">
-            <Button
-              kind="rect"
+            <Button.Rect
               onClick={() => {
                 if (selectedKunde) {
                   setKundeFormData({ name: selectedKunde.name });
@@ -591,23 +636,20 @@ export function KundenPage() {
               }}
             >
               {appConfig.components.buttons.edit}
-            </Button>
-            <Button kind="rect" onClick={() => setDeleteKundeDialogOpen(true)}>
+            </Button.Rect>
+            <Button.Rect onClick={() => setDeleteKundeDialogOpen(true)}>
               {appConfig.components.buttons.delete}
-            </Button>
+            </Button.Rect>
           </div>
         </div>
-
-        {/* Error */}
-        {error && <div className="p-4 bg-red-500/10 border border-red-500 rounded text-red-400">{error}</div>}
 
         {/* Material-Posten */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-semibold text-neutral-50">Material-Posten</h3>
-            <Button onClick={() => setCreatePostenMatDialogOpen(true)}>
-              {appConfig.components.dialog_titles.new_material_post}
-            </Button>
+            <Button.Rect type="setup" onClick={() => setCreatePostenMatDialogOpen(true)}>
+              Neuer Material-Posten
+            </Button.Rect>
           </div>
           <Table
             data={postenMat}
@@ -622,9 +664,9 @@ export function KundenPage() {
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <h3 className="text-xl font-semibold text-neutral-50">Sonstige Posten</h3>
-              <Button onClick={() => setCreatePostenNoMatDialogOpen(true)}>
+              <Button.Rect onClick={() => setCreatePostenNoMatDialogOpen(true)}>
                 {appConfig.components.dialog_titles.new_other_post}
-              </Button>
+              </Button.Rect>
             </div>
             <Table
               data={postenNoMat}
@@ -646,16 +688,14 @@ export function KundenPage() {
           title={appConfig.components.dialog_titles.edit_customer}
           actions={
             <>
-              <Button
-                kind="rect"
+              <Button.Rect
+                type="cancel"
                 onClick={() => {
                   setEditKundeDialogOpen(false);
                   setKundeFormData({ name: '' });
                 }}
-              >
-                {appConfig.components.buttons.cancel}
-              </Button>
-              <Button onClick={() => void handleUpdateKunde()}>{appConfig.components.buttons.save}</Button>
+              />
+              <Button.Rect type="save" onClick={() => void handleUpdateKunde()} />
             </>
           }
         >
@@ -673,12 +713,10 @@ export function KundenPage() {
           title={appConfig.components.dialog_titles.delete_customer}
           actions={
             <>
-              <Button kind="rect" onClick={() => setDeleteKundeDialogOpen(false)}>
-                {appConfig.components.buttons.cancel}
-              </Button>
-              <Button kind="rect" onClick={() => void handleDeleteKunde()}>
+              <Button.Rect type="cancel" onClick={() => setDeleteKundeDialogOpen(false)} />
+              <Button.Rect onClick={() => void handleDeleteKunde()}>
                 {appConfig.components.buttons.delete}
-              </Button>
+              </Button.Rect>
             </>
           }
         >
@@ -697,16 +735,14 @@ export function KundenPage() {
           title={appConfig.components.dialog_titles.new_material_post}
           actions={
             <>
-              <Button
-                kind="rect"
+              <Button.Rect
+                type="cancel"
                 onClick={() => {
                   setCreatePostenMatDialogOpen(false);
                   resetPostenMatForm();
                 }}
-              >
-                {appConfig.components.buttons.cancel}
-              </Button>
-              <Button onClick={handleCreatePostenMat}>{appConfig.components.buttons.create}</Button>
+              />
+              <Button.Rect onClick={handleCreatePostenMat}>{appConfig.components.buttons.create}</Button.Rect>
             </>
           }
         >
@@ -755,16 +791,14 @@ export function KundenPage() {
           title={appConfig.components.dialog_titles.new_other_post}
           actions={
             <>
-              <Button
-                kind="rect"
+              <Button.Rect
+                type="cancel"
                 onClick={() => {
                   setCreatePostenNoMatDialogOpen(false);
                   resetPostenNoMatForm();
                 }}
-              >
-                {appConfig.components.buttons.cancel}
-              </Button>
-              <Button onClick={handleCreatePostenNoMat}>{appConfig.components.buttons.create}</Button>
+              />
+              <Button.Rect onClick={handleCreatePostenNoMat}>{appConfig.components.buttons.create}</Button.Rect>
             </>
           }
         >
@@ -808,17 +842,15 @@ export function KundenPage() {
           title={appConfig.components.dialog_titles.record_payment}
           actions={
             <>
-              <Button
-                kind="rect"
+              <Button.Rect
+                type="cancel"
                 onClick={() => {
                   setZahlungDialogOpen(false);
                   setSelectedPosten(null);
                   setZahlungbetrag(0);
                 }}
-              >
-                {appConfig.components.buttons.cancel}
-              </Button>
-              <Button onClick={handleZahlung}>{appConfig.components.buttons.record}</Button>
+              />
+              <Button.Rect onClick={() => void handleZahlung()}>{appConfig.components.buttons.record}</Button.Rect>
             </>
           }
         >
@@ -837,6 +869,6 @@ export function KundenPage() {
           </div>
         </Dialog>
       </div>
-    </PageLayout>
+    </MainApp>
   );
 }

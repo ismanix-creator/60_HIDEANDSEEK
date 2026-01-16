@@ -2,7 +2,7 @@
 # @description Single Source of Truth für App-Konfiguration (100% config-driven UI – .tsx ist Renderer-only)
 # @version     5.0.0
 # @created     2026-01-06 15:35:00 CET
-# @updated     2026-01-15 00:00:00 CET
+# @updated     2026-01-16 02:18:45 CET
 # @author      Akki Scholze
 #
 # @rules (aus Audit abgeleitet)
@@ -16,8 +16,8 @@
 # ============================================================
 [app.meta]
 name = "Material Tracker"
-version = "0.1.0"
-lastUpdated = "2026-01-15T00:00:00+01:00"
+version = "0.2.3"
+lastUpdated = "2026-01-16T02:18:45+01:00"
 
 [app.locale]
 language = "de-DE"
@@ -304,18 +304,18 @@ grid = "black.500"
 divider = "black.500"
 outerBorder = "black.700"
 
-[theme.colors.button.rect]
+[theme.colors.buttons.rect]
 rectActive = "eisgraublau.500"
 rectSave = "green.650"
 rectHover = "eisgraublau.650"
 rectInactive = "black.700"
 
-[theme.colors.button.icon]
+[theme.colors.buttons.icon]
 iconActive = "eisgraublau.500"
 iconHover = "eisgraublau.650"
 iconInactive = "black.700"
 
-[theme.colors.button.tab]
+[theme.colors.buttons.tab]
 tabActive = "eisgraublau.500"
 tabHover = "eisgraublau.650"
 tabInactive = "black.700"
@@ -385,8 +385,8 @@ dialogLabel = "1.25rem"
 dialogInsert = "1.25rem"
 dialogHint = "1rem"
 dialogMessage = "1rem"
-buttonRect = "1.25rem"
-buttonTab = "1rem"
+buttonsRect = "1.25rem"
+buttonsTab = "1rem"
 formLabel = "1.25rem"
 formInsert = "1.25rem"
 formHint = "1rem"
@@ -401,8 +401,8 @@ normal = "2px"
 thick = "3px"
 
 [theme.border.radius]
-buttonRect = "12px"
-buttonTab = "10px"
+buttonsRect = "12px"
+buttonsTab = "10px"
 navigation = "16px"
 header = "16px"
 body = "16px"
@@ -427,7 +427,7 @@ contentGap = "12px"
 fieldGap = "10px"
 actionsGap = "12px"
 
-[theme.spacing.button]
+[theme.spacing.buttons]
 rectPaddingX = "14px"
 rectPaddingY = "10px"
 rectGap = "10px"
@@ -630,6 +630,7 @@ justifyContent = "center"
 transition = "all 0.2s ease"
 cursor = "pointer"
 outline = "none"
+border = "none"
 
 [ui.buttons.navigation.style.inactive]
 bg = "transparent"
@@ -644,6 +645,7 @@ justifyContent = "center"
 transition = "all 0.2s ease"
 cursor = "pointer"
 outline = "none"
+border = "none"
 
 [ui.buttons.act.style.base]
 width = "32px"
@@ -655,6 +657,7 @@ justifyContent = "center"
 transition = "opacity 0.2s ease"
 cursor = "pointer"
 outline = "none"
+border = "none"
 
 [ui.buttons.rect.style.base]
 minWidth = "120px"
@@ -669,16 +672,22 @@ cursorDisabled = "not-allowed"
 opacity = 1
 opacityDisabled = 0.5
 outline = "none"
+border = "none"
 
 [ui.buttons.tab.style.base]
 minWidth = "100px"
 height = "40px"
+bg = "transparent"
 display = "inline-flex"
 alignItems = "center"
 justifyContent = "center"
 transition = "all 0.2s ease"
 cursor = "pointer"
 outline = "none"
+border = "none"
+
+[ui.buttons.tab.style.inactive]
+bg = "transparent"
 
 # --- Tables
 [ui.tables.loading.container]
@@ -708,6 +717,15 @@ tableLayout = "fixed"
 
 [ui.tables.header.style]
 textAlign = "center"
+paddingY = "12px"
+paddingX = "16px"
+paddingXEdge = "20px"
+
+[ui.tables.cell.style]
+paddingY = "12px"
+paddingX = "16px"
+paddingXEdge = "20px"
+borderTopWidth = "2px"
 
 [ui.tables.cell.content]
 display = "flex"
@@ -741,7 +759,7 @@ width = "90%"
 maxHeight = "90vh"
 overflow = "auto"
 
-[ui.dialogs.closeButton.style]
+[ui.dialogs.closeButtons.style]
 padding = "8px"
 borderRadius = "0.375rem"
 bg = "transparent"
@@ -797,6 +815,10 @@ transition = "colors 0.15s"
 textAlign = "center"
 webkitTapHighlightColorMobile = "transparent"
 minHeightMobile = "44px"
+fontSizeMobile = "16px"
+fontSizeDesktop = "0.875rem"
+paddingX = "16px"
+paddingY = "12px"
 
 [ui.entry.input.focus]
 outline = "none"
@@ -850,7 +872,7 @@ flexDirection = "column"
 overflow = "hidden"
 
 # --- Pages (Material/Kunden/Settings etc.)
-[ui.pages.buttonContainer.style]
+[ui.pages.buttonsContainer.style]
 display = "flex"
 justifyContent = "flex-end"
 marginBottom = "16px"
@@ -1002,6 +1024,26 @@ alignItems = "center"
 opacity = 0.5
 
 # --- Infobox
+[ui.infobox.variants.info]
+bg = "bg.card"
+border = "border.default"
+iconColor = "text.active"
+
+[ui.infobox.variants.success]
+bg = "bg.card"
+border = "border.default"
+iconColor = "text.success"
+
+[ui.infobox.variants.warning]
+bg = "bg.card"
+border = "border.default"
+iconColor = "text.warning"
+
+[ui.infobox.variants.error]
+bg = "bg.card"
+border = "border.default"
+iconColor = "text.error"
+
 [ui.infobox.container.style]
 display = "flex"
 gapMobile = "8px"
@@ -1067,17 +1109,17 @@ erledigt = "shield-check"
 bestand_0_aber_aussenstaende = "database-x"
 
 [components.icon.nav]
-buttonSize = "48px"
+buttonsSize = "48px"
 iconSize = "36px"
 radius = "16px"
 
 [components.icon.dash]
-buttonSize = "64px"
+buttonsSize = "64px"
 iconSize = "48px"
 radius = "16px"
 
 [components.icon.act]
-buttonSize = "20px"
+buttonsSize = "20px"
 iconSize = "20px"
 radius = "12px"
 
@@ -1137,24 +1179,24 @@ order = ["datum", "bezeichnung", "notiz", "ekStck", "ekGesamt", "vkStck", "menge
 labels = { datum = "Datum", bezeichnung = "Bezeichnung", notiz = "Notiz", ekStck = "EK/Stck", ekGesamt = "EK Gesamt", vkStck = "VK/Stck", menge = "Menge", einnahmen = "Einnahmen", aussenstaende = "Außenstände", theorEinnahmen = "theor. Einnahmen", gewinn = "Gewinn", status = "Status", bestand = "Bestand", aktionen = "Aktionen" }
 
 [components.table.columns.kundenOverview]
-order = ["name", "notiz", "summeBetragPostenMat", "summeOffenPostenMat", "summeBetragPostenNoMat", "summeOffenPostenNoMat", "fortschritt", "status", "aktionen"]
-labels = { name = "Name", notiz = "Notiz", summeBetragPostenMat = "Summe Betrag PostenMat", summeOffenPostenMat = "Summe offen PostenMat", summeBetragPostenNoMat = "Summe Betrag PostenNoMat", summeOffenPostenNoMat = "Summe offen PostenNoMat", fortschritt = "Fortschritt", status = "Status", aktionen = "Aktionen" }
+order = ["name", "notiz", "summeBetragPostenMat", "summeOffenPostenMat", "summeBetragPostenNoMat", "summeOffenPostenNoMat", "status", "fortschritt", "aktionen"]
+labels = { name = "Name", notiz = "Notiz", summeBetragPostenMat = "Summe Betrag PostenMat", summeOffenPostenMat = "Summe offen PostenMat", summeBetragPostenNoMat = "Summe Betrag PostenNoMat", summeOffenPostenNoMat = "Summe offen PostenNoMat", status = "Status", fortschritt = "Fortschritt", aktionen = "Aktionen" }
 
 [components.table.columns.kundenViewPostenMat]
-order = ["datum", "bezeichnung", "notiz", "menge", "vkStck", "gesamt", "bezahlt", "offen", "fortschritt", "status", "aktionen"]
-labels = { datum = "Datum", bezeichnung = "Bezeichnung", notiz = "Notiz", menge = "Menge", vkStck = "VK/Stck", gesamt = "Gesamt", bezahlt = "Bezahlt", offen = "Offen", fortschritt = "Fortschritt", status = "Status", aktionen = "Aktionen" }
+order = ["datum", "bezeichnung", "notiz", "menge", "vkStck", "gesamt", "bezahlt", "offen", "status", "fortschritt", "aktionen"]
+labels = { datum = "Datum", bezeichnung = "Bezeichnung", notiz = "Notiz", menge = "Menge", vkStck = "VK/Stck", gesamt = "Gesamt", bezahlt = "Bezahlt", offen = "Offen", status = "Status", fortschritt = "Fortschritt", aktionen = "Aktionen" }
 
 [components.table.columns.kundenViewPostenNoMat]
-order = ["datum", "notiz", "gesamt", "bezahlt", "offen", "fortschritt", "status", "aktionen"]
-labels = { datum = "Datum", notiz = "Notiz", gesamt = "Gesamt", bezahlt = "Bezahlt", offen = "Offen", fortschritt = "Fortschritt", status = "Status", aktionen = "Aktionen" }
+order = ["datum", "notiz", "gesamt", "bezahlt", "offen", "status", "fortschritt", "aktionen"]
+labels = { datum = "Datum", notiz = "Notiz", gesamt = "Gesamt", bezahlt = "Bezahlt", offen = "Offen", status = "Status", fortschritt = "Fortschritt", aktionen = "Aktionen" }
 
 [components.table.columns.schuldner]
-order = ["datum", "name", "notiz", "betrag", "bezahlt", "offen", "fortschritt", "status", "aktionen"]
-labels = { datum = "Datum", name = "Name", notiz = "Notiz", betrag = "Betrag", bezahlt = "Bezahlt", offen = "Offen", fortschritt = "Fortschritt", status = "Status", aktionen = "Aktionen" }
+order = ["datum", "name", "notiz", "betrag", "bezahlt", "offen", "status", "fortschritt", "aktionen"]
+labels = { datum = "Datum", name = "Name", notiz = "Notiz", betrag = "Betrag", bezahlt = "Bezahlt", offen = "Offen", status = "Status", fortschritt = "Fortschritt", aktionen = "Aktionen" }
 
 [components.table.columns.glaeubiger]
-order = ["datum", "name", "notiz", "betrag", "bezahlt", "offen", "fortschritt", "status", "aktionen"]
-labels = { datum = "Datum", name = "Name", notiz = "Notiz", betrag = "Betrag", bezahlt = "Bezahlt", offen = "Offen", fortschritt = "Fortschritt", status = "Status", aktionen = "Aktionen" }
+order = ["datum", "name", "notiz", "betrag", "bezahlt", "offen", "status", "fortschritt", "aktionen"]
+labels = { datum = "Datum", name = "Name", notiz = "Notiz", betrag = "Betrag", bezahlt = "Bezahlt", offen = "Offen", status = "Status", fortschritt = "Fortschritt", aktionen = "Aktionen" }
 
 [components.table.format.moneyEur]
 type = "money"

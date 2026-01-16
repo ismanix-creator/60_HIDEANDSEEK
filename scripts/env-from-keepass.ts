@@ -75,7 +75,10 @@ function parseKeyValueLines(output: string): AttrMap {
 }
 
 function readEntryAttributes(entryPath: string, expectedUsername: string): AttrMap {
-  const out = runKeepass(['show', '--no-password', '--key-file', KEEPASS_KEYFILE, '--all', '-s', KEEPASS_DB, entryPath], `read entry ${entryPath}`);
+  const out = runKeepass(
+    ['show', '--no-password', '--key-file', KEEPASS_KEYFILE, '--all', '-s', KEEPASS_DB, entryPath],
+    `read entry ${entryPath}`
+  );
 
   const userLine = out
     .split('\n')
@@ -101,7 +104,7 @@ function readAllowedKeys(examplePath: string): KeySpec {
   }
   const content = readFileSync(examplePath, 'utf-8');
   const lines = content.split('\n').map((line) => line.trim());
-  
+
   const required: string[] = [];
   const optional: string[] = [];
   let inOptionalSection = false;
@@ -112,10 +115,10 @@ function readAllowedKeys(examplePath: string): KeySpec {
       continue;
     }
     if (!line || line.startsWith('#') || !line.includes('=')) continue;
-    
+
     const key = line.replace(/=.*/, '').trim();
     if (!key) continue;
-    
+
     if (inOptionalSection) {
       optional.push(key);
     } else {
@@ -154,7 +157,7 @@ function main() {
   const missingRequired: string[] = [];
   const missingOptional: string[] = [];
   const lines: string[] = [];
-  
+
   for (const key of allKeys) {
     const val = merged[key];
     if (typeof val === 'undefined') {

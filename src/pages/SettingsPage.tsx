@@ -16,7 +16,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PageLayout } from '@/components/layout/PageLayout';
+import { MainApp } from '@/components/layout/mainapp';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { useApi } from '@/hooks';
@@ -106,11 +106,11 @@ export function SettingsPage() {
 
   if (loading) {
     return (
-      <PageLayout title="Einstellungen" showBackButton={true}>
+      <MainApp title="Einstellungen">
         <div className="flex items-center justify-center h-64">
           <p className="text-neutral-400">Laden...</p>
         </div>
-      </PageLayout>
+      </MainApp>
     );
   }
 
@@ -119,7 +119,7 @@ export function SettingsPage() {
   const disabledUsers = users.filter((u) => u.status === 'disabled');
 
   return (
-    <PageLayout title="Einstellungen">
+    <MainApp title="Einstellungen">
       <div className="space-y-8">
         {message && (
           <div

@@ -21,7 +21,7 @@ const KEY_LENGTH = 32;
 export function hashPassword(plainPassword: string): { hash: string; salt: string } {
   const salt = randomBytes(SALT_LENGTH);
   const hash = scryptSync(plainPassword, salt, KEY_LENGTH);
-  
+
   return {
     hash: hash.toString('hex'),
     salt: salt.toString('hex')
@@ -31,16 +31,12 @@ export function hashPassword(plainPassword: string): { hash: string; salt: strin
 /**
  * Verify password against stored hash and salt
  */
-export function verifyPassword(
-  plainPassword: string,
-  storedHash: string,
-  storedSalt: string
-): boolean {
+export function verifyPassword(plainPassword: string, storedHash: string, storedSalt: string): boolean {
   try {
     const salt = Buffer.from(storedSalt, 'hex');
     const hash = Buffer.from(storedHash, 'hex');
     const derived = scryptSync(plainPassword, salt, KEY_LENGTH);
-    
+
     return timingSafeEqual(hash, derived);
   } catch (error) {
     // Invalid hex or comparison failed

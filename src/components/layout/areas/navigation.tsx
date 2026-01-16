@@ -16,7 +16,7 @@ import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Package, Users, HandCoins, Settings, UserCog, LogIn, LogOut } from 'lucide-react';
 import type { NavItem } from '@/types/ui.types';
-import { appConfig, navigationConfig } from '@/config';
+import { appConfig } from '@/config';
 import { useAuth } from '@/context/AuthContext';
 
 const colorsConfig = appConfig.theme.colors;
@@ -48,7 +48,7 @@ export function NavigationArea({ style, isMobile }: NavigationAreaProps) {
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const { isAuthenticated, logout } = useAuth();
 
-  const navItems = navigationConfig.items as ReadonlyArray<NavItem>;
+  const navItems = appConfig.navigation.item as ReadonlyArray<NavItem>;
 
   const filteredItems = navItems.filter((item) => {
     if (item.key === 'login' && isAuthenticated) return false;
@@ -59,8 +59,11 @@ export function NavigationArea({ style, isMobile }: NavigationAreaProps) {
   const layoutNavigation = appConfig.layout.navigation as NavigationAreaConfig;
   const navPadding =
     layoutNavigation?.padding ??
-    (isMobile ? `${appConfig.theme.spacing.compact} 0` : `${appConfig.theme.spacing.element_gap} ${appConfig.theme.spacing.content_gap}`);
-  const navGap = layoutNavigation?.gap ?? (isMobile ? appConfig.theme.spacing.compact : appConfig.theme.spacing.content_gap);
+    (isMobile
+      ? `${appConfig.theme.spacing.compact} 0`
+      : `${appConfig.theme.spacing.element_gap} ${appConfig.theme.spacing.content_gap}`);
+  const navGap =
+    layoutNavigation?.gap ?? (isMobile ? appConfig.theme.spacing.compact : appConfig.theme.spacing.content_gap);
   const navHeight = layoutNavigation?.height;
   const navMinHeight = layoutNavigation?.minHeight;
 

@@ -26,22 +26,11 @@ import type { SelectProps } from '@/types/ui.types';
 import { appConfig } from '@/config';
 
 const colorsConfig = appConfig.theme.colors;
-const inputConfigBase = appConfig.components.input;
-
-// ═══════════════════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════════════════
-function getColorValue(colorPath: string): string {
-  const parts = colorPath.split('.');
-  if (parts.length === 2) {
-    const [category, shade] = parts;
-    const colorCategory = colorsConfig[category as keyof typeof colorsConfig];
-    if (colorCategory && typeof colorCategory === 'object') {
-      return (colorCategory as Record<string, string>)[shade] || colorPath;
-    }
-  }
-  return colorPath;
-}
+const inputConfigBase = appConfig.components.entry;
+const labelStyleConfig = appConfig.ui.entry.label.style;
+const errorStyleConfig = appConfig.ui.entry.error.style;
+const borderSizes = appConfig.theme.border.sizes;
+const spacingEntry = appConfig.theme.spacing.entry;
 
 // ═══════════════════════════════════════════════════════
 // COMPONENT
@@ -58,14 +47,28 @@ export function Select({
   className = ''
 }: SelectProps) {
   const state = error ? 'error' : disabled ? 'disabled' : 'default';
-  const stateStyles = inputConfigBase.states[state];
+  const entryColors = appConfig.theme.colors.dialog;
+
+  // State-based colors
+  const stateColors = {
+    default: { border: entryColors.entryBorder, bg: colorsConfig.bg.card },
+    error: { border: entryColors.entryError, bg: colorsConfig.bg.card },
+    disabled: { border: entryColors.entryBorderDisabled, bg: entryColors.entryDisabled }
+  };
+  const stateStyles = stateColors[state];
 
   return (
     <div className={`flex flex-col gap-1 ${className}`}>
       {label && (
-        <label className="text-sm font-medium text-neutral-700">
+        <label
+          style={{
+            fontSize: labelStyleConfig.fontSize,
+            fontWeight: labelStyleConfig.fontWeight,
+            color: colorsConfig.text.hint
+          }}
+        >
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span style={{ color: colorsConfig.text.error, marginLeft: spacingEntry.labelGap }}>*</span>}
         </label>
       )}
       <select
@@ -73,25 +76,26 @@ export function Select({
         onChange={onChange}
         disabled={disabled}
         required={required}
-        className={`
-          w-full transition-colors duration-150
-          focus:outline-none focus:ring-2 focus:ring-primary-500
-          ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
-        `.trim()}
+        className="w-full"
         style={{
-          height: inputConfigBase.base.height,
-          paddingLeft: inputConfigBase.base.paddingX,
+          height: inputConfigBase.height,
+          paddingLeft: inputConfigBase.paddingX,
           paddingRight: '2.5rem',
-          borderRadius: inputConfigBase.base.borderRadius,
-          borderWidth: inputConfigBase.base.borderWidth,
+          borderRadius: inputConfigBase.radius,
+          borderWidth: borderSizes.thin,
           borderStyle: 'solid',
-          borderColor: getColorValue(stateStyles.border || colorsConfig.ui.border),
-          backgroundColor: getColorValue(stateStyles.bg || inputConfigBase.base.bg),
-          appearance: 'none',
-          backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-          backgroundPosition: 'right 0.5rem center',
-          backgroundRepeat: 'no-repeat',
-          backgroundSize: '1.5em 1.5em'
+          borderColor: stateStyles.border,
+          backgroundColor: stateStyles.bg,
+          color: colorsConfig.text.active,
+          fontSize: labelStyleConfig.fontSize,
+          transition: appConfig.ui.tokens.transition.colors150,
+          outline: appConfig.ui.entry.input.focus.outline,
+          cursor: disabled ? appConfig.ui.entry.select.cursor.disabled : appConfig.ui.entry.select.cursor.default,
+          appearance: appConfig.ui.entry.select.style.appearance,
+          backgroundImage: appConfig.ui.entry.select.style.backgroundImage,
+          backgroundPosition: appConfig.ui.entry.select.style.backgroundPosition,
+          backgroundRepeat: appConfig.ui.entry.select.style.backgroundRepeat,
+          backgroundSize: appConfig.ui.entry.select.style.backgroundSize
         }}
       >
         {placeholder && (
@@ -105,7 +109,7 @@ export function Select({
           </option>
         ))}
       </select>
-      {error && <span className="text-xs text-red-500">{error}</span>}
+      {error && <span style={{ fontSize: errorStyleConfig.fontSize, color: colorsConfig.red[500] }}>{error}</span>}
     </div>
   );
 }

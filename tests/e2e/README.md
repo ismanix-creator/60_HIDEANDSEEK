@@ -1,14 +1,14 @@
-// @file        tests/e2e/README.md
+// @file tests/e2e/README.md
 // @description Anleitung für E2E-Tests
-// @version     1.2.0
-// @created     2026-01-08 15:00:00 CET
-// @updated     2026-01-08 16:00:00 CET
-// @author      Akki Scholze
+// @version 1.2.0
+// @created 2026-01-08 15:00:00 CET
+// @updated 2026-01-08 16:00:00 CET
+// @author Akki Scholze
 //
 // @changelog
-//   1.2.0 - 2026-01-08 - Hardcoded URLs entfernt, baseURL kommt aus VITE_APP_BASE_URL ENV
-//   1.1.0 - 2026-01-08 - Wichtige Hinweise zu Server-Start hinzugefügt
-//   1.0.0 - 2026-01-08 - E2E-Test-Anleitung erstellt
+// 1.2.0 - 2026-01-08 - Hardcoded URLs entfernt, baseURL kommt aus VITE_APP_BASE_URL ENV
+// 1.1.0 - 2026-01-08 - Wichtige Hinweise zu Server-Start hinzugefügt
+// 1.0.0 - 2026-01-08 - E2E-Test-Anleitung erstellt
 
 # E2E-Tests für Material-Tracker
 
@@ -19,21 +19,24 @@ Die E2E-Tests verwenden **Playwright** und testen die gesamte Anwendung von der 
 ## Voraussetzungen
 
 1. **Abhängigkeiten installieren:**
+
    ```bash
    pnpm install
    pnpm exec playwright install
    ```
 
 2. **WICHTIG: Anwendung muss laufen!**
-   
+
    Die Tests erwarten, dass Frontend UND Backend laufen:
-   
+
    **Terminal 1 - Backend:**
+
    ```bash
    pnpm run server
    ```
-   
+
    **Terminal 2 - Frontend:**
+
    ```bash
    pnpm dev
    ```
@@ -102,13 +105,14 @@ Die Playwright-Konfiguration befindet sich in `playwright.config.ts`:
 ### JS-Fehler: "Cannot read properties of undefined (reading 'items')"
 
 Dieser Fehler tritt auf, wenn die Config nicht korrekt geladen wurde. Stellen Sie sicher:
+
 - Der Backend-Server läuft (`pnpm run server`)
 - Die Config wurde generiert (`pnpm run generate:config`)
 - Die Datenbank ist initialisiert
 
 ### Tests schlagen fehl: Elemente nicht gefunden
 
-Die Tests sind defensiv geschrieben und erwarten grundlegende UI-Elemente. 
+Die Tests sind defensiv geschrieben und erwarten grundlegende UI-Elemente.
 Falls die UI-Struktur geändert wurde, müssen die Selektoren angepasst werden.
 
 ## Best Practices
@@ -135,7 +139,7 @@ Falls die UI-Struktur geändert wurde, müssen die Selektoren angepasst werden.
 ### Tests sind sehr langsam
 
 → Reduziere Parallelität in `playwright.config.ts`:
-```typescript
-workers: 1
-```
 
+```typescript
+workers: 1;
+```
