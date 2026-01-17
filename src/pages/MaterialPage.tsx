@@ -1,12 +1,13 @@
 /**
  * @file        MaterialPage.tsx
  * @description Material-Verwaltung mit 3-Spalten-Grid Layout
- * @version     2.0.0
+ * @version     2.1.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-16 20:35:00 CET
+ * @updated     2026-01-17 04:01:18 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   2.1.0 - 2026-01-17 - Feature: MainApp Wrapper hinzugefügt für konsistente Page-Struktur (Navigation→Header→Content→Footer)
  *   2.0.0 - 2026-01-16 - Refactor: 3-Spalten-Grid Layout, kein MainApp Wrapper, config-driven
  *   1.6.1 - 2026-01-12 - Material-Tabelle: Fortschrittsbalken sichtbar gemacht
  */
@@ -14,6 +15,7 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar } from 'lucide-react';
+import { MainApp } from '@/components/layout/MainApp';
 import { Table } from '@/components/ui/Table';
 import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
@@ -495,9 +497,10 @@ export function MaterialPage() {
   ];
 
   return (
-    <div style={gridStyle}>
-      {/* Zeile 1: Button-Navigation (3 Spalten) */}
-      <div style={buttonRowStyle}>
+    <MainApp title="Material">
+      <div style={gridStyle}>
+        {/* Zeile 1: Button-Navigation (3 Spalten) */}
+        <div style={buttonRowStyle}>
         {/* Spalte 1: Leer */}
         <div />
 
@@ -909,6 +912,7 @@ export function MaterialPage() {
           <p className="text-neutral-400 text-sm text-center py-4">Keine Historie vorhanden</p>
         )}
       </Dialog>
-    </div>
+      </div>
+    </MainApp>
   );
 }
