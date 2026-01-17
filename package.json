@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "version": "0.4.3",
+    "version": "0.4.4",
     "created": "2026-01-06 19:14:38 CET",
-    "updated": "2026-01-17T02:54:24+01:00",
+    "updated": "2026-01-17T03:00:08+01:00",
     "changelog": [
       "0.1.0 - 2026-01-06 - Initial scaffold",
       "0.1.1 - 2026-01-07 - DB Migration/Seed Scripts hinzugefuegt",
@@ -22,7 +22,8 @@
       "0.4.0 - 2026-01-17T02:28:23+01:00 - Container-Architektur Refactoring: MainApp.tsx als Router-Orchestrator, Dashboard.tsx mit 2-Modi-Logik (initial: header+navigation, full: alle 4 Areas), NavigationArea mit onNavigate callback",
       "0.4.1 - 2026-01-17T02:45:44+01:00 - Agent Activity Logging System: scripts/log-agent-activity.sh (max 20 Einträge, reverse chronological, TZ Europe/Berlin)",
       "0.4.2 - 2026-01-17T02:49:56+01:00 - Fix: dashboard.tsx TypeScript errors (bg.content→bg.main, text.primary→text.active, text.secondary→text.inactive)",
-      "0.4.3 - 2026-01-17T02:54:24+01:00 - Cleanup: Redundante Dashboard-Dateien gelöscht (src/components/layout/dashboard.tsx, src/pages/DashboardPage.tsx)"
+      "0.4.3 - 2026-01-17T02:54:24+01:00 - Cleanup: Redundante Dashboard-Dateien gelöscht (src/components/layout/dashboard.tsx, src/pages/DashboardPage.tsx)",
+      "0.4.4 - 2026-01-17T03:00:08+01:00 - Fix: navigation.tsx TypeScript errors - Config-Pfade korrigiert (ui.layout.navigation, theme.spacing, ui.tokens, components.icon.nav)"
     ]
   },
   "name": "60_hideandseek",

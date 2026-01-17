@@ -1,12 +1,13 @@
 /**
  * @file        navigation.tsx
  * @description Navigationsbereich fuer PageLayout (Startpage-ready), rendert Nav-Items inkl. Logout
- * @version     0.3.0
+ * @version     0.4.0
  * @created     2026-01-11 16:20:00 CET
- * @updated     2026-01-17T02:28:23+01:00
+ * @updated     2026-01-17T03:00:08+01:00
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.4.0 - 2026-01-17 - Config-Pfade korrigiert: ui.layout.navigation, theme.spacing, ui.tokens, components.icon.nav
  *   0.3.0 - 2026-01-17 - onNavigate callback hinzugefuegt fuer Container-Orchestrierung
  *   0.2.0 - 2026-01-11 - Desktop: 6-Spalten-Grid, Padding/Gap/Höhe aus layout.areas.navigation
  *   0.1.0 - 2026-01-11 - Extraktion aus PageLayout, Navigation-Logik gekapselt
@@ -21,7 +22,6 @@ import { appConfig } from '@/config';
 import { useAuth } from '@/context/AuthContext';
 
 const colorsConfig = appConfig.theme.colors;
-const buttonConfig = appConfig.components.button;
 
 const iconMap: Record<string, React.ElementType> = {
   package: Package,
@@ -58,14 +58,14 @@ export function NavigationArea({ style, isMobile, onNavigate }: NavigationAreaPr
     return true;
   });
 
-  const layoutNavigation = appConfig.layout.navigation as NavigationAreaConfig;
+  const layoutNavigation = appConfig.ui.layout.navigation?.style as NavigationAreaConfig | undefined;
   const navPadding =
     layoutNavigation?.padding ??
     (isMobile
-      ? `${appConfig.theme.spacing.compact} 0`
-      : `${appConfig.theme.spacing.element_gap} ${appConfig.theme.spacing.content_gap}`);
+      ? `${appConfig.theme.spacing.layout.bodyInnerGap} 0`
+      : `${appConfig.theme.spacing.layout.bodyInnerGap} ${appConfig.theme.spacing.layout.areaGap}`);
   const navGap =
-    layoutNavigation?.gap ?? (isMobile ? appConfig.theme.spacing.compact : appConfig.theme.spacing.content_gap);
+    layoutNavigation?.gap ?? (isMobile ? appConfig.theme.spacing.layout.bodyInnerGap : appConfig.theme.spacing.layout.areaGap);
   const navHeight = layoutNavigation?.height;
   const navMinHeight = layoutNavigation?.minHeight;
 
@@ -92,32 +92,32 @@ export function NavigationArea({ style, isMobile, onNavigate }: NavigationAreaPr
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: isMobile ? appConfig.theme.spacing.compact : appConfig.theme.spacing.element_gap,
+    padding: isMobile ? appConfig.theme.spacing.layout.bodyInnerGap : appConfig.theme.spacing.layout.bodyInnerGap,
     textDecoration: 'none',
-    transition: appConfig.navigation.transition,
-    backgroundColor: isHovered ? colorsConfig.black['700'] : 'transparent',
-    color: isActive ? colorsConfig.text.primary : colorsConfig.text.secondary,
+    transition: appConfig.ui.tokens.transition.fast,
+    backgroundColor: isHovered ? colorsConfig.black['700'] : colorsConfig.bg.transparent,
+    color: isActive ? colorsConfig.text.active : colorsConfig.text.inactive,
     transform:
       !isMobile && isHovered
-        ? `scale(${appConfig.navigation.hoverScale})`
-        : `scale(${appConfig.navigation.normalScale})`,
-    minHeight: isMobile ? `${appConfig.layout.rules.touchMinSizePx}px` : undefined,
-    borderRadius: isMobile ? undefined : appConfig.theme.spacing.element_gap
+        ? 'scale(1.05)'
+        : 'scale(1)',
+    minHeight: isMobile ? appConfig.ui.tokens.size.touchMin : undefined,
+    borderRadius: isMobile ? undefined : appConfig.theme.border.radius.navigation
   });
 
   const getIconContainerStyle = (isActive: boolean): CSSProperties => ({
-    padding: isMobile ? appConfig.theme.spacing.compact : appConfig.theme.spacing.element_gap,
-    borderRadius: appConfig.theme.spacing.element_gap,
-    backgroundColor: isActive ? colorsConfig.green['500'] : 'transparent',
+    padding: isMobile ? appConfig.theme.spacing.layout.bodyInnerGap : appConfig.theme.spacing.layout.bodyInnerGap,
+    borderRadius: appConfig.theme.border.radius.navigation,
+    backgroundColor: isActive ? colorsConfig.green['500'] : colorsConfig.bg.transparent,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'
   });
 
   const getIconStyle = (itemKey: string): CSSProperties => ({
-    height: buttonConfig.nav.iconSize,
-    width: buttonConfig.nav.iconSize,
-    transform: itemKey === 'glaeubiger' ? appConfig.navigation.icon.rotateGlaeubiger : undefined
+    height: appConfig.components.icon.nav.iconSize,
+    width: appConfig.components.icon.nav.iconSize,
+    transform: itemKey === 'glaeubiger' ? 'scaleX(-1)' : undefined
   });
 
   const handleLogout = async () => {
