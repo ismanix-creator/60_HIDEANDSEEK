@@ -1,9 +1,9 @@
 /**
  * @file        Table.tsx
- * @description Wiederverwendbare Table-Komponente (SEASIDE Dark Theme) - Responsive
- * @version     0.14.0
+ * @description Wiederverwendbare Table-Komponente (SEASIDE Dark Theme) - Responsive + Zentrale Table-Schemas
+ * @version     0.15.0
  * @created     2025-12-11 01:05:00 CET
- * @updated     2026-01-17T03:27:18+01:00
+ * @updated     2026-01-17T03:38:00+01:00
  * @author      Akki Scholze
  *
  * @props
@@ -13,7 +13,13 @@
  *   onRowClick - Click-Handler für Zeilen
  *   emptyMessage - Nachricht bei leerer Tabelle
  *
+ * @exports
+ *   Table - Base Table Component
+ *   getTableSchema - Schema-Lookup für TABLE_SCHEMAS
+ *   TABLE_SCHEMAS - Zentrale Table-Definitionen
+ *
  * @changelog
+ *   0.15.0 - 2026-01-17T03:38:00+01:00 - Add: Zentrales Table-Schema System (analog zu Dialog-Schemas), TABLE_SCHEMAS Registry
  *   0.14.0 - 2026-01-17T03:27:18+01:00 - Fixed: React Key Warning - keyField default 'id' + index fallback für undefined keys
  *   0.13.0 - 2026-01-14 05:50:00 - Feature: ProgressBar und StatusIcon zentral importiert und automatisch gerendert (type: progress/stock/statusMaterial/statusCommon)
  *   0.12.0 - 2026-01-11 22:30:00 - Feature: minRows Logic implementiert (table.behavior.minRows aus Config)
@@ -35,7 +41,7 @@
 // IMPORTS
 // ═══════════════════════════════════════════════════════
 import type { CSSProperties } from 'react';
-import type { TableProps, TableColumn } from '@/types/ui.types';
+import type { TableProps, TableColumn, TableSchema } from '@/types/ui.types';
 import { appConfig } from '@/config';
 import { formatCurrency, formatDate, formatNumber } from '@/utils/format';
 import { useResponsive } from '@/hooks/useResponsive';
@@ -385,4 +391,203 @@ export function Table<T>({
       </table>
     </div>
   );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+// ZENTRALE TABLE-SCHEMAS (für alle Pages)
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+/**
+ * TABLE_SCHEMAS - Zentrale Registry für Tabellendefinitionen
+ * 
+ * Struktur: pageId.tableId
+ * - material.main: Haupt-Material-Tabelle
+ * - material.historie: Material-Historie-Detail-Tabelle
+ * - kunden.main: Haupt-Kunden-Tabelle
+ * - kunden.posten: Kunden-Posten-Detail-Tabelle
+ * - schuldner.main: Haupt-Schuldner-Tabelle
+ * - glaeubiger.main: Haupt-Gläubiger-Tabelle
+ */
+
+export const TABLE_SCHEMAS: Record<string, TableSchema> = {
+  // ════════════════════════════════════════════════════════════
+  // MATERIAL PAGE
+  // ════════════════════════════════════════════════════════════
+  'material.main': {
+    id: 'material.main',
+    keyField: 'id',
+    emptyMessage: 'Keine Materialien vorhanden',
+    minRows: 10,
+    columns: [
+      { key: 'datum', label: 'Datum', type: 'date' },
+      { key: 'bezeichnung', label: 'Bezeichnung', type: 'input' },
+      { key: 'menge', label: 'Menge', type: 'number' },
+      {
+        key: 'bestand',
+        label: 'Bestand',
+        type: 'stock',
+        stockCurrent: (m) => m.bestand,
+        stockMax: (m) => m.menge
+      },
+      { key: 'ek_stueck', label: 'EK/Stück', type: 'currency' },
+      { key: 'ek_gesamt', label: 'EK Gesamt', type: 'currency' },
+      { key: 'vk_stueck', label: 'VK/Stück', type: 'currency' },
+      {
+        key: 'einnahmen',
+        label: 'Einnahmen',
+        type: 'currency',
+        render: (m) => formatCurrency((m.einnahmen_bar || 0) + (m.einnahmen_rechnung || 0))
+      },
+      {
+        key: 'theor_einnahmen',
+        label: 'Theor. Einnahmen',
+        type: 'currency',
+        render: (m) => formatCurrency((m.vk_stueck || 0) * (m.menge || 0))
+      },
+      {
+        key: 'gewinn',
+        label: 'Gewinn',
+        type: 'currency',
+        render: (m) =>
+          formatCurrency((m.einnahmen_bar || 0) + (m.einnahmen_rechnung || 0) - (m.ek_gesamt || 0))
+      },
+      {
+        key: 'actions',
+        label: 'Aktionen',
+        type: 'actions'
+        // actions werden dynamisch von der Page bereitgestellt
+      }
+    ]
+  },
+
+  'material.historie': {
+    id: 'material.historie',
+    keyField: 'id',
+    emptyMessage: 'Keine Historie vorhanden',
+    columns: [
+      { key: 'datum', label: 'Datum', type: 'date' },
+      { key: 'typ', label: 'Typ', type: 'text' },
+      { key: 'menge', label: 'Menge', type: 'number' },
+      { key: 'preis', label: 'Preis', type: 'currency' },
+      { key: 'info', label: 'Info', type: 'text' },
+      { key: 'notiz', label: 'Notiz', type: 'text' }
+    ]
+  },
+
+  // ════════════════════════════════════════════════════════════
+  // KUNDEN PAGE
+  // ════════════════════════════════════════════════════════════
+  'kunden.main': {
+    id: 'kunden.main',
+    keyField: 'id',
+    emptyMessage: 'Keine Kunden vorhanden',
+    minRows: 10,
+    columns: [
+      { key: 'name', label: 'Name', type: 'text' },
+      { key: 'adresse', label: 'Adresse', type: 'text' },
+      { key: 'plz', label: 'PLZ', type: 'text' },
+      { key: 'ort', label: 'Ort', type: 'text' },
+      { key: 'telefon', label: 'Telefon', type: 'text' },
+      { key: 'email', label: 'E-Mail', type: 'text' },
+      {
+        key: 'gesamtumsatz',
+        label: 'Gesamtumsatz',
+        type: 'currency'
+      },
+      {
+        key: 'aussenstaende',
+        label: 'Außenstände',
+        type: 'currency'
+      },
+      {
+        key: 'actions',
+        label: 'Aktionen',
+        type: 'actions'
+      }
+    ]
+  },
+
+  'kunden.posten': {
+    id: 'kunden.posten',
+    keyField: 'id',
+    emptyMessage: 'Keine Posten vorhanden',
+    columns: [
+      { key: 'datum', label: 'Datum', type: 'date' },
+      { key: 'bezeichnung', label: 'Bezeichnung', type: 'text' },
+      { key: 'menge', label: 'Menge', type: 'number' },
+      { key: 'preis', label: 'Preis', type: 'currency' },
+      {
+        key: 'status',
+        label: 'Status',
+        type: 'statusCommon',
+        statusData: (p) => ({ started: p.started || false, erledigt: p.erledigt || false })
+      },
+      {
+        key: 'actions',
+        label: 'Aktionen',
+        type: 'actions'
+      }
+    ]
+  },
+
+  // ════════════════════════════════════════════════════════════
+  // SCHULDNER PAGE
+  // ════════════════════════════════════════════════════════════
+  'schuldner.main': {
+    id: 'schuldner.main',
+    keyField: 'id',
+    emptyMessage: 'Keine Schuldner vorhanden',
+    minRows: 10,
+    columns: [
+      { key: 'name', label: 'Name', type: 'text' },
+      { key: 'adresse', label: 'Adresse', type: 'text' },
+      { key: 'schulden', label: 'Schulden', type: 'currency' },
+      {
+        key: 'status',
+        label: 'Status',
+        type: 'statusCommon',
+        statusData: (s) => ({ started: s.started || false, erledigt: s.erledigt || false })
+      },
+      {
+        key: 'actions',
+        label: 'Aktionen',
+        type: 'actions'
+      }
+    ]
+  },
+
+  // ════════════════════════════════════════════════════════════
+  // GLAEUBIGER PAGE
+  // ════════════════════════════════════════════════════════════
+  'glaeubiger.main': {
+    id: 'glaeubiger.main',
+    keyField: 'id',
+    emptyMessage: 'Keine Gläubiger vorhanden',
+    minRows: 10,
+    columns: [
+      { key: 'name', label: 'Name', type: 'text' },
+      { key: 'adresse', label: 'Adresse', type: 'text' },
+      { key: 'forderungen', label: 'Forderungen', type: 'currency' },
+      {
+        key: 'status',
+        label: 'Status',
+        type: 'statusCommon',
+        statusData: (g) => ({ started: g.started || false, erledigt: g.erledigt || false })
+      },
+      {
+        key: 'actions',
+        label: 'Aktionen',
+        type: 'actions'
+      }
+    ]
+  }
+};
+
+/**
+ * Get Table Schema by ID
+ * @param schemaId - Schema ID (e.g., 'material.main')
+ * @returns TableSchema or undefined
+ */
+export function getTableSchema(schemaId: string): TableSchema | undefined {
+  return TABLE_SCHEMAS[schemaId];
 }

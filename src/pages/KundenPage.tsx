@@ -1,12 +1,13 @@
 /**
  * @file        KundenPage.tsx
  * @description Kunden-Verwaltung mit Übersicht und Detail-Ansicht
- * @version     0.8.0
+ * @version     0.9.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-11 22:35:00 CET
+ * @updated     2026-01-17T03:30:52+01:00
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.9.0 - 2026-01-17T03:30:52+01:00 - Fixed: Config-Zugriff auf components.table.columns.kundenOverview (kunden.columns existiert nicht)
  *   0.8.0 - 2026-01-11 22:35:00 - Feature: Action Buttons mit disabled-State für Empty Rows (alle 3 Tabellen)
  *   0.7.0 - 2026-01-11 - Fixed: floating promises + unsafe-any errors
  *   0.6.0 - 2026-01-10 12:45:00 - Alle verbleibenden Hardcodes durch appConfig.* ersetzt (Phase 2.3.2 Final)
@@ -386,7 +387,7 @@ export function KundenPage() {
     }
   };
 
-  const overviewColumns = appConfig.components.table.kunden.columns.map((col) => ({
+  const overviewColumns = (appConfig.components.table.columns?.kundenOverview || []).map((col) => ({
     key: col.key,
     label: col.label,
     type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,

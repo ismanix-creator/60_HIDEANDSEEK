@@ -337,6 +337,57 @@ export interface ProgressBarProps {
   className?: string;
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+// TABLE SCHEMA SYSTEM (Zentrale Table-Definitionen für alle Pages)
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+export interface TableSchema<T = unknown> {
+  id: string; // Eindeutige Table-ID (z.B. 'material.main', 'kunden.main')
+  columns: TableColumn<T>[];
+  keyField?: string; // Default: 'id'
+  emptyMessage?: string;
+  minRows?: number; // Default: 10
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+// PAGE SCHEMA SYSTEM (Zentrale Page-Layout-Definitionen)
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+export interface PageContentSchema {
+  type: 'table' | 'grid' | 'custom';
+  tableId?: string; // Referenz auf TABLE_SCHEMAS (z.B. 'material.main')
+  tables?: string[]; // Mehrere Tables für Grid-Layout
+  customContent?: ReactNode; // Für komplexes Custom-Layout
+}
+
+export interface PageHeaderSchema {
+  title: string;
+  actions?: Array<{
+    type: 'new' | 'custom';
+    label: string;
+    onClick: () => void;
+  }>;
+  filters?: Array<{
+    type: 'month' | 'custom';
+    component: ReactNode;
+  }>;
+}
+
+export interface PageFooterSchema {
+  columns: number; // Grid-Spalten
+  widgets: Array<{
+    id: string;
+    component: ReactNode;
+  }>;
+}
+
+export interface PageSchema {
+  id: string; // Page-ID (z.B. 'material', 'kunden')
+  header: PageHeaderSchema;
+  content: PageContentSchema;
+  footer?: PageFooterSchema;
+}
+
 // ═══════════════════════════════════════════════════════
 // LAYOUT TYPES
 // ═══════════════════════════════════════════════════════
