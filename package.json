@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "version": "0.4.9",
+    "version": "0.5.0",
     "created": "2026-01-06 19:14:38 CET",
-    "updated": "2026-01-17T04:01:18+01:00",
+    "updated": "2026-01-17T04:05:00+01:00",
     "changelog": [
       "0.1.0 - 2026-01-06 - Initial scaffold",
       "0.1.1 - 2026-01-07 - DB Migration/Seed Scripts hinzugefuegt",
@@ -28,7 +28,8 @@
       "0.4.6 - 2026-01-17T03:27:18+01:00 - Fix: Table.tsx React Key Warning - keyField default 'id' + index fallback für undefined keys",
       "0.4.7 - 2026-01-17T03:42:00+01:00 - Feature: Zentrale Schema-Systeme - TABLE_SCHEMAS in Table.tsx + PAGE_SCHEMAS in pageSchemas.ts für deklarative Page-Strukturen (analog Dialog-Schemas)",
       "0.4.8 - 2026-01-17T03:59:30+01:00 - Fix: Backend-Server-Restart nach Absturz (/api/material und /api/kunden 500 Errors behoben durch Server-Neustart)",
-      "0.4.9 - 2026-01-17T04:01:18+01:00 - Feature: MaterialPage MainApp Wrapper hinzugefügt - konsistente Container-Struktur (Navigation→Header→Content→Footer) für alle 5 Pages"
+      "0.4.9 - 2026-01-17T04:01:18+01:00 - Feature: MaterialPage MainApp Wrapper hinzugefügt - konsistente Container-Struktur (Navigation→Header→Content→Footer) für alle 5 Pages",
+      "0.5.0 - 2026-01-17T04:05:00+01:00 - Refactor: Alle Pages nutzen String-Titles statt appConfig.page_titles.* (Config-Keys existieren nicht)"
     ]
   },
   "name": "60_hideandseek",

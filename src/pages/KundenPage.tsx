@@ -517,7 +517,7 @@ export function KundenPage() {
   // Render Overview
   if (view === 'overview') {
     return (
-      <MainApp title={appConfig.page_titles.customers}>
+      <MainApp title="Kunden">
         <div className="space-y-4">
           {/* Error */}
           {error && <div className="p-4 bg-red-500/10 border border-red-500 rounded text-red-400">{error}</div>}

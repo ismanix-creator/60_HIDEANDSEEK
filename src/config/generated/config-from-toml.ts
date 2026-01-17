@@ -3,7 +3,7 @@
  * @description Generated config from config.toml (do not edit)
  * @version     2.5.0
  * @created     2026-01-06 19:14:38 CET
- * @updated     2026-01-17 03:07:34 CET
+ * @updated     2026-01-17 09:13:14 CET
  * @author      Akki Scholze
  */
 
@@ -11,8 +11,8 @@ export const configFromToml = {
   "app": {
     "meta": {
       "name": "Material Tracker",
-      "version": "0.4.9",
-      "lastUpdated": "2026-01-17T04:01:18+01:00"
+      "version": "0.5.0",
+      "lastUpdated": "2026-01-17T04:05:00+01:00"
     },
     "locale": {
       "language": "de-DE",

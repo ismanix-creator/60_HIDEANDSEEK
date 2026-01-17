@@ -272,7 +272,7 @@ export function SchuldnerPage() {
   }));
 
   return (
-    <MainApp title={appConfig.page_titles.debtors}>
+    <MainApp title="Schuldner">
       <div className="space-y-4">
         {/* Error */}
         {error && <div className="p-4 bg-red-500/10 border border-red-500 rounded text-red-400">{error}</div>}
