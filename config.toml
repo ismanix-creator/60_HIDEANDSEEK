@@ -1,8 +1,8 @@
 # @file        config.toml
 # @description Single Source of Truth für App-Konfiguration (100% config-driven UI – .tsx ist Renderer-only)
-# @version     0.5.0
+# @version     0.5.1
 # @created     2026-01-06 15:35:00 CET
-# @updated     2026-01-17T04:05:00+01:00
+# @updated     2026-01-17T11:37:15+01:00
 # @author      Akki Scholze
 #
 # @rules (aus Audit abgeleitet)
@@ -16,8 +16,8 @@
 # ============================================================
 [app.meta]
 name = "Material Tracker"
-version = "0.5.0"
-lastUpdated = "2026-01-17T04:05:00+01:00"
+version = "0.5.1"
+lastUpdated = "2026-01-17T11:37:15+01:00"
 
 [app.locale]
 language = "de-DE"
@@ -73,13 +73,7 @@ roles = ["admin"]
 # NAVIGATION
 # ============================================================
 [navigation]
-items = ["dashboard", "material", "kunden", "schuldner", "glaeubiger", "settings"]
-
-[[navigation.item]]
-key = "dashboard"
-label = "Dashboard"
-path = "/"
-icon = "home"
+items = ["material", "kunden", "schuldner", "glaeubiger", "settings", "logout"]
 
 [[navigation.item]]
 key = "material"
@@ -111,6 +105,12 @@ key = "settings"
 label = "Einstellungen"
 path = "/settings"
 icon = "settings"
+
+[[navigation.item]]
+key = "logout"
+label = "Abmelden"
+path = "#"
+icon = "log-out"
 
 # ============================================================
 # THEME — COLORS (Primitives)

@@ -1,12 +1,13 @@
 /**
  * @file        navigation.tsx
  * @description Navigationsbereich fuer PageLayout (Startpage-ready), rendert Nav-Items inkl. Logout
- * @version     0.4.0
+ * @version     0.5.1
  * @created     2026-01-11 16:20:00 CET
- * @updated     2026-01-17T03:00:08+01:00
+ * @updated     2026-01-17T11:37:15+01:00
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.5.1 - 2026-01-17 - Navigation-Fix: Festes 6-Spalten-Grid, quadratische Icons, Dashboard entfernt, Logout hinzugefügt
  *   0.4.0 - 2026-01-17 - Config-Pfade korrigiert: ui.layout.navigation, theme.spacing, ui.tokens, components.icon.nav
  *   0.3.0 - 2026-01-17 - onNavigate callback hinzugefuegt fuer Container-Orchestrierung
  *   0.2.0 - 2026-01-11 - Desktop: 6-Spalten-Grid, Padding/Gap/Höhe aus layout.areas.navigation
@@ -77,11 +78,11 @@ export function NavigationArea({ style, isMobile, onNavigate }: NavigationAreaPr
     minHeight: style.minHeight ?? navMinHeight
   };
 
-  const navGridColumns = isMobile ? Math.max(filteredItems.length, 1) : 6;
+  const navGridColumns = 6;
 
   const navItemsContainerStyle: CSSProperties = {
     display: 'grid',
-    gridTemplateColumns: `repeat(${navGridColumns}, 1fr)`,
+    gridTemplateColumns: isMobile ? `repeat(${Math.max(filteredItems.length, 1)}, 1fr)` : 'repeat(6, 1fr)',
     width: '100%',
     height: '100%',
     gap: navGap,
@@ -115,6 +116,7 @@ export function NavigationArea({ style, isMobile, onNavigate }: NavigationAreaPr
   const getIconStyle = (itemKey: string): CSSProperties => ({
     height: appConfig.components.icon.nav.iconSize,
     width: appConfig.components.icon.nav.iconSize,
+    aspectRatio: '1',
     transform: itemKey === 'glaeubiger' ? 'scaleX(-1)' : undefined
   });
 
