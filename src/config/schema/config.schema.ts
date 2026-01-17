@@ -806,7 +806,10 @@ const UiTablesTableSchema = z
 
 const UiTablesHeaderStyleSchema = z
   .object({
-    textAlign: z.string()
+    textAlign: z.string(),
+    paddingY: z.string(),
+    paddingX: z.string(),
+    paddingXEdge: z.string()
   })
   .strict();
 
@@ -829,8 +832,18 @@ const UiTablesCellContentSchema = z
   })
   .strict();
 
+const UiTablesCellStyleSchema = z
+  .object({
+    paddingY: z.string(),
+    paddingX: z.string(),
+    paddingXEdge: z.string(),
+    borderTopWidth: z.string()
+  })
+  .strict();
+
 const UiTablesCellSchema = z
   .object({
+    style: UiTablesCellStyleSchema,
     content: UiTablesCellContentSchema
   })
   .strict();
@@ -1039,7 +1052,11 @@ const UiEntryInputStyleSchema = z
     transition: z.string(),
     textAlign: z.string(),
     webkitTapHighlightColorMobile: z.string(),
-    minHeightMobile: z.string()
+    minHeightMobile: z.string(),
+    fontSizeMobile: z.string(),
+    fontSizeDesktop: z.string(),
+    paddingX: z.string(),
+    paddingY: z.string()
   })
   .strict();
 
@@ -1698,8 +1715,26 @@ const UiInfoboxContentSchema = z
   })
   .strict();
 
+const UiInfoboxVariantSchema = z
+  .object({
+    bg: z.string(),
+    border: z.string(),
+    iconColor: z.string()
+  })
+  .strict();
+
+const UiInfoboxVariantsSchema = z
+  .object({
+    info: UiInfoboxVariantSchema,
+    success: UiInfoboxVariantSchema,
+    warning: UiInfoboxVariantSchema,
+    error: UiInfoboxVariantSchema
+  })
+  .strict();
+
 const UiInfoboxComponentSchema = z
   .object({
+    variants: UiInfoboxVariantsSchema,
     container: UiInfoboxContainerSchema,
     icon: UiInfoboxIconSchema,
     title: UiInfoboxTitleSchema,

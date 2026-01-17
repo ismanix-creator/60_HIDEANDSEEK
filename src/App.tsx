@@ -1,12 +1,13 @@
 /**
  * @file        App.tsx
- * @description Root-Komponente mit React Router und Navigation
- * @version     0.4.0
+ * @description DEPRECATED - Use MainApp.tsx instead (v0.4.0+)
+ * @version     0.5.0
  * @created     2026-01-06 19:14:38 CET
- * @updated     2026-01-08 01:55:00 CET
+ * @updated     2026-01-17T03:11:00+01:00
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.5.0 - 2026-01-17 - DEPRECATED: Marked as deprecated, DashboardPage removed (use MainApp.tsx)
  *   0.4.0 - 2026-01-08 - Setup und Login Pages hinzugefügt
  *   0.3.0 - 2026-01-07 - Navigation-Komponente integriert
  *   0.2.0 - 2026-01-07 - React Router Integration mit allen Pages
@@ -15,7 +16,6 @@
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import {
-  DashboardPage,
   MaterialPage,
   KundenPage,
   GlaeubigerPage,
@@ -29,7 +29,7 @@ export function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<DashboardPage />} />
+        <Route path="/" element={<Navigate to="/material" replace />} />
         <Route path="/material" element={<MaterialPage />} />
         <Route path="/kunden" element={<KundenPage />} />
         <Route path="/glaeubiger" element={<GlaeubigerPage />} />

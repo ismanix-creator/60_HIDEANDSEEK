@@ -65,7 +65,8 @@ export function NavigationArea({ style, isMobile, onNavigate }: NavigationAreaPr
       ? `${appConfig.theme.spacing.layout.bodyInnerGap} 0`
       : `${appConfig.theme.spacing.layout.bodyInnerGap} ${appConfig.theme.spacing.layout.areaGap}`);
   const navGap =
-    layoutNavigation?.gap ?? (isMobile ? appConfig.theme.spacing.layout.bodyInnerGap : appConfig.theme.spacing.layout.areaGap);
+    layoutNavigation?.gap ??
+    (isMobile ? appConfig.theme.spacing.layout.bodyInnerGap : appConfig.theme.spacing.layout.areaGap);
   const navHeight = layoutNavigation?.height;
   const navMinHeight = layoutNavigation?.minHeight;
 
@@ -97,10 +98,7 @@ export function NavigationArea({ style, isMobile, onNavigate }: NavigationAreaPr
     transition: appConfig.ui.tokens.transition.fast,
     backgroundColor: isHovered ? colorsConfig.black['700'] : colorsConfig.bg.transparent,
     color: isActive ? colorsConfig.text.active : colorsConfig.text.inactive,
-    transform:
-      !isMobile && isHovered
-        ? 'scale(1.05)'
-        : 'scale(1)',
+    transform: !isMobile && isHovered ? 'scale(1.05)' : 'scale(1)',
     minHeight: isMobile ? appConfig.ui.tokens.size.touchMin : undefined,
     borderRadius: isMobile ? undefined : appConfig.theme.border.radius.navigation
   });

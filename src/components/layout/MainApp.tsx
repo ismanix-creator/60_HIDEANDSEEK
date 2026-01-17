@@ -26,7 +26,7 @@ export interface MainAppProps {
 
 export function MainApp({ title, children, footer, footerColumns = 2 }: MainAppProps) {
   const { isMobile } = useResponsive();
-  
+
   const containerStyle: CSSProperties = {
     padding: appConfig.theme.spacing.layout?.areaPadding || '1rem'
   };
@@ -49,7 +49,7 @@ export function MainApp({ title, children, footer, footerColumns = 2 }: MainAppP
     backgroundColor: appConfig.theme.colors.bg?.footer || '#000',
     padding: appConfig.theme.spacing.layout?.areaPadding || '1rem'
   };
-  
+
   return (
     <div style={containerStyle}>
       <NavigationArea style={navStyle} isMobile={isMobile} />
@@ -63,7 +63,9 @@ export function MainApp({ title, children, footer, footerColumns = 2 }: MainAppP
       </div>
       {footer && (
         <div style={spacingStyle}>
-          <FooterArea style={footerStyle} columns={footerColumns}>{footer}</FooterArea>
+          <FooterArea style={footerStyle} columns={footerColumns}>
+            {footer}
+          </FooterArea>
         </div>
       )}
     </div>
