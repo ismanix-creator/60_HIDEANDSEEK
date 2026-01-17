@@ -727,7 +727,7 @@ export function DialogDynamic({
                 label={field.label}
                 value={stringValue}
                 onChange={handleFieldChange}
-                options={field.options}
+                options={field.options || []}
                 required={field.required}
                 disabled={field.disabled}
               />

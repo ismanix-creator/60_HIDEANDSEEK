@@ -106,11 +106,9 @@ export function SettingsPage() {
 
   if (loading) {
     return (
-      <MainApp title="Einstellungen">
-        <div className="flex items-center justify-center h-64">
-          <p className="text-neutral-400">Laden...</p>
-        </div>
-      </MainApp>
+      <div className="flex items-center justify-center h-64">
+        <p className="text-neutral-400">Laden...</p>
+      </div>
     );
   }
 
