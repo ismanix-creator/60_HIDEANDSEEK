@@ -1,12 +1,13 @@
 /**
  * @file        KundenPage.tsx
  * @description Kunden-Verwaltung mit Übersicht und Detail-Ansicht
- * @version     1.0.0
+ * @version     1.0.1
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-17 20:11:08 CET
+ * @updated     2026-01-17T20:53:30+01:00
  * @author      Akki Scholze
  *
  * @changelog
+ *   1.0.1 - 2026-01-17 - Conditional rendering: Alle Tables nur anzeigen wenn Daten vorhanden
  *   1.0.0 - 2026-01-17 - Refactor: 3-Spalten 2-Zeilen Grid-Layout im Overview implementiert, Zurück-Button hinzugefügt
  *   0.9.0 - 2026-01-17T03:30:52+01:00 - Fixed: Config-Zugriff auf components.table.columns.kundenOverview (kunden.columns existiert nicht)
  *   0.8.0 - 2026-01-11 22:35:00 - Feature: Action Buttons mit disabled-State für Empty Rows (alle 3 Tabellen)
@@ -568,16 +569,18 @@ export function KundenPage() {
             </div>
           )}
 
-          {/* Zeile 2: Table über alle 3 Spalten */}
-          <div style={tableRowStyle}>
-            <Table
-              data={kunden}
-              columns={overviewColumns}
-              loading={loading}
-              emptyMessage={appConfig.ui.empty.kunden}
-              onRowClick={handleRowClick}
-            />
-          </div>
+          {/* Zeile 2: Table über alle 3 Spalten - nur wenn Daten vorhanden */}
+          {kunden.length > 0 && (
+            <div style={tableRowStyle}>
+              <Table
+                data={kunden}
+                columns={overviewColumns}
+                loading={loading}
+                emptyMessage={appConfig.ui.empty.kunden}
+                onRowClick={handleRowClick}
+              />
+            </div>
+          )}
 
         {/* Create Kunde Dialog */}
         <Dialog
@@ -687,21 +690,23 @@ export function KundenPage() {
           </div>
         </div>
 
-        {/* Material-Posten */}
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <h3 className="text-xl font-semibold text-neutral-50">Material-Posten</h3>
-            <Button.Rect type="setup" onClick={() => setCreatePostenMatDialogOpen(true)}>
-              Neuer Material-Posten
-            </Button.Rect>
+        {/* Material-Posten - nur anzeigen wenn Daten vorhanden */}
+        {postenMat.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold text-neutral-50">Material-Posten</h3>
+              <Button.Rect type="setup" onClick={() => setCreatePostenMatDialogOpen(true)}>
+                Neuer Material-Posten
+              </Button.Rect>
+            </div>
+            <Table
+              data={postenMat}
+              columns={postenMatColumns}
+              loading={detailLoading}
+              emptyMessage={appConfig.ui.empty.postenMat}
+            />
           </div>
-          <Table
-            data={postenMat}
-            columns={postenMatColumns}
-            loading={detailLoading}
-            emptyMessage={appConfig.ui.empty.postenMat}
-          />
-        </div>
+        )}
 
         {/* Sonstige Posten */}
         {postenNoMat.length > 0 && (

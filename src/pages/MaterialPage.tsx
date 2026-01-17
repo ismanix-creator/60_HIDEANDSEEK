@@ -1,12 +1,13 @@
 /**
  * @file        MaterialPage.tsx
  * @description Material-Verwaltung mit 3-Spalten-Grid Layout
- * @version     2.1.0
+ * @version     2.1.1
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-17 04:01:18 CET
+ * @updated     2026-01-17T20:53:30+01:00
  * @author      Akki Scholze
  *
  * @changelog
+ *   2.1.1 - 2026-01-17 - Conditional rendering: Table nur anzeigen wenn Daten vorhanden
  *   2.1.0 - 2026-01-17 - Feature: MainApp Wrapper hinzugefügt für konsistente Page-Struktur (Navigation→Header→Content→Footer)
  *   2.0.0 - 2026-01-16 - Refactor: 3-Spalten-Grid Layout, kein MainApp Wrapper, config-driven
  *   1.6.1 - 2026-01-12 - Material-Tabelle: Fortschrittsbalken sichtbar gemacht
@@ -552,16 +553,18 @@ export function MaterialPage() {
         </div>
       )}
 
-      {/* Zeile 2: Table über alle 3 Spalten */}
-      <div style={tableRowStyle}>
-        <Table
-          data={filteredMaterialien}
-          columns={columns}
-          loading={loading}
-          emptyMessage="Keine Materialien vorhanden"
-          onRowClick={(m) => void openHistorieDialog(m)}
-        />
-      </div>
+      {/* Zeile 2: Table über alle 3 Spalten - nur wenn Daten vorhanden */}
+      {filteredMaterialien.length > 0 && (
+        <div style={tableRowStyle}>
+          <Table
+            data={filteredMaterialien}
+            columns={columns}
+            loading={loading}
+            emptyMessage="Keine Materialien vorhanden"
+            onRowClick={(m) => void openHistorieDialog(m)}
+          />
+        </div>
+      )}
 
       {/* Dialoge (unverändert - zu lang für Inline) */}
       <Dialog

@@ -1,12 +1,13 @@
 /**
  * @file        GlaeubigerPage.tsx
  * @description Gläubiger-Verwaltung Seite
- * @version     2.0.0
+ * @version     2.0.1
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-17 20:11:08 CET
+ * @updated     2026-01-17T20:53:30+01:00
  * @author      Akki Scholze
  *
  * @changelog
+ *   2.0.1 - 2026-01-17 - Conditional rendering: Table nur anzeigen wenn Daten vorhanden
  *   2.0.0 - 2026-01-17 - Refactor: 3-Spalten 2-Zeilen Grid-Layout implementiert, Zurück-Button hinzugefügt
  *   1.2.0 - 2026-01-11 22:35:00 - Feature: Action Buttons mit disabled-State für Empty Rows
  *   1.1.0 - 2026-01-11 - Fixed: floating promises + type signatures
@@ -315,16 +316,18 @@ export function GlaeubigerPage() {
           </div>
         )}
 
-        {/* Zeile 2: Table über alle 3 Spalten */}
-        <div style={tableRowStyle}>
-          <Table
-            data={glaeubiger}
-            columns={columns}
-            loading={loading}
-            emptyMessage={appConfig.ui.empty.glaeubiger}
-            onRowClick={(g) => openHistorieDialog(g)}
-          />
-        </div>
+        {/* Zeile 2: Table über alle 3 Spalten - nur wenn Daten vorhanden */}
+        {glaeubiger.length > 0 && (
+          <div style={tableRowStyle}>
+            <Table
+              data={glaeubiger}
+              columns={columns}
+              loading={loading}
+              emptyMessage={appConfig.ui.empty.glaeubiger}
+              onRowClick={(g) => openHistorieDialog(g)}
+            />
+          </div>
+        )}
 
         {/* Create Dialog */}
         <Dialog
