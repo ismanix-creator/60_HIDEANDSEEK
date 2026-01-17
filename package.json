@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "version": "0.5.1",
+    "version": "0.5.2",
     "created": "2026-01-06 19:14:38 CET",
-    "updated": "2026-01-17T11:37:15+01:00",
+    "updated": "2026-01-17T20:39:35+01:00",
     "changelog": [
       "0.1.0 - 2026-01-06 - Initial scaffold",
       "0.1.1 - 2026-01-07 - DB Migration/Seed Scripts hinzugefuegt",
@@ -13,6 +13,7 @@
       "0.1.6 - 2026-01-08 - Deleted src/config/env.ts - ENV auto-loads from project root .env via standard dotenv",
       "0.1.7 - 2026-01-08 - Playwright Tests laden nun .env via env:pull, hardcoded URLs aus README entfernt",
       "0.1.8 - 2026-01-16 - restart + kill:servers Scripts hinzugefuegt",
+      "0.5.2 - 2026-01-17 - Schema sync: app.auth + theme.typography.fontSize.small/xsmall added"
       "0.1.9 - 2026-01-16 - AgentOS Tool-Hierarchie verschaerft (Serena/Context7/sequentialthinking/time/filesystem MANDATORY), A01 auf reine Koordination beschraenkt, npm-Skripte bereinigt",
       "0.2.0 - 2026-01-16 - UI Components 100% config-driven: Button.tsx (5 Typen), Dialog.tsx, Input.tsx, Select.tsx - alle Style-Hardcodes entfernt (border/cursor/display/alignItems/justifyContent/transition/outline/backgroundColor/opacity)",
       "0.2.1 - 2026-01-16 - generate:config fix + Divider config ausgelagert",
@@ -93,6 +94,7 @@
     "postcss": "^8.4.49",
     "prettier": "^3.4.2",
     "tailwindcss": "^3.4.17",
+    "toml": "^3.0.0",
     "tsx": "^4.19.2",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.18.2",

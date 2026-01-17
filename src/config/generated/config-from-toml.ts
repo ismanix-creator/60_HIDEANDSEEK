@@ -3,7 +3,7 @@
  * @description Generated config from config.toml (do not edit)
  * @version     2.5.0
  * @created     2026-01-06 19:14:38 CET
- * @updated     2026-01-17 19:01:13 CET
+ * @updated     2026-01-17 19:39:28 CET
  * @author      Akki Scholze
  */
 

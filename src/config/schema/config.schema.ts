@@ -62,12 +62,19 @@ const AppServerSchema = z
   })
   .strict();
 
+const AppAuthSchema = z
+  .object({
+    enabled: z.boolean()
+  })
+  .strict();
+
 const AppSchema = z
   .object({
     meta: AppMetaSchema,
     locale: AppLocaleSchema,
     database: AppDatabaseSchema,
-    server: AppServerSchema
+    server: AppServerSchema,
+    auth: AppAuthSchema
   })
   .strict();
 
@@ -338,7 +345,9 @@ const ThemeTypographyFontSizeSchema = z
     formLabel: z.string(),
     formInsert: z.string(),
     formHint: z.string(),
-    formMessage: z.string()
+    formMessage: z.string(),
+    small: z.string(),
+    xsmall: z.string()
   })
   .strict();
 
