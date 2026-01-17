@@ -1,19 +1,20 @@
 /**
  * @file        Table.tsx
  * @description Wiederverwendbare Table-Komponente (SEASIDE Dark Theme) - Responsive
- * @version     0.13.0
+ * @version     0.14.0
  * @created     2025-12-11 01:05:00 CET
- * @updated     2026-01-14 05:50:00 CET
+ * @updated     2026-01-17T03:27:18+01:00
  * @author      Akki Scholze
  *
  * @props
  *   columns - Spaltendefinitionen
  *   data - Tabellendaten
- *   keyField - Eindeutiges Schlüsselfeld
+ *   keyField - Eindeutiges Schlüsselfeld (optional, default: 'id')
  *   onRowClick - Click-Handler für Zeilen
  *   emptyMessage - Nachricht bei leerer Tabelle
  *
  * @changelog
+ *   0.14.0 - 2026-01-17T03:27:18+01:00 - Fixed: React Key Warning - keyField default 'id' + index fallback für undefined keys
  *   0.13.0 - 2026-01-14 05:50:00 - Feature: ProgressBar und StatusIcon zentral importiert und automatisch gerendert (type: progress/stock/statusMaterial/statusCommon)
  *   0.12.0 - 2026-01-11 22:30:00 - Feature: minRows Logic implementiert (table.behavior.minRows aus Config)
  *   0.11.0 - 2026-01-11 - Fixed: Config-Zugriff auf appConfig.components.table statt appConfig.components.table (Config-Struktur-Migration)
@@ -306,7 +307,10 @@ export function Table<T>({
         <tbody>
           {rowsToRender.map((item, rowIndex) => {
             const empty = isEmptyRow(item);
-            const rowKey = empty ? item.id : String(item[keyField as keyof T]);
+            // Use keyField (default 'id'), fallback to index if undefined
+            const keyFieldToUse = keyField || 'id';
+            const keyValue = empty ? item.id : item[keyFieldToUse as keyof T];
+            const rowKey = keyValue !== undefined ? String(keyValue) : `row-${rowIndex}`;
             return (
               <tr
                 key={rowKey}
