@@ -231,37 +231,44 @@ export function SchuldnerPage() {
     key: col.key,
     label: col.label,
     type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
-    render: col.key === 'datum' ? (s: Schuldner) => formatDate(s.datum) :
-            col.key === 'betrag' ? (s: Schuldner) => formatCurrency(s.betrag) :
-            col.key === 'bezahlt' ? (s: Schuldner) => formatCurrency(s.bezahlt) :
-            col.key === 'offen' ? (s: Schuldner) => formatCurrency(s.offen) :
-            col.key === 'faelligkeit' ? (s: Schuldner) => (s.faelligkeit ? formatDate(s.faelligkeit) : '-') :
-            col.key === 'status' ? (s: Schuldner) => (
-              <span
-                className={`px-2 py-1 rounded text-sm ${
-                  s.status === 'bezahlt'
-                    ? 'bg-green-500/20 text-green-300'
-                    : s.status === 'teilbezahlt'
-                      ? 'bg-yellow-500/20 text-yellow-300'
-                      : 'bg-red-500/20 text-red-300'
-                }`}
-              >
-                {s.status === 'bezahlt'
-                  ? 'Bezahlt'
-                  : s.status === 'teilbezahlt'
-                    ? 'Teilbezahlt'
-                    : 'Offen'}
-              </span>
-            ) : undefined,
-    actions: col.key === 'actions' ? (s: Schuldner) => {
-      const acts = [];
-      if (!isEmptyRow(s) && s.offen > 0) {
-        acts.push({ type: 'zahlung' as const, onClick: () => void openZahlungDialog(s) });
-      }
-      acts.push({ type: 'edit' as const, onClick: () => void openEditDialog(s) });
-      acts.push({ type: 'delete' as const, onClick: () => void openDeleteDialog(s) });
-      return acts;
-    } : undefined
+    render:
+      col.key === 'datum'
+        ? (s: Schuldner) => formatDate(s.datum)
+        : col.key === 'betrag'
+          ? (s: Schuldner) => formatCurrency(s.betrag)
+          : col.key === 'bezahlt'
+            ? (s: Schuldner) => formatCurrency(s.bezahlt)
+            : col.key === 'offen'
+              ? (s: Schuldner) => formatCurrency(s.offen)
+              : col.key === 'faelligkeit'
+                ? (s: Schuldner) => (s.faelligkeit ? formatDate(s.faelligkeit) : '-')
+                : col.key === 'status'
+                  ? (s: Schuldner) => (
+                      <span
+                        className={`px-2 py-1 rounded text-sm ${
+                          s.status === 'bezahlt'
+                            ? 'bg-green-500/20 text-green-300'
+                            : s.status === 'teilbezahlt'
+                              ? 'bg-yellow-500/20 text-yellow-300'
+                              : 'bg-red-500/20 text-red-300'
+                        }`}
+                      >
+                        {s.status === 'bezahlt' ? 'Bezahlt' : s.status === 'teilbezahlt' ? 'Teilbezahlt' : 'Offen'}
+                      </span>
+                    )
+                  : undefined,
+    actions:
+      col.key === 'actions'
+        ? (s: Schuldner) => {
+            const acts = [];
+            if (!isEmptyRow(s) && s.offen > 0) {
+              acts.push({ type: 'zahlung' as const, onClick: () => void openZahlungDialog(s) });
+            }
+            acts.push({ type: 'edit' as const, onClick: () => void openEditDialog(s) });
+            acts.push({ type: 'delete' as const, onClick: () => void openDeleteDialog(s) });
+            return acts;
+          }
+        : undefined
   }));
 
   return (
@@ -411,9 +418,7 @@ export function SchuldnerPage() {
                   setSelectedSchuldner(null);
                 }}
               />
-              <Button.Rect onClick={() => void handleDelete()}>
-                {appConfig.components.buttons.delete}
-              </Button.Rect>
+              <Button.Rect onClick={() => void handleDelete()}>{appConfig.components.buttons.delete}</Button.Rect>
             </>
           }
         >

@@ -30,6 +30,7 @@ Die `ProgressBar`-Komponente bietet 3 Varianten für unterschiedliche Anwendungs
 ## Konfiguration (config.toml)
 
 ### Base Config
+
 ```toml
 [components.progressbar]
 height = "18px"
@@ -38,6 +39,7 @@ padding = "2px"
 ```
 
 ### Variante: progressPercent (0→100%)
+
 ```toml
 [components.progressbar.scale.progressPercent]
 themeScalePath = "theme.colors.progress"
@@ -50,6 +52,7 @@ unit = "%"
 ```
 
 ### Variante: progressPercent110 (0→110%)
+
 ```toml
 [components.progressbar.scale.progressPercent110]
 themeScalePath = "theme.colors.progress"
@@ -63,6 +66,7 @@ unit = "%"
 ```
 
 ### Variante: stock (Bestand, inverted)
+
 ```toml
 [components.progressbar.scale.stock]
 themeScalePath = "theme.colors.progress"
@@ -72,6 +76,7 @@ unit = ""  # keine Einheit (zeigt reale Zahl)
 ```
 
 ### Farbskala (theme.colors.progress)
+
 ```toml
 [theme.colors.progress]
 "0" = "#7a7a7a"    # Grau (leer/0%)
@@ -91,11 +96,13 @@ unit = ""  # keine Einheit (zeigt reale Zahl)
 ## Verwendung
 
 ### Import
+
 ```tsx
 import { ProgressBar } from '@/components/ui';
 ```
 
 ### Beispiel 1: Fortschritt 0→100%
+
 ```tsx
 // Kunde hat 75% bezahlt
 <ProgressBar variant="progressPercent" value={75} />
@@ -103,6 +110,7 @@ import { ProgressBar } from '@/components/ui';
 ```
 
 ### Beispiel 2: Fortschritt 0→110% (Überzahlung)
+
 ```tsx
 // Kunde hat 110% bezahlt
 <ProgressBar variant="progressPercent110" value={110} />
@@ -110,6 +118,7 @@ import { ProgressBar } from '@/components/ui';
 ```
 
 ### Beispiel 3: Bestand (inverted)
+
 ```tsx
 // Material: 30 Stück von 50 verfügbar
 <ProgressBar variant="stock" current={30} max={50} />
@@ -121,47 +130,50 @@ import { ProgressBar } from '@/components/ui';
 ## Integration in Tabellen
 
 ### Material-Tabelle (Bestand)
+
 ```tsx
 // columns definition
 {
   key: 'bestand',
   label: 'Bestand',
   render: (row) => (
-    <ProgressBar 
-      variant="stock" 
+    <ProgressBar
+      variant="stock"
       current={row.menge - row.gebucht}  // Bestand = Menge - Gebucht
-      max={row.menge} 
+      max={row.menge}
     />
   )
 }
 ```
 
 ### Kunden-Tabelle (Fortschritt)
+
 ```tsx
 // columns definition
 {
   key: 'fortschritt',
   label: 'Fortschritt',
   render: (row) => {
-    const percent = row.gesamt > 0 
-      ? (row.bezahlt / row.gesamt) * 100 
+    const percent = row.gesamt > 0
+      ? (row.bezahlt / row.gesamt) * 100
       : 0;
-    
+
     return <ProgressBar variant="progressPercent" value={percent} />;
   }
 }
 ```
 
 ### Schuldner/Gläubiger-Tabelle
+
 ```tsx
 {
   key: 'fortschritt',
   label: 'Fortschritt',
   render: (row) => {
-    const percent = row.betrag > 0 
-      ? (row.bezahlt / row.betrag) * 100 
+    const percent = row.betrag > 0
+      ? (row.bezahlt / row.betrag) * 100
       : 0;
-    
+
     return <ProgressBar variant="progressPercent" value={percent} />;
   }
 }
@@ -208,6 +220,7 @@ export interface ProgressBarProps {
 ## Styling-Regeln (100% config-driven)
 
 ❌ **VERBOTEN in .tsx:**
+
 - `display: flex/grid`
 - `alignItems/justifyContent`
 - `cursor`
@@ -217,6 +230,7 @@ export interface ProgressBarProps {
 - `backgroundColor: 'transparent'`
 
 ✅ **ERLAUBT (aus config):**
+
 - `components.progressbar.height`
 - `components.progressbar.radius`
 - `components.progressbar.padding`

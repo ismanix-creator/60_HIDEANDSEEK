@@ -21,7 +21,7 @@ export interface Material {
   vk_stueck: number;
   bestand: number;
   einnahmen_bar: number;
-  einnahmen_kombi: number;
+  einnahmen_rechnung: number;
   gewinn_aktuell: number;
   gewinn_theoretisch: number;
   notiz?: string;
@@ -41,7 +41,7 @@ export interface MaterialBewegungBar {
   created_at: string;
 }
 
-export interface MaterialBewegungKombi {
+export interface MaterialBewegungRechnung {
   id: number;
   material_id: number;
   kunde_id: number;
@@ -54,7 +54,7 @@ export interface MaterialBewegungKombi {
 
 export interface MaterialHistorieItem {
   datum: string;
-  typ: 'bar' | 'kombi';
+  typ: 'bar' | 'rechnung';
   menge: number;
   preis: number;
   kunde_name?: string;
@@ -151,7 +151,7 @@ export interface CreateMaterialRequest {
   vk_stueck: number;
   bestand: number;
   einnahmen_bar?: number;
-  einnahmen_kombi?: number;
+  einnahmen_rechnung?: number;
   gewinn_aktuell?: number;
   gewinn_theoretisch?: number;
   notiz?: string;
@@ -170,7 +170,7 @@ export interface CreateBarBewegungRequest {
   notiz?: string;
 }
 
-export interface CreateKombiBewegungRequest {
+export interface CreateRechnungBewegungRequest {
   material_id: number;
   kunde_id: number;
   datum: string;

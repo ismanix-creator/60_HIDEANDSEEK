@@ -25,7 +25,7 @@ export type MaterialRecord = {
   vk_stueck: number;
   bestand: number;
   einnahmen_bar: number;
-  einnahmen_kombi: number;
+  einnahmen_rechnung: number;
   gewinn_aktuell: number;
   gewinn_theoretisch: number;
   notiz: string | null;
@@ -56,7 +56,7 @@ export function createMaterial(db: Database.Database, input: Omit<MaterialRecord
   const stmt = db.prepare(`
     INSERT INTO material (
       datum, bezeichnung, menge, ek_stueck, ek_gesamt, vk_stueck,
-      bestand, einnahmen_bar, einnahmen_kombi, gewinn_aktuell, gewinn_theoretisch, notiz,
+      bestand, einnahmen_bar, einnahmen_rechnung, gewinn_aktuell, gewinn_theoretisch, notiz,
       created_at, updated_at
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
@@ -69,7 +69,7 @@ export function createMaterial(db: Database.Database, input: Omit<MaterialRecord
     input.vk_stueck,
     input.bestand,
     input.einnahmen_bar,
-    input.einnahmen_kombi,
+    input.einnahmen_rechnung,
     input.gewinn_aktuell,
     input.gewinn_theoretisch,
     input.notiz ?? null,
@@ -103,7 +103,7 @@ export function updateMaterial(
       vk_stueck = ?,
       bestand = ?,
       einnahmen_bar = ?,
-      einnahmen_kombi = ?,
+      einnahmen_rechnung = ?,
       gewinn_aktuell = ?,
       gewinn_theoretisch = ?,
       notiz = ?,
@@ -120,7 +120,7 @@ export function updateMaterial(
     updated.vk_stueck,
     updated.bestand,
     updated.einnahmen_bar,
-    updated.einnahmen_kombi,
+    updated.einnahmen_rechnung,
     updated.gewinn_aktuell,
     updated.gewinn_theoretisch,
     updated.notiz,
@@ -145,10 +145,10 @@ export function listBarMovements(db: Database.Database, materialId?: number): an
   return materialId ? stmt.all(materialId) : stmt.all();
 }
 
-export function listKombiMovements(db: Database.Database, materialId?: number): any[] {
+export function listRechnungMovements(db: Database.Database, materialId?: number): any[] {
   const stmt = materialId
-    ? db.prepare('SELECT * FROM material_bewegungen_kombi WHERE material_id = ? ORDER BY datum DESC, id DESC')
-    : db.prepare('SELECT * FROM material_bewegungen_kombi ORDER BY datum DESC, id DESC');
+    ? db.prepare('SELECT * FROM material_bewegungen_rechnung WHERE material_id = ? ORDER BY datum DESC, id DESC')
+    : db.prepare('SELECT * FROM material_bewegungen_rechnung ORDER BY datum DESC, id DESC');
   return materialId ? stmt.all(materialId) : stmt.all();
 }
 
@@ -190,7 +190,7 @@ export function createBarMovement(
   return { success: true };
 }
 
-export function createKombiMovement(
+export function createRechnungMovement(
   db: Database.Database,
   input: { material_id: number; kunde_id: number; datum: string; menge: number; preis: number; notiz?: string }
 ) {
@@ -201,7 +201,7 @@ export function createKombiMovement(
   }
 
   const insertStmt = db.prepare(`
-    INSERT INTO material_bewegungen_kombi (
+    INSERT INTO material_bewegungen_rechnung (
       material_id, kunde_id, datum, menge, preis, notiz, created_at
     ) VALUES (?, ?, ?, ?, ?, ?, ?)
   `);
@@ -209,12 +209,12 @@ export function createKombiMovement(
 
   const updateStmt = db.prepare(`
     UPDATE material
-    SET bestand = ?, einnahmen_kombi = ?, updated_at = ?
+    SET bestand = ?, einnahmen_rechnung = ?, updated_at = ?
     WHERE id = ?
   `);
   const runTransaction = db.transaction(() => {
     insertStmt.run(input.material_id, input.kunde_id, input.datum, input.menge, input.preis, input.notiz ?? null, now);
-    updateStmt.run(material.bestand - input.menge, material.einnahmen_kombi + input.preis, now, input.material_id);
+    updateStmt.run(material.bestand - input.menge, material.einnahmen_rechnung + input.preis, now, input.material_id);
   });
   runTransaction();
 
@@ -223,8 +223,8 @@ export function createKombiMovement(
 
 export function getMaterialHistorie(db: Database.Database, materialId: number) {
   const bar = listBarMovements(db, materialId).map((item) => ({ ...item, typ: 'bar' as const }));
-  const kombi = listKombiMovements(db, materialId).map((item) => ({ ...item, typ: 'kombi' as const }));
-  const combined = [...bar, ...kombi].sort((a, b) => {
+  const rechnung = listRechnungMovements(db, materialId).map((item) => ({ ...item, typ: 'rechnung' as const }));
+  const combined = [...bar, ...rechnung].sort((a, b) => {
     const dateA = Date.parse(a.datum);
     const dateB = Date.parse(b.datum);
     if (!Number.isNaN(dateA) && !Number.isNaN(dateB) && dateA !== dateB) {

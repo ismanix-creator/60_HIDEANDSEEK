@@ -1,8 +1,8 @@
 # @file        config.toml
 # @description Single Source of Truth für App-Konfiguration (100% config-driven UI – .tsx ist Renderer-only)
-# @version     5.0.0
+# @version     5.1.0
 # @created     2026-01-06 15:35:00 CET
-# @updated     2026-01-16 02:18:45 CET
+# @updated     2026-01-17 01:36:42 CET
 # @author      Akki Scholze
 #
 # @rules (aus Audit abgeleitet)
@@ -16,8 +16,8 @@
 # ============================================================
 [app.meta]
 name = "Material Tracker"
-version = "0.2.3"
-lastUpdated = "2026-01-16T02:18:45+01:00"
+version = "0.3.0"
+lastUpdated = "2026-01-17T00:04:08+01:00"
 
 [app.locale]
 language = "de-DE"
@@ -872,6 +872,17 @@ flexDirection = "column"
 overflow = "hidden"
 
 # --- Pages (Material/Kunden/Settings etc.)
+[ui.pages.grid.style]
+display = "grid"
+gridTemplateColumns = "repeat(3, 1fr)"
+gap = "1rem"
+
+[ui.pages.grid.buttonRow.style]
+display = "contents"
+
+[ui.pages.grid.tableRow.style]
+gridColumn = "1 / -1"
+
 [ui.pages.buttonsContainer.style]
 display = "flex"
 justifyContent = "flex-end"

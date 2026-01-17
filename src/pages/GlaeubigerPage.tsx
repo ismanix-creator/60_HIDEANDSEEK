@@ -230,33 +230,44 @@ export function GlaeubigerPage() {
     key: col.key,
     label: col.label,
     type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
-    render: col.key === 'datum' ? (g: Glaeubiger) => formatDate(g.datum) :
-            col.key === 'betrag' ? (g: Glaeubiger) => formatCurrency(g.betrag) :
-            col.key === 'bezahlt' ? (g: Glaeubiger) => formatCurrency(g.bezahlt) :
-            col.key === 'offen' ? (g: Glaeubiger) => formatCurrency(g.offen) :
-            col.key === 'faelligkeit' ? (g: Glaeubiger) => (g.faelligkeit ? formatDate(g.faelligkeit) : '-') :
-            col.key === 'status' ? (g: Glaeubiger) => (
-              <span
-                className={`px-2 py-1 rounded text-sm ${
-                  g.status === 'bezahlt'
-                    ? 'bg-green-500/20 text-green-300'
-                    : g.status === 'teilbezahlt'
-                      ? 'bg-yellow-500/20 text-yellow-300'
-                      : 'bg-red-500/20 text-red-300'
-                }`}
-              >
-                {g.status === 'bezahlt' ? 'Bezahlt' : g.status === 'teilbezahlt' ? 'Teilbezahlt' : 'Offen'}
-              </span>
-            ) : undefined,
-    actions: col.key === 'actions' ? (g: Glaeubiger) => {
-      const acts = [];
-      if (!isEmptyRow(g) && g.offen > 0) {
-        acts.push({ type: 'zahlung' as const, onClick: () => void openZahlungDialog(g) });
-      }
-      acts.push({ type: 'edit' as const, onClick: () => void openEditDialog(g) });
-      acts.push({ type: 'delete' as const, onClick: () => void openDeleteDialog(g) });
-      return acts;
-    } : undefined
+    render:
+      col.key === 'datum'
+        ? (g: Glaeubiger) => formatDate(g.datum)
+        : col.key === 'betrag'
+          ? (g: Glaeubiger) => formatCurrency(g.betrag)
+          : col.key === 'bezahlt'
+            ? (g: Glaeubiger) => formatCurrency(g.bezahlt)
+            : col.key === 'offen'
+              ? (g: Glaeubiger) => formatCurrency(g.offen)
+              : col.key === 'faelligkeit'
+                ? (g: Glaeubiger) => (g.faelligkeit ? formatDate(g.faelligkeit) : '-')
+                : col.key === 'status'
+                  ? (g: Glaeubiger) => (
+                      <span
+                        className={`px-2 py-1 rounded text-sm ${
+                          g.status === 'bezahlt'
+                            ? 'bg-green-500/20 text-green-300'
+                            : g.status === 'teilbezahlt'
+                              ? 'bg-yellow-500/20 text-yellow-300'
+                              : 'bg-red-500/20 text-red-300'
+                        }`}
+                      >
+                        {g.status === 'bezahlt' ? 'Bezahlt' : g.status === 'teilbezahlt' ? 'Teilbezahlt' : 'Offen'}
+                      </span>
+                    )
+                  : undefined,
+    actions:
+      col.key === 'actions'
+        ? (g: Glaeubiger) => {
+            const acts = [];
+            if (!isEmptyRow(g) && g.offen > 0) {
+              acts.push({ type: 'zahlung' as const, onClick: () => void openZahlungDialog(g) });
+            }
+            acts.push({ type: 'edit' as const, onClick: () => void openEditDialog(g) });
+            acts.push({ type: 'delete' as const, onClick: () => void openDeleteDialog(g) });
+            return acts;
+          }
+        : undefined
   }));
 
   return (
@@ -406,9 +417,7 @@ export function GlaeubigerPage() {
                   setSelectedGlaeubiger(null);
                 }}
               />
-              <Button.Rect onClick={() => void handleDelete()}>
-                {appConfig.components.buttons.delete}
-              </Button.Rect>
+              <Button.Rect onClick={() => void handleDelete()}>{appConfig.components.buttons.delete}</Button.Rect>
             </>
           }
         >

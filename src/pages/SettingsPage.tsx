@@ -222,6 +222,6 @@ export function SettingsPage() {
           </Button>
         </section>
       </div>
-    </PageLayout>
+    </MainApp>
   );
 }

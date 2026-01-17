@@ -17,7 +17,7 @@ import { fromZodError } from '../errors.js';
 import {
   barMovementSchema,
   historieQuerySchema,
-  kombiMovementSchema,
+  rechnungMovementSchema,
   listMovementsQuerySchema,
   materialCreateSchema,
   materialIdParamSchema,
@@ -25,13 +25,13 @@ import {
 } from '../validation/material.validation.js';
 import {
   createBarMovement,
-  createKombiMovement,
+  createRechnungMovement,
   createMaterial,
   deleteMaterial,
   getMaterialById,
   getMaterialHistorie,
   listBarMovements,
-  listKombiMovements,
+  listRechnungMovements,
   listMaterial,
   updateMaterial
 } from '../services/material.service.js';
@@ -62,7 +62,7 @@ materialRoutes.post('/material', async (c) => {
     ...parsed.data,
     notiz: parsed.data.notiz ?? null,
     einnahmen_bar: parsed.data.einnahmen_bar ?? 0,
-    einnahmen_kombi: parsed.data.einnahmen_kombi ?? 0,
+    einnahmen_rechnung: parsed.data.einnahmen_rechnung ?? 0,
     gewinn_aktuell: parsed.data.gewinn_aktuell ?? 0,
     gewinn_theoretisch: parsed.data.gewinn_theoretisch ?? 0
   });
@@ -108,21 +108,21 @@ materialRoutes.post('/material-bewegungen-bar', async (c) => {
   return c.json({ success: true, data }, 201);
 });
 
-materialRoutes.get('/material-bewegungen-kombi', (c) => {
+materialRoutes.get('/material-bewegungen-rechnung', (c) => {
   const parsed = listMovementsQuerySchema.safeParse({ materialId: c.req.query('materialId') });
   if (!parsed.success) throw fromZodError(parsed.error);
   const db = c.get('db');
-  const data = listKombiMovements(db, parsed.data.materialId);
+  const data = listRechnungMovements(db, parsed.data.materialId);
   return c.json({ success: true, data });
 });
 
-materialRoutes.post('/material-bewegungen-kombi', async (c) => {
+materialRoutes.post('/material-bewegungen-rechnung', async (c) => {
   const payload = await c.req.json();
-  const parsed = kombiMovementSchema.safeParse(payload);
+  const parsed = rechnungMovementSchema.safeParse(payload);
   if (!parsed.success) throw fromZodError(parsed.error);
 
   const db = c.get('db');
-  const data = createKombiMovement(db, parsed.data);
+  const data = createRechnungMovement(db, parsed.data);
   return c.json({ success: true, data }, 201);
 });
 

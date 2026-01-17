@@ -146,11 +146,101 @@ export interface DialogProps {
   className?: string;
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+// DIALOG SCHEMA SYSTEM (Zentrale Dialog-Definitionen für alle Pages)
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+export type DialogFieldType = 'text' | 'number' | 'date' | 'select' | 'textarea';
+
+export interface DialogField {
+  name: string;
+  label: string;
+  type: DialogFieldType;
+  required?: boolean;
+  disabled?: boolean;
+  placeholder?: string;
+  min?: number;
+  max?: number;
+  step?: string;
+  options?: Array<{ value: string; label: string }>;
+}
+
+export interface DialogSchema {
+  title: string;
+  fields: DialogField[];
+  confirmText?: string; // Für Delete-Dialoge mit Interpolation {key}
+  customBody?: boolean; // Für komplexe Custom-Rendering (Historie)
+}
+
+export interface DialogDynamicProps {
+  schema: string; // 'material.create', 'kunden.edit', etc.
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (data: Record<string, unknown>) => void | Promise<void>;
+  initialData?: Record<string, unknown>;
+  data?: Record<string, unknown>; // Für confirmText Interpolation
+  customBody?: ReactNode; // Custom JSX für komplexe Dialoge
+  options?: Record<string, Array<{ value: string; label: string }>>; // Dynamische Select-Optionen
+}
+
+// ═══════════════════════════════════════════════════════
+// FORM FIELD TYPES (for Dialog.Form)
+// ═══════════════════════════════════════════════════════
+
+export type FormFieldType = 'text' | 'number' | 'date' | 'select' | 'textarea' | 'checkbox';
+
+export interface BaseFormField {
+  name: string;
+  label: string;
+  type: FormFieldType;
+  required?: boolean;
+  disabled?: boolean;
+  placeholder?: string;
+}
+
+export interface TextFormField extends BaseFormField {
+  type: 'text' | 'textarea';
+  maxLength?: number;
+}
+
+export interface NumberFormField extends BaseFormField {
+  type: 'number';
+  min?: number;
+  max?: number;
+  step?: string;
+}
+
+export interface DateFormField extends BaseFormField {
+  type: 'date';
+}
+
+export interface SelectFormField extends BaseFormField {
+  type: 'select';
+  options?: Array<{ value: string; label: string }>;
+}
+
+export interface CheckboxFormField extends BaseFormField {
+  type: 'checkbox';
+}
+
+export type FormField = TextFormField | NumberFormField | DateFormField | SelectFormField | CheckboxFormField;
+
+export interface DialogFormProps {
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  fields: FormField[];
+  initialData?: Record<string, unknown>;
+  onSubmit: (data: Record<string, unknown>) => void | Promise<void>;
+  submitLabel?: string;
+  cancelLabel?: string;
+}
+
 // ═══════════════════════════════════════════════════════
 // INPUT TYPES
 // ═══════════════════════════════════════════════════════
 
-export type InputType = 'text' | 'number' | 'currency' | 'date' | 'password' | 'email';
+export type InputType = 'text' | 'number' | 'currency' | 'date' | 'password' | 'email' | 'textarea';
 
 export interface InputProps {
   type?: InputType;

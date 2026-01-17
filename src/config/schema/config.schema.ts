@@ -1193,6 +1193,34 @@ const UiLayoutComponentSchema = z
 // UI — PAGES (Component Styles)
 // ============================================================
 
+const UiPagesGridStyleSchema = z
+  .object({
+    display: z.string(),
+    gridTemplateColumns: z.string(),
+    gap: z.string()
+  })
+  .strict();
+
+const UiPagesGridButtonRowStyleSchema = z
+  .object({
+    display: z.string()
+  })
+  .strict();
+
+const UiPagesGridTableRowStyleSchema = z
+  .object({
+    gridColumn: z.string()
+  })
+  .strict();
+
+const UiPagesGridSchema = z
+  .object({
+    style: UiPagesGridStyleSchema,
+    buttonRow: z.object({ style: UiPagesGridButtonRowStyleSchema }).strict(),
+    tableRow: z.object({ style: UiPagesGridTableRowStyleSchema }).strict()
+  })
+  .strict();
+
 const UiPagesButtonsContainerStyleSchema = z
   .object({
     display: z.string(),
@@ -1588,6 +1616,7 @@ const UiPagesSettingsSchema = z
 
 const UiPagesComponentSchema = z
   .object({
+    grid: UiPagesGridSchema,
     buttonsContainer: UiPagesButtonsContainerSchema,
     error: UiPagesErrorSchema,
     monthNavigation: UiPagesMonthNavigationSchema,

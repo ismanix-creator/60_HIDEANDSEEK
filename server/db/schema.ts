@@ -41,7 +41,7 @@ export const schemaStatements = [
     vk_stueck REAL NOT NULL,
     bestand REAL NOT NULL DEFAULT 0,
     einnahmen_bar REAL NOT NULL DEFAULT 0,
-    einnahmen_kombi REAL NOT NULL DEFAULT 0,
+    einnahmen_rechnung REAL NOT NULL DEFAULT 0,
     gewinn_aktuell REAL NOT NULL DEFAULT 0,
     gewinn_theoretisch REAL NOT NULL DEFAULT 0,
     notiz TEXT,
@@ -54,6 +54,7 @@ export const schemaStatements = [
     datum TEXT NOT NULL,
     menge REAL NOT NULL,
     preis REAL NOT NULL,
+    info TEXT,
     notiz TEXT,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
@@ -62,7 +63,7 @@ export const schemaStatements = [
     action_by TEXT DEFAULT 'system',
     FOREIGN KEY (material_id) REFERENCES material(id)
   );`,
-  `CREATE TABLE IF NOT EXISTS material_bewegungen_kombi (
+  `CREATE TABLE IF NOT EXISTS material_bewegungen_rechnung (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     material_id INTEGER NOT NULL,
     kunde_id INTEGER NOT NULL,

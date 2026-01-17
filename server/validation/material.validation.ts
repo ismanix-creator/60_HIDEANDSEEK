@@ -22,7 +22,7 @@ export const materialCreateSchema = z.object({
   vk_stueck: z.number().nonnegative(),
   bestand: z.number().nonnegative(),
   einnahmen_bar: z.number().nonnegative().optional(),
-  einnahmen_kombi: z.number().nonnegative().optional(),
+  einnahmen_rechnung: z.number().nonnegative().optional(),
   gewinn_aktuell: z.number().optional(),
   gewinn_theoretisch: z.number().optional(),
   notiz: z.string().nullable().optional()
@@ -43,7 +43,7 @@ export const barMovementSchema = z.object({
   notiz: z.string().optional()
 });
 
-export const kombiMovementSchema = z.object({
+export const rechnungMovementSchema = z.object({
   material_id: z.number().int().positive(),
   kunde_id: z.number().int().positive(),
   datum: z.string().min(1),

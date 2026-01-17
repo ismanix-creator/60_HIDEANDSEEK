@@ -378,11 +378,7 @@ export function KundenPage() {
                   : 'bg-red-500/20 text-red-300'
             }`}
           >
-            {k.status === 'bezahlt'
-              ? 'Bezahlt'
-              : k.status === 'teilbezahlt'
-                ? 'Teilbezahlt'
-                : 'Offen'}
+            {k.status === 'bezahlt' ? 'Bezahlt' : k.status === 'teilbezahlt' ? 'Teilbezahlt' : 'Offen'}
           </span>
         );
       default:
@@ -395,19 +391,28 @@ export function KundenPage() {
     label: col.label,
     type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
     render: col.key === 'actions' ? undefined : getOverviewColumnRender(col.key),
-    actions: col.key === 'actions' ? (k: KundeWithSummary) => [
-      { type: 'edit' as const, onClick: () => {
-        setView('detail');
-        setSelectedKunde(k);
-        setKundeFormData({ name: k.name });
-        setEditKundeDialogOpen(true);
-      }},
-      { type: 'delete' as const, onClick: () => {
-        setView('detail');
-        setSelectedKunde(k);
-        setDeleteKundeDialogOpen(true);
-      }}
-    ] : undefined
+    actions:
+      col.key === 'actions'
+        ? (k: KundeWithSummary) => [
+            {
+              type: 'edit' as const,
+              onClick: () => {
+                setView('detail');
+                setSelectedKunde(k);
+                setKundeFormData({ name: k.name });
+                setEditKundeDialogOpen(true);
+              }
+            },
+            {
+              type: 'delete' as const,
+              onClick: () => {
+                setView('detail');
+                setSelectedKunde(k);
+                setDeleteKundeDialogOpen(true);
+              }
+            }
+          ]
+        : undefined
   }));
 
   // Detail Columns
@@ -439,11 +444,7 @@ export function KundenPage() {
                   : 'bg-red-500/20 text-red-300'
             }`}
           >
-            {p.status === 'bezahlt'
-              ? 'Bezahlt'
-              : p.status === 'teilbezahlt'
-                ? 'Teilbezahlt'
-                : 'Offen'}
+            {p.status === 'bezahlt' ? 'Bezahlt' : p.status === 'teilbezahlt' ? 'Teilbezahlt' : 'Offen'}
           </span>
         );
       default:
@@ -456,12 +457,15 @@ export function KundenPage() {
     label: col.label,
     type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
     render: col.key === 'actions' ? undefined : getPostenMatColumnRender(col.key),
-    actions: col.key === 'actions' ? (p: KundenPostenMat) => {
-      if (!isEmptyRow(p) && p.offen > 0) {
-        return [{ type: 'zahlung' as const, onClick: () => openZahlungDialog(p, 'mat') }];
-      }
-      return [];
-    } : undefined
+    actions:
+      col.key === 'actions'
+        ? (p: KundenPostenMat) => {
+            if (!isEmptyRow(p) && p.offen > 0) {
+              return [{ type: 'zahlung' as const, onClick: () => openZahlungDialog(p, 'mat') }];
+            }
+            return [];
+          }
+        : undefined
   }));
 
   const getPostenNoMatColumnRender = (key: string) => {
@@ -485,11 +489,7 @@ export function KundenPage() {
                   : 'bg-red-500/20 text-red-300'
             }`}
           >
-            {p.status === 'bezahlt'
-              ? 'Bezahlt'
-              : p.status === 'teilbezahlt'
-                ? 'Teilbezahlt'
-                : 'Offen'}
+            {p.status === 'bezahlt' ? 'Bezahlt' : p.status === 'teilbezahlt' ? 'Teilbezahlt' : 'Offen'}
           </span>
         );
       default:
@@ -502,12 +502,15 @@ export function KundenPage() {
     label: col.label,
     type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
     render: col.key === 'actions' ? undefined : getPostenNoMatColumnRender(col.key),
-    actions: col.key === 'actions' ? (p: KundenPostenNoMat) => {
-      if (!isEmptyRow(p) && p.offen > 0) {
-        return [{ type: 'zahlung' as const, onClick: () => openZahlungDialog(p, 'nomat') }];
-      }
-      return [];
-    } : undefined
+    actions:
+      col.key === 'actions'
+        ? (p: KundenPostenNoMat) => {
+            if (!isEmptyRow(p) && p.offen > 0) {
+              return [{ type: 'zahlung' as const, onClick: () => openZahlungDialog(p, 'nomat') }];
+            }
+            return [];
+          }
+        : undefined
   }));
 
   // Render Overview
@@ -549,7 +552,9 @@ export function KundenPage() {
                     setKundeFormData({ name: '' });
                   }}
                 />
-                <Button.Rect onClick={() => void handleCreateKunde()}>{appConfig.components.buttons.create}</Button.Rect>
+                <Button.Rect onClick={() => void handleCreateKunde()}>
+                  {appConfig.components.buttons.create}
+                </Button.Rect>
               </>
             }
           >
@@ -574,23 +579,18 @@ export function KundenPage() {
         {/* Button-Reihe: Navigation (Zurück/Prev/Picker/Next) + Edit/Delete */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <Button.Action 
-              type="back" 
-              onClick={handleBackToOverview}
-            />
-            <Button.Action 
-              type="prevMonth" 
+            <Button.Action type="back" onClick={handleBackToOverview} />
+            <Button.Action
+              type="prevMonth"
               onClick={() => {
                 const currentIndex = kunden.findIndex((k) => k.id === selectedKunde?.id);
                 if (currentIndex > 0) {
                   handleRowClick(kunden[currentIndex - 1]);
                 }
-              }} 
+              }}
             />
             <div className="relative">
-              <Button.Rect 
-                onClick={() => setKundenPickerOpen((open) => !open)}
-              >
+              <Button.Rect onClick={() => setKundenPickerOpen((open) => !open)}>
                 <User size={18} />
                 <span>{selectedKunde?.name || 'Kunde auswählen'}</span>
               </Button.Rect>
@@ -616,14 +616,14 @@ export function KundenPage() {
                 </div>
               )}
             </div>
-            <Button.Action 
-              type="nextMonth" 
+            <Button.Action
+              type="nextMonth"
               onClick={() => {
                 const currentIndex = kunden.findIndex((k) => k.id === selectedKunde?.id);
                 if (currentIndex < kunden.length - 1) {
                   handleRowClick(kunden[currentIndex + 1]);
                 }
-              }} 
+              }}
             />
           </div>
           <div className="flex gap-2">
@@ -714,9 +714,7 @@ export function KundenPage() {
           actions={
             <>
               <Button.Rect type="cancel" onClick={() => setDeleteKundeDialogOpen(false)} />
-              <Button.Rect onClick={() => void handleDeleteKunde()}>
-                {appConfig.components.buttons.delete}
-              </Button.Rect>
+              <Button.Rect onClick={() => void handleDeleteKunde()}>{appConfig.components.buttons.delete}</Button.Rect>
             </>
           }
         >

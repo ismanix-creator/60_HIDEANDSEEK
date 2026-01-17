@@ -28,6 +28,18 @@ export default [
     ignores: ['node_modules/**', 'dist/**', 'build/**', 'logs/**', '.pnpm-store/**', 'src/config/generated/**']
   },
   {
+    files: ['scripts/**/*.ts', 'server/**/*.ts'],
+    languageOptions: {
+      globals: {
+        process: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        Buffer: 'readonly',
+        console: 'readonly'
+      }
+    }
+  },
+  {
     languageOptions: {
       globals: {
         React: 'readonly',

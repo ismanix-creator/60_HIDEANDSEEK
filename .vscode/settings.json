@@ -1,3 +1,5 @@
 {
-  "cSpell.words": ["AUTHTOKEN", "GITHUB", "NGROK", "OPENAI", "SQLITE"]
+  "chat.useAgentsMdFile": true,
+  "chat.agentsFilePath": "/home/akki/vault/DEV_CONTROL_VAULT/Projectdocs/60_HIDEANDSEEK/AGENTS.md",
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true
 }

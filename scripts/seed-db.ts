@@ -27,7 +27,7 @@ db.exec('PRAGMA foreign_keys = ON;');
 initializeSchema(db);
 
 const tableNames = [
-  'material_bewegungen_kombi',
+  'material_bewegungen_rechnung',
   'material_bewegungen_bar',
   'kunden_posten_mat',
   'kunden_posten_nomat',
@@ -64,8 +64,8 @@ const now = new Date().toISOString();
 const insertTx = db.transaction(() => {
   const insertMaterial = db.prepare(
     `INSERT INTO material
-    (datum, bezeichnung, menge, ek_stueck, ek_gesamt, vk_stueck, bestand, einnahmen_bar, einnahmen_kombi, gewinn_aktuell, gewinn_theoretisch, notiz, created_at, updated_at)
-    VALUES (@datum, @bezeichnung, @menge, @ek_stueck, @ek_gesamt, @vk_stueck, @bestand, @einnahmen_bar, @einnahmen_kombi, @gewinn_aktuell, @gewinn_theoretisch, @notiz, @created_at, @updated_at);`
+    (datum, bezeichnung, menge, ek_stueck, ek_gesamt, vk_stueck, bestand, einnahmen_bar, einnahmen_rechnung, gewinn_aktuell, gewinn_theoretisch, notiz, created_at, updated_at)
+    VALUES (@datum, @bezeichnung, @menge, @ek_stueck, @ek_gesamt, @vk_stueck, @bestand, @einnahmen_bar, @einnahmen_rechnung, @gewinn_aktuell, @gewinn_theoretisch, @notiz, @created_at, @updated_at);`
   );
 
   const materialRows = [
@@ -78,7 +78,7 @@ const insertTx = db.transaction(() => {
       vk_stueck: 2.0,
       bestand: 75,
       einnahmen_bar: 40,
-      einnahmen_kombi: 10,
+      einnahmen_rechnung: 10,
       gewinn_aktuell: 18,
       gewinn_theoretisch: 80,
       notiz: 'Startbestand Januar',
@@ -94,7 +94,7 @@ const insertTx = db.transaction(() => {
       vk_stueck: 5.0,
       bestand: 48,
       einnahmen_bar: 30,
-      einnahmen_kombi: 20,
+      einnahmen_rechnung: 20,
       gewinn_aktuell: 22,
       gewinn_theoretisch: 90,
       notiz: 'Lieferung KW01',
@@ -209,8 +209,8 @@ const insertTx = db.transaction(() => {
 
   const insertBar = db.prepare(
     `INSERT INTO material_bewegungen_bar
-    (material_id, datum, menge, preis, info, notiz, created_at)
-    VALUES (@material_id, @datum, @menge, @preis, @info, @notiz, @created_at);`
+    (material_id, datum, menge, preis, info, notiz, created_at, updated_at)
+    VALUES (@material_id, @datum, @menge, @preis, @info, @notiz, @created_at, @updated_at);`
   );
 
   insertBar.run({
@@ -220,23 +220,25 @@ const insertTx = db.transaction(() => {
     preis: 2.0,
     info: 'Barzahlung',
     notiz: 'Abholung vor Ort',
-    created_at: now
+    created_at: now,
+    updated_at: now
   });
 
-  const insertKombi = db.prepare(
-    `INSERT INTO material_bewegungen_kombi
-    (material_id, kunde_id, datum, menge, preis, notiz, created_at)
-    VALUES (@material_id, @kunde_id, @datum, @menge, @preis, @notiz, @created_at);`
+  const insertRechnung = db.prepare(
+    `INSERT INTO material_bewegungen_rechnung
+    (material_id, kunde_id, datum, menge, preis, notiz, created_at, updated_at)
+    VALUES (@material_id, @kunde_id, @datum, @menge, @preis, @notiz, @created_at, @updated_at);`
   );
 
-  insertKombi.run({
+  insertRechnung.run({
     material_id: materialIds[1],
     kunde_id: kundenIds[1],
     datum: '2026-01-05',
     menge: 6,
     preis: 5.0,
-    notiz: 'Kombi-Posten',
-    created_at: now
+    notiz: 'Rechnung-Posten',
+    created_at: now,
+    updated_at: now
   });
 });
 
