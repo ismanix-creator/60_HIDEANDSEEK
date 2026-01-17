@@ -1,12 +1,13 @@
 /**
  * @file        SchuldnerPage.tsx
  * @description Schuldner-Verwaltung Seite
- * @version     1.2.0
+ * @version     2.0.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-11 22:35:00 CET
+ * @updated     2026-01-17 20:11:08 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   2.0.0 - 2026-01-17 - Refactor: 3-Spalten 2-Zeilen Grid-Layout implementiert, Zurück-Button hinzugefügt
  *   1.2.0 - 2026-01-11 22:35:00 - Feature: Action Buttons mit disabled-State für Empty Rows
  *   1.1.0 - 2026-01-11 - Fixed: floating promises + type signatures
  *   1.0.0 - 2026-01-10 18:30:00 - TASK 2.5: Zahlungshistorie Dialog vollständig implementiert (Final)
@@ -22,7 +23,8 @@
  *   0.1.0 - 2026-01-07 - Initial implementation
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type CSSProperties } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MainApp } from '@/components/layout/MainApp';
 import { Table, isEmptyRow } from '@/components/ui/Table';
 import { Button } from '@/components/ui/Button';
@@ -30,11 +32,11 @@ import { Dialog } from '@/components/ui/Dialog';
 import { Input } from '@/components/ui/Input';
 import { useApi } from '@/hooks/useApi';
 import { formatCurrency, formatDate } from '@/utils/format';
-import { HandCoins, Pencil, Trash2, DollarSign, Plus } from 'lucide-react';
 import type { Schuldner, CreateSchuldnerRequest, UpdateSchuldnerRequest, ZahlungRequest } from '@/types';
 import { appConfig } from '@/config';
 
 export function SchuldnerPage() {
+  const navigate = useNavigate();
   const api = useApi();
   const [schuldner, setSchuldner] = useState<Schuldner[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,10 +70,10 @@ export function SchuldnerPage() {
       if (result.success && result.data) {
         setSchuldner(result.data);
       } else {
-        setError(result.error || appConfig.errors.load_failed);
+        setError(result.error || appConfig.ui.messages.error.loadFailed);
       }
     } catch (err) {
-      setError(appConfig.errors.network_error);
+      setError(appConfig.ui.messages.error.networkError);
     } finally {
       setLoading(false);
     }
@@ -93,10 +95,10 @@ export function SchuldnerPage() {
         resetForm();
         void loadSchuldner();
       } else {
-        setError(result.error || appConfig.errors.create_failed);
+        setError(result.error || appConfig.ui.messages.error.createFailed);
       }
     } catch (err) {
-      setError(appConfig.errors.network_error);
+      setError(appConfig.ui.messages.error.networkError);
     }
   };
 
@@ -118,10 +120,10 @@ export function SchuldnerPage() {
         resetForm();
         void loadSchuldner();
       } else {
-        setError(result.error || appConfig.errors.update_failed);
+        setError(result.error || appConfig.ui.messages.error.updateFailed);
       }
     } catch (err) {
-      setError(appConfig.errors.network_error);
+      setError(appConfig.ui.messages.error.networkError);
     }
   };
 
@@ -137,10 +139,10 @@ export function SchuldnerPage() {
         setSelectedSchuldner(null);
         void loadSchuldner();
       } else {
-        setError(result.error || appConfig.errors.delete_failed);
+        setError(result.error || appConfig.ui.messages.error.deleteFailed);
       }
     } catch (err) {
-      setError(appConfig.errors.network_error);
+      setError(appConfig.ui.messages.error.networkError);
     }
   };
 
@@ -159,10 +161,10 @@ export function SchuldnerPage() {
         setZahlungbetrag(0);
         void loadSchuldner();
       } else {
-        setError(result.error || appConfig.errors.booking_failed);
+        setError(result.error || appConfig.ui.messages.error.bookFailed);
       }
     } catch (err) {
-      setError(appConfig.errors.network_error);
+      setError(appConfig.ui.messages.error.networkError);
     }
   };
 
@@ -226,23 +228,40 @@ export function SchuldnerPage() {
     });
   };
 
+  // Grid Styles
+  const gridStyle: CSSProperties = {
+    display: appConfig.ui.pages.grid.style.display,
+    gridTemplateColumns: appConfig.ui.pages.grid.style.gridTemplateColumns,
+    gap: appConfig.ui.pages.grid.style.gap
+  };
+
+  const buttonRowStyle: CSSProperties = {
+    display: appConfig.ui.pages.grid.buttonRow.style.display
+  };
+
+  const tableRowStyle: CSSProperties = {
+    gridColumn: appConfig.ui.pages.grid.tableRow.style.gridColumn
+  };
+
   // Table Columns mit inline renders
-  const columns = appConfig.components.table.schuldner.columns.map((col) => ({
-    key: col.key,
-    label: col.label,
-    type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
+  const columns = appConfig.components.table.columns.schuldner.order.map((colKey) => {
+    const label = appConfig.components.table.columns.schuldner.labels[colKey] || colKey;
+    return {
+    key: colKey,
+    label: label,
+    type: undefined as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
     render:
-      col.key === 'datum'
+      colKey === 'datum'
         ? (s: Schuldner) => formatDate(s.datum)
-        : col.key === 'betrag'
+        : colKey === 'betrag'
           ? (s: Schuldner) => formatCurrency(s.betrag)
-          : col.key === 'bezahlt'
+          : colKey === 'bezahlt'
             ? (s: Schuldner) => formatCurrency(s.bezahlt)
-            : col.key === 'offen'
+            : colKey === 'offen'
               ? (s: Schuldner) => formatCurrency(s.offen)
-              : col.key === 'faelligkeit'
+              : colKey === 'faelligkeit'
                 ? (s: Schuldner) => (s.faelligkeit ? formatDate(s.faelligkeit) : '-')
-                : col.key === 'status'
+                : colKey === 'status'
                   ? (s: Schuldner) => (
                       <span
                         className={`px-2 py-1 rounded text-sm ${
@@ -258,7 +277,7 @@ export function SchuldnerPage() {
                     )
                   : undefined,
     actions:
-      col.key === 'actions'
+      colKey === 'actions'
         ? (s: Schuldner) => {
             const acts = [];
             if (!isEmptyRow(s) && s.offen > 0) {
@@ -269,27 +288,44 @@ export function SchuldnerPage() {
             return acts;
           }
         : undefined
-  }));
+    };
+  });
 
   return (
     <MainApp title="Schuldner">
-      <div className="space-y-4">
-        {/* Error */}
-        {error && <div className="p-4 bg-red-500/10 border border-red-500 rounded text-red-400">{error}</div>}
+      <div style={gridStyle}>
+        {/* Zeile 1: Button-Navigation (3 Spalten) */}
+        <div style={buttonRowStyle}>
+          {/* Spalte 1: Leer */}
+          <div />
 
-        {/* Button-Reihe über der Tabelle */}
-        <div className="flex justify-end mb-4">
-          <Button.Action type="new" onClick={() => setCreateDialogOpen(true)} />
+          {/* Spalte 2: Leer */}
+          <div />
+
+          {/* Spalte 3: Neu + Zurück */}
+          <div className="flex items-center justify-end gap-2">
+            <Button.Action type="new" onClick={() => setCreateDialogOpen(true)} />
+            <Button.Action type="back" onClick={() => navigate('/dashboard')} />
+          </div>
         </div>
 
-        {/* Table */}
-        <Table
-          data={schuldner}
-          columns={columns}
-          loading={loading}
-          emptyMessage={appConfig.empty_states.no_debtors}
-          onRowClick={(s) => openHistorieDialog(s)}
-        />
+        {/* Error */}
+        {error && (
+          <div style={tableRowStyle} className="p-4 bg-red-500/10 border border-red-500 rounded text-red-400">
+            {error}
+          </div>
+        )}
+
+        {/* Zeile 2: Table über alle 3 Spalten */}
+        <div style={tableRowStyle}>
+          <Table
+            data={schuldner}
+            columns={columns}
+            loading={loading}
+            emptyMessage={appConfig.ui.empty.schuldner}
+            onRowClick={(s) => openHistorieDialog(s)}
+          />
+        </div>
 
         {/* Create Dialog */}
         <Dialog
@@ -298,7 +334,7 @@ export function SchuldnerPage() {
             setCreateDialogOpen(false);
             resetForm();
           }}
-          title={appConfig.components.dialog_titles.new_debtor}
+          title={appConfig.ui.titles.dialog.newSchuldner}
           actions={
             <>
               <Button.Rect
@@ -308,37 +344,37 @@ export function SchuldnerPage() {
                   resetForm();
                 }}
               />
-              <Button.Rect onClick={() => void handleCreate()}>{appConfig.components.buttons.create}</Button.Rect>
+              <Button.Rect onClick={() => void handleCreate()}>{appConfig.ui.buttons.erstellen}</Button.Rect>
             </>
           }
         >
           <div className="space-y-4">
             <Input
-              label={appConfig.labels.date}
+              label={appConfig.ui.labels.datum}
               type="date"
               value={formData.datum}
               onChange={(e) => setFormData({ ...formData, datum: e.target.value })}
             />
             <Input
-              label={appConfig.labels.name}
+              label={appConfig.ui.labels.name}
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
             <Input
-              label={appConfig.labels.amount}
+              label={appConfig.ui.labels.betrag}
               type="number"
               step="0.01"
               value={formData.betrag}
               onChange={(e) => setFormData({ ...formData, betrag: parseFloat(e.target.value) || 0 })}
             />
             <Input
-              label={appConfig.labels.due_date}
+              label={appConfig.ui.labels.faelligkeit}
               type="date"
               value={formData.faelligkeit}
               onChange={(e) => setFormData({ ...formData, faelligkeit: e.target.value })}
             />
             <Input
-              label={appConfig.labels.note}
+              label={appConfig.ui.labels.notiz}
               value={formData.notiz}
               onChange={(e) => setFormData({ ...formData, notiz: e.target.value })}
             />
@@ -353,7 +389,7 @@ export function SchuldnerPage() {
             setSelectedSchuldner(null);
             resetForm();
           }}
-          title={appConfig.components.dialog_titles.edit_debtor}
+          title={appConfig.ui.titles.dialog.editSchuldner}
           actions={
             <>
               <Button.Rect
@@ -370,31 +406,31 @@ export function SchuldnerPage() {
         >
           <div className="space-y-4">
             <Input
-              label={appConfig.labels.date}
+              label={appConfig.ui.labels.datum}
               type="date"
               value={formData.datum}
               onChange={(e) => setFormData({ ...formData, datum: e.target.value })}
             />
             <Input
-              label={appConfig.labels.name}
+              label={appConfig.ui.labels.name}
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
             <Input
-              label={appConfig.labels.amount}
+              label={appConfig.ui.labels.betrag}
               type="number"
               step="0.01"
               value={formData.betrag}
               onChange={(e) => setFormData({ ...formData, betrag: parseFloat(e.target.value) || 0 })}
             />
             <Input
-              label={appConfig.labels.due_date}
+              label={appConfig.ui.labels.faelligkeit}
               type="date"
               value={formData.faelligkeit}
               onChange={(e) => setFormData({ ...formData, faelligkeit: e.target.value })}
             />
             <Input
-              label={appConfig.labels.note}
+              label={appConfig.ui.labels.notiz}
               value={formData.notiz}
               onChange={(e) => setFormData({ ...formData, notiz: e.target.value })}
             />
@@ -408,7 +444,7 @@ export function SchuldnerPage() {
             setDeleteDialogOpen(false);
             setSelectedSchuldner(null);
           }}
-          title={appConfig.components.dialog_titles.delete_debtor}
+          title={appConfig.ui.titles.dialog.deleteSchuldner}
           actions={
             <>
               <Button.Rect
@@ -418,12 +454,12 @@ export function SchuldnerPage() {
                   setSelectedSchuldner(null);
                 }}
               />
-              <Button.Rect onClick={() => void handleDelete()}>{appConfig.components.buttons.delete}</Button.Rect>
+              <Button.Rect onClick={() => void handleDelete()}>{appConfig.ui.buttons.loeschen}</Button.Rect>
             </>
           }
         >
           <p className="text-neutral-300">
-            {appConfig.messages.confirm_delete_debtor.replace('{name}', selectedSchuldner?.name || '')}
+            {appConfig.ui.messages.confirm.deleteSchuldner.replace('{name}', selectedSchuldner?.name || '')}
           </p>
         </Dialog>
 
@@ -435,7 +471,7 @@ export function SchuldnerPage() {
             setSelectedSchuldner(null);
             setZahlungbetrag(0);
           }}
-          title={appConfig.components.dialog_titles.record_payment}
+          title={appConfig.ui.titles.dialog.zahlungBuchen}
           actions={
             <>
               <Button.Rect
@@ -446,17 +482,17 @@ export function SchuldnerPage() {
                   setZahlungbetrag(0);
                 }}
               />
-              <Button.Rect onClick={() => void handleZahlung()}>{appConfig.components.buttons.record}</Button.Rect>
+              <Button.Rect onClick={() => void handleZahlung()}>{appConfig.ui.buttons.buchen}</Button.Rect>
             </>
           }
         >
           <div className="space-y-4">
             <div className="p-4 bg-neutral-800 rounded">
-              <p className="text-neutral-400 text-sm">{appConfig.labels.open_amount}</p>
+              <p className="text-neutral-400 text-sm">{appConfig.ui.labels.offen}</p>
               <p className="text-2xl font-semibold text-neutral-50">{formatCurrency(selectedSchuldner?.offen || 0)}</p>
             </div>
             <Input
-              label={appConfig.labels.payment_amount}
+              label={appConfig.ui.labels.betrag}
               type="number"
               step="0.01"
               value={zahlungbetrag}
@@ -475,19 +511,19 @@ export function SchuldnerPage() {
           }}
           title={
             selectedSchuldner
-              ? `${appConfig.components.dialog_titles.history}: ${selectedSchuldner.name}`
-              : appConfig.components.dialog_titles.history
+              ? `${appConfig.ui.titles.dialog.history}: ${selectedSchuldner.name}`
+              : appConfig.ui.titles.dialog.history
           }
           actions={
-            <Button
+            <Button.Rect
               onClick={() => {
                 setHistorieDialogOpen(false);
                 setSelectedSchuldner(null);
                 setZahlungsHistorie([]);
               }}
             >
-              {appConfig.components.buttons.close}
-            </Button>
+              {appConfig.ui.buttons.schliessen}
+            </Button.Rect>
           }
         >
           {zahlungsHistorie.length > 0 ? (
@@ -524,7 +560,7 @@ export function SchuldnerPage() {
               })}
             </div>
           ) : (
-            <p className="text-neutral-400 text-sm text-center py-4">{appConfig.empty_states.no_history}</p>
+            <p className="text-neutral-400 text-sm text-center py-4">{appConfig.ui.empty.historie}</p>
           )}
         </Dialog>
       </div>

@@ -1,19 +1,20 @@
 /**
  * @file        GlaeubigerPage.tsx
  * @description Gläubiger-Verwaltung Seite
- * @version     1.2.0
+ * @version     2.0.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-11 22:35:00 CET
+ * @updated     2026-01-17 20:11:08 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   2.0.0 - 2026-01-17 - Refactor: 3-Spalten 2-Zeilen Grid-Layout implementiert, Zurück-Button hinzugefügt
  *   1.2.0 - 2026-01-11 22:35:00 - Feature: Action Buttons mit disabled-State für Empty Rows
  *   1.1.0 - 2026-01-11 - Fixed: floating promises + type signatures
  *   1.0.0 - 2026-01-10 18:30:00 - TASK 2.5: Zahlungshistorie Dialog vollständig implementiert (Final)
  *   0.8.0 - 2026-01-10 15:42:37 - Inline-Style für Monospace-Font im Betrag entfernt (Task 2.4.1)
  *   0.7.0 - 2026-01-10 00:30:15 - Hardcodes für Fälligkeit, Notiz und Monospace-Font entfernt (Phase 2.3.3)
  *   0.6.0 - 2026-01-09 23:45:00 - Alle verbleibenden Hardcodes entfernt (Phase 2.3 Final)
- *   0.5.0 - 2026-01-09 21:51:40 - 4 verbleibende Hardcodes durch appConfig.labels.* ersetzt (Phase 2.3.B)
+ *   0.5.0 - 2026-01-09 21:51:40 - 4 verbleibende Hardcodes durch appConfig.ui.labels.* ersetzt (Phase 2.3.B)
  *   0.4.0 - 2026-01-09 21:03:15 - 30 UI-Text-Hardcodes entfernt (Phase 2.3.3)
  *   0.3.1 - 2026-01-09 - Name + Betrag-Spalten als Monospace (type: 'input')
  *   0.3.0 - 2026-01-09 - Button als actions Prop an PageLayout übergeben (horizontal zentriert)
@@ -21,7 +22,8 @@
  *   0.1.0 - 2026-01-07 - Initial implementation
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type CSSProperties } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MainApp } from '@/components/layout/MainApp';
 import { Table, isEmptyRow } from '@/components/ui/Table';
 import { Button } from '@/components/ui/Button';
@@ -30,10 +32,10 @@ import { Input } from '@/components/ui/Input';
 import { useApi } from '@/hooks/useApi';
 import { formatCurrency, formatDate } from '@/utils/format';
 import { appConfig } from '@/config';
-import { HandCoins, Pencil, Trash2, DollarSign, Plus } from 'lucide-react';
 import type { Glaeubiger, CreateGlaeubigerRequest, UpdateGlaeubigerRequest, ZahlungRequest } from '@/types';
 
 export function GlaeubigerPage() {
+  const navigate = useNavigate();
   const api = useApi();
   const [glaeubiger, setGlaeubiger] = useState<Glaeubiger[]>([]);
   const [loading, setLoading] = useState(true);
@@ -67,10 +69,10 @@ export function GlaeubigerPage() {
       if (result.success && result.data) {
         setGlaeubiger(result.data);
       } else {
-        setError(result.error || appConfig.errors.load_failed);
+        setError(result.error || appConfig.ui.messages.error.loadFailed);
       }
     } catch (err) {
-      setError(appConfig.errors.network_error);
+      setError(appConfig.ui.messages.error.networkError);
     } finally {
       setLoading(false);
     }
@@ -92,10 +94,10 @@ export function GlaeubigerPage() {
         resetForm();
         void loadGlaeubiger();
       } else {
-        setError(result.error || appConfig.errors.create_failed);
+        setError(result.error || appConfig.ui.messages.error.createFailed);
       }
     } catch (err) {
-      setError(appConfig.errors.network_error);
+      setError(appConfig.ui.messages.error.networkError);
     }
   };
 
@@ -117,10 +119,10 @@ export function GlaeubigerPage() {
         resetForm();
         void loadGlaeubiger();
       } else {
-        setError(result.error || appConfig.errors.update_failed);
+        setError(result.error || appConfig.ui.messages.error.updateFailed);
       }
     } catch (err) {
-      setError(appConfig.errors.network_error);
+      setError(appConfig.ui.messages.error.networkError);
     }
   };
 
@@ -136,10 +138,10 @@ export function GlaeubigerPage() {
         setSelectedGlaeubiger(null);
         void loadGlaeubiger();
       } else {
-        setError(result.error || appConfig.errors.delete_failed);
+        setError(result.error || appConfig.ui.messages.error.deleteFailed);
       }
     } catch (err) {
-      setError(appConfig.errors.network_error);
+      setError(appConfig.ui.messages.error.networkError);
     }
   };
 
@@ -158,10 +160,10 @@ export function GlaeubigerPage() {
         setZahlungbetrag(0);
         void loadGlaeubiger();
       } else {
-        setError(result.error || appConfig.errors.booking_failed);
+        setError(result.error || appConfig.ui.messages.error.bookFailed);
       }
     } catch (err) {
-      setError(appConfig.errors.network_error);
+      setError(appConfig.ui.messages.error.networkError);
     }
   };
 
@@ -225,23 +227,40 @@ export function GlaeubigerPage() {
     });
   };
 
+  // Grid Styles
+  const gridStyle: CSSProperties = {
+    display: appConfig.ui.pages.grid.style.display,
+    gridTemplateColumns: appConfig.ui.pages.grid.style.gridTemplateColumns,
+    gap: appConfig.ui.pages.grid.style.gap
+  };
+
+  const buttonRowStyle: CSSProperties = {
+    display: appConfig.ui.pages.grid.buttonRow.style.display
+  };
+
+  const tableRowStyle: CSSProperties = {
+    gridColumn: appConfig.ui.pages.grid.tableRow.style.gridColumn
+  };
+
   // Table Columns mit inline renders und actions via property
-  const columns = appConfig.components.table.glaeubiger.columns.map((col) => ({
-    key: col.key,
-    label: col.label,
-    type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
+  const columns = appConfig.components.table.columns.glaeubiger.order.map((colKey) => {
+    const label = appConfig.components.table.columns.glaeubiger.labels[colKey] || colKey;
+    return {
+    key: colKey,
+    label: label,
+    type: undefined as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
     render:
-      col.key === 'datum'
+      colKey === 'datum'
         ? (g: Glaeubiger) => formatDate(g.datum)
-        : col.key === 'betrag'
+        : colKey === 'betrag'
           ? (g: Glaeubiger) => formatCurrency(g.betrag)
-          : col.key === 'bezahlt'
+          : colKey === 'bezahlt'
             ? (g: Glaeubiger) => formatCurrency(g.bezahlt)
-            : col.key === 'offen'
+            : colKey === 'offen'
               ? (g: Glaeubiger) => formatCurrency(g.offen)
-              : col.key === 'faelligkeit'
+              : colKey === 'faelligkeit'
                 ? (g: Glaeubiger) => (g.faelligkeit ? formatDate(g.faelligkeit) : '-')
-                : col.key === 'status'
+                : colKey === 'status'
                   ? (g: Glaeubiger) => (
                       <span
                         className={`px-2 py-1 rounded text-sm ${
@@ -257,7 +276,7 @@ export function GlaeubigerPage() {
                     )
                   : undefined,
     actions:
-      col.key === 'actions'
+      colKey === 'actions'
         ? (g: Glaeubiger) => {
             const acts = [];
             if (!isEmptyRow(g) && g.offen > 0) {
@@ -268,27 +287,44 @@ export function GlaeubigerPage() {
             return acts;
           }
         : undefined
-  }));
+    };
+  });
 
   return (
     <MainApp title="Gläubiger">
-      <div className="space-y-4">
-        {/* Error */}
-        {error && <div className="p-4 bg-red-500/10 border border-red-500 rounded text-red-400">{error}</div>}
+      <div style={gridStyle}>
+        {/* Zeile 1: Button-Navigation (3 Spalten) */}
+        <div style={buttonRowStyle}>
+          {/* Spalte 1: Leer */}
+          <div />
 
-        {/* Button-Reihe über der Tabelle */}
-        <div className="flex justify-end mb-4">
-          <Button.Action type="new" onClick={() => setCreateDialogOpen(true)} />
+          {/* Spalte 2: Leer */}
+          <div />
+
+          {/* Spalte 3: Neu + Zurück */}
+          <div className="flex items-center justify-end gap-2">
+            <Button.Action type="new" onClick={() => setCreateDialogOpen(true)} />
+            <Button.Action type="back" onClick={() => navigate('/dashboard')} />
+          </div>
         </div>
 
-        {/* Table */}
-        <Table
-          data={glaeubiger}
-          columns={columns}
-          loading={loading}
-          emptyMessage={appConfig.empty_states.no_creditors}
-          onRowClick={(g) => openHistorieDialog(g)}
-        />
+        {/* Error */}
+        {error && (
+          <div style={tableRowStyle} className="p-4 bg-red-500/10 border border-red-500 rounded text-red-400">
+            {error}
+          </div>
+        )}
+
+        {/* Zeile 2: Table über alle 3 Spalten */}
+        <div style={tableRowStyle}>
+          <Table
+            data={glaeubiger}
+            columns={columns}
+            loading={loading}
+            emptyMessage={appConfig.ui.empty.glaeubiger}
+            onRowClick={(g) => openHistorieDialog(g)}
+          />
+        </div>
 
         {/* Create Dialog */}
         <Dialog
@@ -297,7 +333,7 @@ export function GlaeubigerPage() {
             setCreateDialogOpen(false);
             resetForm();
           }}
-          title={appConfig.components.dialog_titles.new_creditor}
+          title={appConfig.ui.titles.dialog.newGlaeubiger}
           actions={
             <>
               <Button.Rect
@@ -307,37 +343,37 @@ export function GlaeubigerPage() {
                   resetForm();
                 }}
               />
-              <Button.Rect onClick={() => void handleCreate()}>{appConfig.components.buttons.create}</Button.Rect>
+              <Button.Rect onClick={() => void handleCreate()}>{appConfig.ui.buttons.erstellen}</Button.Rect>
             </>
           }
         >
           <div className="space-y-4">
             <Input
-              label={appConfig.labels.date}
+              label={appConfig.ui.labels.datum}
               type="date"
               value={formData.datum}
               onChange={(e) => setFormData({ ...formData, datum: e.target.value })}
             />
             <Input
-              label={appConfig.labels.name}
+              label={appConfig.ui.labels.name}
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
             <Input
-              label={appConfig.labels.amount}
+              label={appConfig.ui.labels.betrag}
               type="number"
               step="0.01"
               value={formData.betrag}
               onChange={(e) => setFormData({ ...formData, betrag: parseFloat(e.target.value) || 0 })}
             />
             <Input
-              label={appConfig.labels.due_date}
+              label={appConfig.ui.labels.faelligkeit}
               type="date"
               value={formData.faelligkeit}
               onChange={(e) => setFormData({ ...formData, faelligkeit: e.target.value })}
             />
             <Input
-              label={appConfig.labels.note}
+              label={appConfig.ui.labels.notiz}
               value={formData.notiz}
               onChange={(e) => setFormData({ ...formData, notiz: e.target.value })}
             />
@@ -352,7 +388,7 @@ export function GlaeubigerPage() {
             setSelectedGlaeubiger(null);
             resetForm();
           }}
-          title={appConfig.components.dialog_titles.edit_creditor}
+          title={appConfig.ui.titles.dialog.editGlaeubiger}
           actions={
             <>
               <Button.Rect
@@ -369,31 +405,31 @@ export function GlaeubigerPage() {
         >
           <div className="space-y-4">
             <Input
-              label={appConfig.labels.date}
+              label={appConfig.ui.labels.datum}
               type="date"
               value={formData.datum}
               onChange={(e) => setFormData({ ...formData, datum: e.target.value })}
             />
             <Input
-              label={appConfig.labels.name}
+              label={appConfig.ui.labels.name}
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
             <Input
-              label={appConfig.labels.amount}
+              label={appConfig.ui.labels.betrag}
               type="number"
               step="0.01"
               value={formData.betrag}
               onChange={(e) => setFormData({ ...formData, betrag: parseFloat(e.target.value) || 0 })}
             />
             <Input
-              label={appConfig.labels.due_date}
+              label={appConfig.ui.labels.faelligkeit}
               type="date"
               value={formData.faelligkeit}
               onChange={(e) => setFormData({ ...formData, faelligkeit: e.target.value })}
             />
             <Input
-              label={appConfig.labels.note}
+              label={appConfig.ui.labels.notiz}
               value={formData.notiz}
               onChange={(e) => setFormData({ ...formData, notiz: e.target.value })}
             />
@@ -407,7 +443,7 @@ export function GlaeubigerPage() {
             setDeleteDialogOpen(false);
             setSelectedGlaeubiger(null);
           }}
-          title={appConfig.components.dialog_titles.delete_creditor}
+          title={appConfig.ui.titles.dialog.deleteGlaeubiger}
           actions={
             <>
               <Button.Rect
@@ -417,12 +453,12 @@ export function GlaeubigerPage() {
                   setSelectedGlaeubiger(null);
                 }}
               />
-              <Button.Rect onClick={() => void handleDelete()}>{appConfig.components.buttons.delete}</Button.Rect>
+              <Button.Rect onClick={() => void handleDelete()}>{appConfig.ui.buttons.loeschen}</Button.Rect>
             </>
           }
         >
           <p className="text-neutral-300">
-            {appConfig.messages.confirm_delete_creditor.replace('{name}', selectedGlaeubiger?.name || '')}
+            {appConfig.ui.messages.confirm.deleteGlaeubiger.replace('{name}', selectedGlaeubiger?.name || '')}
           </p>
         </Dialog>
 
@@ -434,7 +470,7 @@ export function GlaeubigerPage() {
             setSelectedGlaeubiger(null);
             setZahlungbetrag(0);
           }}
-          title={appConfig.components.dialog_titles.record_payment}
+          title={appConfig.ui.titles.dialog.zahlungBuchen}
           actions={
             <>
               <Button.Rect
@@ -445,17 +481,17 @@ export function GlaeubigerPage() {
                   setZahlungbetrag(0);
                 }}
               />
-              <Button.Rect onClick={() => void handleZahlung()}>{appConfig.components.buttons.record}</Button.Rect>
+              <Button.Rect onClick={() => void handleZahlung()}>{appConfig.ui.buttons.buchen}</Button.Rect>
             </>
           }
         >
           <div className="space-y-4">
             <div className="p-4 bg-neutral-800 rounded">
-              <p className="text-neutral-400 text-sm">{appConfig.labels.open_amount}</p>
+              <p className="text-neutral-400 text-sm">{appConfig.ui.labels.offen}</p>
               <p className="text-2xl font-semibold text-neutral-50">{formatCurrency(selectedGlaeubiger?.offen || 0)}</p>
             </div>
             <Input
-              label={appConfig.labels.payment_amount}
+              label={appConfig.ui.labels.betrag}
               type="number"
               step="0.01"
               value={zahlungbetrag}
@@ -474,19 +510,19 @@ export function GlaeubigerPage() {
           }}
           title={
             selectedGlaeubiger
-              ? `${appConfig.components.dialog_titles.history}: ${selectedGlaeubiger.name}`
-              : appConfig.components.dialog_titles.history
+              ? `${appConfig.ui.titles.dialog.history}: ${selectedGlaeubiger.name}`
+              : appConfig.ui.titles.dialog.history
           }
           actions={
-            <Button
+            <Button.Rect
               onClick={() => {
                 setHistorieDialogOpen(false);
                 setSelectedGlaeubiger(null);
                 setZahlungsHistorie([]);
               }}
             >
-              {appConfig.components.buttons.close}
-            </Button>
+              {appConfig.ui.buttons.schliessen}
+            </Button.Rect>
           }
         >
           {zahlungsHistorie.length > 0 ? (
@@ -523,7 +559,7 @@ export function GlaeubigerPage() {
               })}
             </div>
           ) : (
-            <p className="text-neutral-400 text-sm text-center py-4">{appConfig.empty_states.no_history}</p>
+            <p className="text-neutral-400 text-sm text-center py-4">{appConfig.ui.empty.historie}</p>
           )}
         </Dialog>
       </div>

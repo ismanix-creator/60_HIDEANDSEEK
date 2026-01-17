@@ -3,7 +3,7 @@
  * @description Generated config from config.toml (do not edit)
  * @version     2.5.0
  * @created     2026-01-06 19:14:38 CET
- * @updated     2026-01-17 10:40:26 CET
+ * @updated     2026-01-17 19:01:13 CET
  * @author      Akki Scholze
  */
 
@@ -30,6 +30,9 @@ export const configFromToml = {
     "server": {
       "host": "127.0.0.1",
       "port": 3001
+    },
+    "auth": {
+      "enabled": false
     }
   },
   "permissions": {
@@ -411,7 +414,9 @@ export const configFromToml = {
         "formLabel": "1.25rem",
         "formInsert": "1.25rem",
         "formHint": "1rem",
-        "formMessage": "1rem"
+        "formMessage": "1rem",
+        "small": "0.875rem",
+        "xsmall": "0.75rem"
       }
     },
     "border": {
@@ -509,7 +514,9 @@ export const configFromToml = {
       "aussenstaende": "Außenstände",
       "theorEinnahmen": "Theor. Einnahmen",
       "gewinn": "Gewinn",
-      "bestand": "Bestand"
+      "bestand": "Bestand",
+      "faelligkeit": "Fälligkeit",
+      "material": "Material"
     },
     "titles": {
       "dashboard": "Dashboard",

@@ -76,23 +76,23 @@ export function LoginPage() {
   return (
     <div
       style={{
-        padding: appConfig.theme.spacing.section_padding,
+        padding: appConfig.theme.spacing.layout.areaPadding,
         maxWidth: '400px',
-        margin: `${appConfig.theme.spacing.page_padding} auto`
+        margin: `${appConfig.theme.spacing.layout.pagePadding} auto`
       }}
     >
       <h1>Login</h1>
       <p
         style={{
-          color: appConfig.theme.colors.gray['500'],
-          marginBottom: appConfig.theme.spacing.section_padding
+          color: appConfig.theme.colors.neutral['700'],
+          marginBottom: appConfig.theme.spacing.layout.areaPadding
         }}
       >
         {appConfig.auth.enabled ? 'Login erforderlich' : 'Auth deaktiviert (dev mode)'}
       </p>
 
       <form onSubmit={(e) => void handleLogin(e)}>
-        <div style={{ marginBottom: appConfig.theme.spacing.content_gap }}>
+        <div style={{ marginBottom: appConfig.theme.spacing.dialog.contentGap }}>
           <Input
             type="text"
             label="Username"
@@ -101,7 +101,7 @@ export function LoginPage() {
             required
           />
         </div>
-        <div style={{ marginBottom: appConfig.theme.spacing.panel_padding }}>
+        <div style={{ marginBottom: appConfig.theme.spacing.dialog.padding }}>
           <Input
             type="password"
             label="Password"
@@ -118,11 +118,11 @@ export function LoginPage() {
       {error && (
         <div
           style={{
-            marginTop: appConfig.theme.spacing.panel_padding,
-            padding: appConfig.theme.spacing.content_gap,
+            marginTop: appConfig.theme.spacing.dialog.padding,
+            padding: appConfig.theme.spacing.dialog.contentGap,
             background: appConfig.theme.colors.red['500'],
             color: appConfig.theme.colors.white['50'],
-            borderRadius: appConfig.borderRadius.md
+            borderRadius: appConfig.theme.border.radius.md
           }}
         >
           {error}
@@ -131,7 +131,7 @@ export function LoginPage() {
 
       <div
         style={{
-          marginTop: appConfig.theme.spacing.section_padding,
+          marginTop: appConfig.theme.spacing.layout.areaPadding,
           textAlign: 'center'
         }}
       >

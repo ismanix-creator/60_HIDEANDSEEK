@@ -1,12 +1,13 @@
 /**
  * @file        SettingsPage.tsx
  * @description Einstellungen Seite mit Admin User Management
- * @version     1.4.0
+ * @version     2.0.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-11 03:06:28 CET
+ * @updated     2026-01-17 20:11:08 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   2.0.0 - 2026-01-17 - Refactor: 3-Spalten 2-Zeilen Grid-Layout implementiert, Zurück-Button hinzugefügt
  *   1.4.0 - 2026-01-11 - Fixed: floating promises + type signatures
  *   1.3.0 - 2026-01-11 - P1: useApi Hook integriert, window.fetch entfernt
  *   1.1.0 - 2026-01-10 - UI-Components (Button, Select) statt Hardcoded Tailwind
@@ -14,12 +15,13 @@
  *   0.1.0 - 2026-01-07 - Initial placeholder
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainApp } from '@/components/layout/MainApp';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { useApi } from '@/hooks';
+import { appConfig } from '@/config';
 
 interface User {
   id: string;
@@ -116,9 +118,40 @@ export function SettingsPage() {
   const activeUsers = users.filter((u) => u.status === 'active');
   const disabledUsers = users.filter((u) => u.status === 'disabled');
 
+  // Grid Styles
+  const gridStyle: CSSProperties = {
+    display: appConfig.ui.pages.grid.style.display,
+    gridTemplateColumns: appConfig.ui.pages.grid.style.gridTemplateColumns,
+    gap: appConfig.ui.pages.grid.style.gap
+  };
+
+  const buttonRowStyle: CSSProperties = {
+    display: appConfig.ui.pages.grid.buttonRow.style.display
+  };
+
+  const tableRowStyle: CSSProperties = {
+    gridColumn: appConfig.ui.pages.grid.tableRow.style.gridColumn
+  };
+
   return (
     <MainApp title="Einstellungen">
-      <div className="space-y-8">
+      <div style={gridStyle}>
+        {/* Zeile 1: Button-Navigation (3 Spalten) */}
+        <div style={buttonRowStyle}>
+          {/* Spalte 1: Leer */}
+          <div />
+
+          {/* Spalte 2: Leer */}
+          <div />
+
+          {/* Spalte 3: Zurück */}
+          <div className="flex items-center justify-end gap-2">
+            <Button.Action type="back" onClick={() => navigate('/dashboard')} />
+          </div>
+        </div>
+
+        {/* Zeile 2: Content über alle 3 Spalten */}
+        <div style={tableRowStyle} className="space-y-8">
         {message && (
           <div
             className={`p-4 rounded-md ${
@@ -219,6 +252,7 @@ export function SettingsPage() {
             Zur Setup-Seite
           </Button>
         </section>
+        </div>
       </div>
     </MainApp>
   );

@@ -36,6 +36,9 @@ version = 1
 host = "127.0.0.1"
 port = 3001
 
+[app.auth]
+enabled = false
+
 # ============================================================
 # PERMISSIONS
 # ============================================================
@@ -391,8 +394,10 @@ formLabel = "1.25rem"
 formInsert = "1.25rem"
 formHint = "1rem"
 formMessage = "1rem"
+small = "0.875rem"
+xsmall = "0.75rem"
 
-# ============================================================
+# ============================================================# ============================================================
 # THEME — BORDER / SPACING / SHADOWS / BREAKPOINTS / Z-INDEX
 # ============================================================
 [theme.border.sizes]
@@ -488,6 +493,8 @@ aussenstaende = "Außenstände"
 theorEinnahmen = "Theor. Einnahmen"
 gewinn = "Gewinn"
 bestand = "Bestand"
+faelligkeit = "Fälligkeit"
+material = "Material"
 
 [ui.titles]
 dashboard = "Dashboard"

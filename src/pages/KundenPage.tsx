@@ -1,17 +1,18 @@
 /**
  * @file        KundenPage.tsx
  * @description Kunden-Verwaltung mit Übersicht und Detail-Ansicht
- * @version     0.9.0
+ * @version     1.0.0
  * @created     2026-01-07 01:36:51 CET
- * @updated     2026-01-17T03:30:52+01:00
+ * @updated     2026-01-17 20:11:08 CET
  * @author      Akki Scholze
  *
  * @changelog
+ *   1.0.0 - 2026-01-17 - Refactor: 3-Spalten 2-Zeilen Grid-Layout im Overview implementiert, Zurück-Button hinzugefügt
  *   0.9.0 - 2026-01-17T03:30:52+01:00 - Fixed: Config-Zugriff auf components.table.columns.kundenOverview (kunden.columns existiert nicht)
  *   0.8.0 - 2026-01-11 22:35:00 - Feature: Action Buttons mit disabled-State für Empty Rows (alle 3 Tabellen)
  *   0.7.0 - 2026-01-11 - Fixed: floating promises + unsafe-any errors
  *   0.6.0 - 2026-01-10 12:45:00 - Alle verbleibenden Hardcodes durch appConfig.* ersetzt (Phase 2.3.2 Final)
- *   0.5.0 - 2026-01-09 21:51:40 - 3 verbleibende Hardcodes durch appConfig.labels.* ersetzt (Phase 2.3.B)
+ *   0.5.0 - 2026-01-09 21:51:40 - 3 verbleibende Hardcodes durch appConfig.ui.labels.* ersetzt (Phase 2.3.B)
  *   0.4.0 - 2026-01-09 21:00:20 - 38 UI-Text-Hardcodes entfernt (Phase 2.3.2)
  *   0.3.1 - 2026-01-09 - Name-Spalte als Monospace (type: 'input')
  *   0.3.0 - 2026-01-09 - Button als actions Prop an PageLayout übergeben (horizontal zentriert)
@@ -19,7 +20,8 @@
  *   0.1.0 - 2026-01-07 - Initial implementation mit 2 Ansichten
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type CSSProperties } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MainApp } from '@/components/layout/MainApp';
 import { Table, isEmptyRow } from '@/components/ui/Table';
 import { Button } from '@/components/ui/Button';
@@ -29,7 +31,7 @@ import { Select } from '@/components/ui/Select';
 import { useApi } from '@/hooks/useApi';
 import { formatCurrency, formatDate } from '@/utils/format';
 import { appConfig } from '@/config';
-import { ChevronLeft, ChevronRight, User } from 'lucide-react';
+import { User } from 'lucide-react';
 import type {
   Kunde,
   KundeWithSummary,
@@ -47,6 +49,7 @@ type View = 'overview' | 'detail';
 
 export function KundenPage() {
   const api = useApi();
+  const navigate = useNavigate();
   const [view, setView] = useState<View>('overview');
   const [selectedKunde, setSelectedKunde] = useState<Kunde | null>(null);
 
@@ -129,10 +132,10 @@ export function KundenPage() {
 
         setKunden(kundenWithSummary);
       } else {
-        setError(result.error || appConfig.errors.load_failed);
+        setError(result.error || appConfig.ui.messages.error.loadFailed);
       }
     } catch (err) {
-      setError(appConfig.errors.network_error);
+      setError(appConfig.ui.messages.error.networkError);
     } finally {
       setLoading(false);
     }
@@ -159,7 +162,7 @@ export function KundenPage() {
         setMaterialien(materialResult.data);
       }
     } catch (err) {
-      setError(appConfig.errors.network_error);
+      setError(appConfig.ui.messages.error.networkError);
     } finally {
       setDetailLoading(false);
     }
@@ -201,10 +204,10 @@ export function KundenPage() {
         setKundeFormData({ name: '' });
         void loadKunden();
       } else {
-        setError(result.error || appConfig.errors.create_failed);
+        setError(result.error || appConfig.ui.messages.error.createFailed);
       }
     } catch (err) {
-      setError(appConfig.errors.network_error);
+      setError(appConfig.ui.messages.error.networkError);
     }
   };
 
@@ -228,10 +231,10 @@ export function KundenPage() {
           setSelectedKunde({ ...selectedKunde, name: kundeFormData.name });
         }
       } else {
-        setError(result.error || appConfig.errors.update_failed);
+        setError(result.error || appConfig.ui.messages.error.updateFailed);
       }
     } catch (err) {
-      setError(appConfig.errors.network_error);
+      setError(appConfig.ui.messages.error.networkError);
     }
   };
 
@@ -250,10 +253,10 @@ export function KundenPage() {
           handleBackToOverview();
         }
       } else {
-        setError(result.error || appConfig.errors.delete_failed);
+        setError(result.error || appConfig.ui.messages.error.deleteFailed);
       }
     } catch (err) {
-      setError(appConfig.errors.network_error);
+      setError(appConfig.ui.messages.error.networkError);
     }
   };
 
@@ -271,10 +274,10 @@ export function KundenPage() {
         resetPostenMatForm();
         void loadKundeDetail(selectedKunde.id);
       } else {
-        setError(result.error || appConfig.errors.create_failed);
+        setError(result.error || appConfig.ui.messages.error.createFailed);
       }
     } catch (err) {
-      setError(appConfig.errors.network_error);
+      setError(appConfig.ui.messages.error.networkError);
     }
   };
 
@@ -292,10 +295,10 @@ export function KundenPage() {
         resetPostenNoMatForm();
         void loadKundeDetail(selectedKunde.id);
       } else {
-        setError(result.error || appConfig.errors.create_failed);
+        setError(result.error || appConfig.ui.messages.error.createFailed);
       }
     } catch (err) {
-      setError(appConfig.errors.network_error);
+      setError(appConfig.ui.messages.error.networkError);
     }
   };
 
@@ -321,10 +324,10 @@ export function KundenPage() {
           void loadKundeDetail(selectedKunde.id);
         }
       } else {
-        setError(result.error || appConfig.errors.booking_failed);
+        setError(result.error || appConfig.ui.messages.error.bookFailed);
       }
     } catch (err) {
-      setError(appConfig.errors.network_error);
+      setError(appConfig.ui.messages.error.networkError);
     }
   };
 
@@ -358,6 +361,21 @@ export function KundenPage() {
     });
   };
 
+  // Grid Styles
+  const gridStyle: CSSProperties = {
+    display: appConfig.ui.pages.grid.style.display,
+    gridTemplateColumns: appConfig.ui.pages.grid.style.gridTemplateColumns,
+    gap: appConfig.ui.pages.grid.style.gap
+  };
+
+  const buttonRowStyle: CSSProperties = {
+    display: appConfig.ui.pages.grid.buttonRow.style.display
+  };
+
+  const tableRowStyle: CSSProperties = {
+    gridColumn: appConfig.ui.pages.grid.tableRow.style.gridColumn
+  };
+
   // Overview Columns
   // Render functions per column
   const getOverviewColumnRender = (key: string) => {
@@ -387,17 +405,19 @@ export function KundenPage() {
     }
   };
 
-  const overviewColumns = (appConfig.components.table.columns?.kundenOverview || []).map((col) => ({
-    key: col.key,
-    label: col.label,
-    type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
-    render: col.key === 'actions' ? undefined : getOverviewColumnRender(col.key),
-    actions:
-      col.key === 'actions'
-        ? (k: KundeWithSummary) => [
-            {
-              type: 'edit' as const,
-              onClick: () => {
+  const overviewColumns = appConfig.components.table.columns.kundenOverview.order.map((colKey) => {
+    const label = appConfig.components.table.columns.kundenOverview.labels[colKey] || colKey;
+    return {
+      key: colKey,
+      label: label,
+      type: undefined as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
+      render: colKey === 'actions' ? undefined : getOverviewColumnRender(colKey),
+      actions:
+        colKey === 'actions'
+          ? (k: KundeWithSummary) => [
+              {
+                type: 'edit' as const,
+                onClick: () => {
                 setView('detail');
                 setSelectedKunde(k);
                 setKundeFormData({ name: k.name });
@@ -414,7 +434,8 @@ export function KundenPage() {
             }
           ]
         : undefined
-  }));
+    };
+  });
 
   // Detail Columns
   const getPostenMatColumnRender = (key: string) => {
@@ -453,21 +474,24 @@ export function KundenPage() {
     }
   };
 
-  const postenMatColumns = appConfig.components.table.kunden.mat.columns.map((col) => ({
-    key: col.key,
-    label: col.label,
-    type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
-    render: col.key === 'actions' ? undefined : getPostenMatColumnRender(col.key),
-    actions:
-      col.key === 'actions'
-        ? (p: KundenPostenMat) => {
-            if (!isEmptyRow(p) && p.offen > 0) {
-              return [{ type: 'zahlung' as const, onClick: () => openZahlungDialog(p, 'mat') }];
+  const postenMatColumns = appConfig.components.table.columns.kundenViewPostenMat.order.map((colKey) => {
+    const label = appConfig.components.table.columns.kundenViewPostenMat.labels[colKey] || colKey;
+    return {
+      key: colKey,
+      label: label,
+      type: undefined as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
+      render: colKey === 'actions' ? undefined : getPostenMatColumnRender(colKey),
+      actions:
+        colKey === 'actions'
+          ? (p: KundenPostenMat) => {
+              if (!isEmptyRow(p) && p.offen > 0) {
+                return [{ type: 'zahlung' as const, onClick: () => openZahlungDialog(p, 'mat') }];
+              }
+              return [];
             }
-            return [];
-          }
-        : undefined
-  }));
+          : undefined
+    };
+  });
 
   const getPostenNoMatColumnRender = (key: string) => {
     switch (key) {
@@ -498,75 +522,94 @@ export function KundenPage() {
     }
   };
 
-  const postenNoMatColumns = appConfig.components.table.kunden.nomat.columns.map((col) => ({
-    key: col.key,
-    label: col.label,
-    type: col.type as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
-    render: col.key === 'actions' ? undefined : getPostenNoMatColumnRender(col.key),
-    actions:
-      col.key === 'actions'
-        ? (p: KundenPostenNoMat) => {
-            if (!isEmptyRow(p) && p.offen > 0) {
-              return [{ type: 'zahlung' as const, onClick: () => openZahlungDialog(p, 'nomat') }];
+  const postenNoMatColumns = appConfig.components.table.columns.kundenViewPostenNoMat.order.map((colKey) => {
+    const label = appConfig.components.table.columns.kundenViewPostenNoMat.labels[colKey] || colKey;
+    return {
+      key: colKey,
+      label: label,
+      type: undefined as 'text' | 'number' | 'currency' | 'date' | 'status' | 'actions' | 'input' | undefined,
+      render: colKey === 'actions' ? undefined : getPostenNoMatColumnRender(colKey),
+      actions:
+        colKey === 'actions'
+          ? (p: KundenPostenNoMat) => {
+              if (!isEmptyRow(p) && p.offen > 0) {
+                return [{ type: 'zahlung' as const, onClick: () => openZahlungDialog(p, 'nomat') }];
+              }
+              return [];
             }
-            return [];
-          }
-        : undefined
-  }));
+          : undefined
+    };
+  });
 
   // Render Overview
   if (view === 'overview') {
     return (
       <MainApp title="Kunden">
-        <div className="space-y-4">
-          {/* Error */}
-          {error && <div className="p-4 bg-red-500/10 border border-red-500 rounded text-red-400">{error}</div>}
+        <div style={gridStyle}>
+          {/* Zeile 1: Button-Navigation (3 Spalten) */}
+          <div style={buttonRowStyle}>
+            {/* Spalte 1: Leer */}
+            <div />
 
-          {/* Button-Reihe über der Tabelle */}
-          <div className="flex justify-end mb-4">
-            <Button.Action type="new" onClick={() => setCreateKundeDialogOpen(true)} />
+            {/* Spalte 2: Leer */}
+            <div />
+
+            {/* Spalte 3: Neu + Zurück */}
+            <div className="flex items-center justify-end gap-2">
+              <Button.Action type="new" onClick={() => setCreateKundeDialogOpen(true)} />
+              <Button.Action type="back" onClick={() => navigate('/dashboard')} />
+            </div>
           </div>
 
-          {/* Table */}
-          <Table
-            data={kunden}
-            columns={overviewColumns}
-            loading={loading}
-            emptyMessage={appConfig.empty_states.no_customers}
-            onRowClick={handleRowClick}
-          />
+          {/* Error */}
+          {error && (
+            <div style={tableRowStyle} className="p-4 bg-red-500/10 border border-red-500 rounded text-red-400">
+              {error}
+            </div>
+          )}
 
-          {/* Create Kunde Dialog */}
-          <Dialog
-            open={createKundeDialogOpen}
-            onClose={() => {
-              setCreateKundeDialogOpen(false);
-              setKundeFormData({ name: '' });
-            }}
-            title={appConfig.components.dialog_titles.new_customer}
-            actions={
-              <>
-                <Button.Rect
-                  type="cancel"
-                  onClick={() => {
-                    setCreateKundeDialogOpen(false);
-                    setKundeFormData({ name: '' });
-                  }}
-                />
-                <Button.Rect onClick={() => void handleCreateKunde()}>
-                  {appConfig.components.buttons.create}
-                </Button.Rect>
-              </>
-            }
-          >
-            <Input
-              label={appConfig.labels.name}
-              value={kundeFormData.name}
-              onChange={(e) => setKundeFormData({ name: e.target.value })}
+          {/* Zeile 2: Table über alle 3 Spalten */}
+          <div style={tableRowStyle}>
+            <Table
+              data={kunden}
+              columns={overviewColumns}
+              loading={loading}
+              emptyMessage={appConfig.ui.empty.kunden}
+              onRowClick={handleRowClick}
             />
-          </Dialog>
-        </div>
-      </MainApp>
+          </div>
+
+        {/* Create Kunde Dialog */}
+        <Dialog
+          open={createKundeDialogOpen}
+          onClose={() => {
+            setCreateKundeDialogOpen(false);
+            setKundeFormData({ name: '' });
+          }}
+          title={appConfig.ui.titles.dialog.newKunde}
+          actions={
+            <>
+              <Button.Rect
+                type="cancel"
+                onClick={() => {
+                  setCreateKundeDialogOpen(false);
+                  setKundeFormData({ name: '' });
+                }}
+              />
+              <Button.Rect onClick={() => void handleCreateKunde()}>
+                {appConfig.ui.buttons.erstellen}
+              </Button.Rect>
+            </>
+          }
+        >
+          <Input
+            label={appConfig.ui.labels.name}
+            value={kundeFormData.name}
+            onChange={(e) => setKundeFormData({ name: e.target.value })}
+          />
+        </Dialog>
+      </div>
+    </MainApp>
     );
   }
 
@@ -636,10 +679,10 @@ export function KundenPage() {
                 }
               }}
             >
-              {appConfig.components.buttons.edit}
+              {appConfig.ui.buttons.bearbeiten}
             </Button.Rect>
             <Button.Rect onClick={() => setDeleteKundeDialogOpen(true)}>
-              {appConfig.components.buttons.delete}
+              {appConfig.ui.buttons.loeschen}
             </Button.Rect>
           </div>
         </div>
@@ -656,7 +699,7 @@ export function KundenPage() {
             data={postenMat}
             columns={postenMatColumns}
             loading={detailLoading}
-            emptyMessage={appConfig.empty_states.no_material_posts}
+            emptyMessage={appConfig.ui.empty.postenMat}
           />
         </div>
 
@@ -666,14 +709,14 @@ export function KundenPage() {
             <div className="flex justify-between items-center">
               <h3 className="text-xl font-semibold text-neutral-50">Sonstige Posten</h3>
               <Button.Rect onClick={() => setCreatePostenNoMatDialogOpen(true)}>
-                {appConfig.components.dialog_titles.new_other_post}
+                {appConfig.ui.titles.dialog.newPostenNoMat}
               </Button.Rect>
             </div>
             <Table
               data={postenNoMat}
               columns={postenNoMatColumns}
               loading={detailLoading}
-              emptyMessage={appConfig.empty_states.no_other_posts}
+              emptyMessage={appConfig.ui.empty.postenNoMat}
             />
           </div>
         )}
@@ -686,7 +729,7 @@ export function KundenPage() {
             setEditKundeDialogOpen(false);
             setKundeFormData({ name: '' });
           }}
-          title={appConfig.components.dialog_titles.edit_customer}
+          title={appConfig.ui.titles.dialog.editKunde}
           actions={
             <>
               <Button.Rect
@@ -701,7 +744,7 @@ export function KundenPage() {
           }
         >
           <Input
-            label={appConfig.labels.name}
+            label={appConfig.ui.labels.name}
             value={kundeFormData.name}
             onChange={(e) => setKundeFormData({ name: e.target.value })}
           />
@@ -711,16 +754,16 @@ export function KundenPage() {
         <Dialog
           open={deleteKundeDialogOpen}
           onClose={() => setDeleteKundeDialogOpen(false)}
-          title={appConfig.components.dialog_titles.delete_customer}
+          title={appConfig.ui.titles.dialog.deleteKunde}
           actions={
             <>
               <Button.Rect type="cancel" onClick={() => setDeleteKundeDialogOpen(false)} />
-              <Button.Rect onClick={() => void handleDeleteKunde()}>{appConfig.components.buttons.delete}</Button.Rect>
+              <Button.Rect onClick={() => void handleDeleteKunde()}>{appConfig.ui.buttons.loeschen}</Button.Rect>
             </>
           }
         >
           <p className="text-neutral-300">
-            {appConfig.messages.confirm_delete_customer.replace('{name}', selectedKunde?.name || '')}
+            {appConfig.ui.messages.confirm.deleteKunde.replace('{name}', selectedKunde?.name || '')}
           </p>
         </Dialog>
 
@@ -731,7 +774,7 @@ export function KundenPage() {
             setCreatePostenMatDialogOpen(false);
             resetPostenMatForm();
           }}
-          title={appConfig.components.dialog_titles.new_material_post}
+          title={appConfig.ui.titles.dialog.newPostenMat}
           actions={
             <>
               <Button.Rect
@@ -741,39 +784,39 @@ export function KundenPage() {
                   resetPostenMatForm();
                 }}
               />
-              <Button.Rect onClick={handleCreatePostenMat}>{appConfig.components.buttons.create}</Button.Rect>
+              <Button.Rect onClick={handleCreatePostenMat}>{appConfig.ui.buttons.erstellen}</Button.Rect>
             </>
           }
         >
           <div className="space-y-4">
             <Input
-              label={appConfig.labels.date}
+              label={appConfig.ui.labels.datum}
               type="date"
               value={postenMatFormData.datum}
               onChange={(e) => setPostenMatFormData({ ...postenMatFormData, datum: e.target.value })}
             />
             <Select
-              label={appConfig.labels.material}
+              label={appConfig.ui.labels.material}
               value={postenMatFormData.material_id.toString()}
               onChange={(e) => setPostenMatFormData({ ...postenMatFormData, material_id: parseInt(e.target.value) })}
               options={materialien.map((m) => ({ value: m.id.toString(), label: m.bezeichnung }))}
             />
             <Input
-              label={appConfig.labels.quantity}
+              label={appConfig.ui.labels.menge}
               type="number"
               step="0.01"
               value={postenMatFormData.menge}
               onChange={(e) => setPostenMatFormData({ ...postenMatFormData, menge: parseFloat(e.target.value) || 0 })}
             />
             <Input
-              label={appConfig.labels.amount}
+              label={appConfig.ui.labels.betrag}
               type="number"
               step="0.01"
               value={postenMatFormData.preis}
               onChange={(e) => setPostenMatFormData({ ...postenMatFormData, preis: parseFloat(e.target.value) || 0 })}
             />
             <Input
-              label={appConfig.labels.note}
+              label={appConfig.ui.labels.notiz}
               value={postenMatFormData.notiz}
               onChange={(e) => setPostenMatFormData({ ...postenMatFormData, notiz: e.target.value })}
             />
@@ -787,7 +830,7 @@ export function KundenPage() {
             setCreatePostenNoMatDialogOpen(false);
             resetPostenNoMatForm();
           }}
-          title={appConfig.components.dialog_titles.new_other_post}
+          title={appConfig.ui.titles.dialog.newPostenNoMat}
           actions={
             <>
               <Button.Rect
@@ -797,24 +840,24 @@ export function KundenPage() {
                   resetPostenNoMatForm();
                 }}
               />
-              <Button.Rect onClick={handleCreatePostenNoMat}>{appConfig.components.buttons.create}</Button.Rect>
+              <Button.Rect onClick={handleCreatePostenNoMat}>{appConfig.ui.buttons.erstellen}</Button.Rect>
             </>
           }
         >
           <div className="space-y-4">
             <Input
-              label={appConfig.labels.date}
+              label={appConfig.ui.labels.datum}
               type="date"
               value={postenNoMatFormData.datum}
               onChange={(e) => setPostenNoMatFormData({ ...postenNoMatFormData, datum: e.target.value })}
             />
             <Input
-              label={appConfig.labels.designation}
+              label={appConfig.ui.labels.bezeichnung}
               value={postenNoMatFormData.bezeichnung}
               onChange={(e) => setPostenNoMatFormData({ ...postenNoMatFormData, bezeichnung: e.target.value })}
             />
             <Input
-              label={appConfig.labels.amount}
+              label={appConfig.ui.labels.betrag}
               type="number"
               step="0.01"
               value={postenNoMatFormData.betrag}
@@ -823,7 +866,7 @@ export function KundenPage() {
               }
             />
             <Input
-              label={appConfig.labels.note}
+              label={appConfig.ui.labels.notiz}
               value={postenNoMatFormData.notiz}
               onChange={(e) => setPostenNoMatFormData({ ...postenNoMatFormData, notiz: e.target.value })}
             />
@@ -838,7 +881,7 @@ export function KundenPage() {
             setSelectedPosten(null);
             setZahlungbetrag(0);
           }}
-          title={appConfig.components.dialog_titles.record_payment}
+          title={appConfig.ui.titles.dialog.zahlungBuchen}
           actions={
             <>
               <Button.Rect
@@ -849,17 +892,17 @@ export function KundenPage() {
                   setZahlungbetrag(0);
                 }}
               />
-              <Button.Rect onClick={() => void handleZahlung()}>{appConfig.components.buttons.record}</Button.Rect>
+              <Button.Rect onClick={() => void handleZahlung()}>{appConfig.ui.buttons.buchen}</Button.Rect>
             </>
           }
         >
           <div className="space-y-4">
             <div className="p-4 bg-neutral-800 rounded">
-              <p className="text-neutral-400 text-sm">{appConfig.labels.open_amount}</p>
+              <p className="text-neutral-400 text-sm">{appConfig.ui.labels.offen}</p>
               <p className="text-2xl font-semibold text-neutral-50">{formatCurrency(selectedPosten?.offen || 0)}</p>
             </div>
             <Input
-              label={appConfig.labels.payment_amount}
+              label={appConfig.ui.labels.betrag}
               type="number"
               step="0.01"
               value={zahlungbetrag}

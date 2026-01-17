@@ -96,7 +96,7 @@ export function SetupPage() {
   return (
     <div
       style={{
-        padding: appConfig.theme.spacing.page_padding,
+        padding: appConfig.theme.spacing.layout.pagePadding,
         maxWidth: '600px',
         margin: '0 auto'
       }}
@@ -105,9 +105,9 @@ export function SetupPage() {
 
       <div
         style={{
-          marginBottom: appConfig.theme.spacing.page_padding,
+          marginBottom: appConfig.theme.spacing.layout.pagePadding,
           display: 'flex',
-          gap: appConfig.theme.spacing.content_gap
+          gap: appConfig.theme.spacing.dialog.contentGap
         }}
       >
         <Button kind="rect" onClick={() => setMode('bootstrap')}>
@@ -123,7 +123,7 @@ export function SetupPage() {
           <h2>Admin Bootstrap</h2>
           <p>First-run admin setup. Only available if admin account is in bootstrap status.</p>
           <form onSubmit={handleBootstrap}>
-            <div style={{ marginBottom: appConfig.theme.spacing.panel_padding }}>
+            <div style={{ marginBottom: appConfig.theme.spacing.dialog.padding }}>
               <Input
                 type="text"
                 label="Username"
@@ -132,7 +132,7 @@ export function SetupPage() {
                 required
               />
             </div>
-            <div style={{ marginBottom: appConfig.theme.spacing.panel_padding }}>
+            <div style={{ marginBottom: appConfig.theme.spacing.dialog.padding }}>
               <Input
                 type="text"
                 label="Display Name"
@@ -141,7 +141,7 @@ export function SetupPage() {
                 required
               />
             </div>
-            <div style={{ marginBottom: appConfig.theme.spacing.panel_padding }}>
+            <div style={{ marginBottom: appConfig.theme.spacing.dialog.padding }}>
               <Input
                 type="password"
                 label="Password"
@@ -162,7 +162,7 @@ export function SetupPage() {
           <h2>Customer Signup</h2>
           <p>Register as a customer. Your account will be pending until admin approves.</p>
           <form onSubmit={handleSignup}>
-            <div style={{ marginBottom: appConfig.theme.spacing.panel_padding }}>
+            <div style={{ marginBottom: appConfig.theme.spacing.dialog.padding }}>
               <Input
                 type="text"
                 label="Username"
@@ -171,7 +171,7 @@ export function SetupPage() {
                 required
               />
             </div>
-            <div style={{ marginBottom: appConfig.theme.spacing.panel_padding }}>
+            <div style={{ marginBottom: appConfig.theme.spacing.dialog.padding }}>
               <Input
                 type="text"
                 label="Display Name"
@@ -180,7 +180,7 @@ export function SetupPage() {
                 required
               />
             </div>
-            <div style={{ marginBottom: appConfig.theme.spacing.panel_padding }}>
+            <div style={{ marginBottom: appConfig.theme.spacing.dialog.padding }}>
               <Input
                 type="password"
                 label="Password"
@@ -197,7 +197,7 @@ export function SetupPage() {
       )}
 
       {status && (
-        <div style={{ marginTop: appConfig.theme.spacing.page_padding }}>
+        <div style={{ marginTop: appConfig.theme.spacing.layout.pagePadding }}>
           <Infobox variant={status.type === 'success' ? 'success' : 'error'}>{status.message}</Infobox>
         </div>
       )}
