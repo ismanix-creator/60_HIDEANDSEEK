@@ -1,8 +1,8 @@
 # @file        config.toml
 # @description Single Source of Truth für App-Konfiguration (100% config-driven UI – .tsx ist Renderer-only)
-# @version     0.4.2
+# @version     0.4.3
 # @created     2026-01-06 15:35:00 CET
-# @updated     2026-01-17T02:49:56+01:00
+# @updated     2026-01-17T02:54:24+01:00
 # @author      Akki Scholze
 #
 # @rules (aus Audit abgeleitet)
