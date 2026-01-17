@@ -16,7 +16,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MainApp } from '@/components/layout/mainapp';
+import { MainApp } from '@/components/layout/MainApp';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { useApi } from '@/hooks';

@@ -1,12 +1,13 @@
 /**
  * @file        navigation.tsx
  * @description Navigationsbereich fuer PageLayout (Startpage-ready), rendert Nav-Items inkl. Logout
- * @version     0.2.0
+ * @version     0.3.0
  * @created     2026-01-11 16:20:00 CET
- * @updated     2026-01-11 23:59:00 CET
+ * @updated     2026-01-17T02:28:23+01:00
  * @author      Akki Scholze
  *
  * @changelog
+ *   0.3.0 - 2026-01-17 - onNavigate callback hinzugefuegt fuer Container-Orchestrierung
  *   0.2.0 - 2026-01-11 - Desktop: 6-Spalten-Grid, Padding/Gap/Höhe aus layout.areas.navigation
  *   0.1.0 - 2026-01-11 - Extraktion aus PageLayout, Navigation-Logik gekapselt
  */
@@ -35,6 +36,7 @@ const iconMap: Record<string, React.ElementType> = {
 export interface NavigationAreaProps {
   style: CSSProperties;
   isMobile: boolean;
+  onNavigate?: () => void;
 }
 
 type NavigationAreaConfig = {
@@ -44,7 +46,7 @@ type NavigationAreaConfig = {
   minHeight?: string;
 };
 
-export function NavigationArea({ style, isMobile }: NavigationAreaProps) {
+export function NavigationArea({ style, isMobile, onNavigate }: NavigationAreaProps) {
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const { isAuthenticated, logout } = useAuth();
 
@@ -150,6 +152,7 @@ export function NavigationArea({ style, isMobile }: NavigationAreaProps) {
         style={({ isActive }) => getNavLinkStyle(isActive, isHovered)}
         onMouseEnter={!isMobile ? () => setHoveredKey(item.key) : undefined}
         onMouseLeave={!isMobile ? () => setHoveredKey(null) : undefined}
+        onClick={onNavigate}
       >
         {({ isActive }) => (
           <div style={getIconContainerStyle(isActive)}>{Icon && <Icon style={getIconStyle(item.key)} />}</div>

@@ -19,7 +19,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { MainApp } from '@/components/layout/mainapp';
+import { MainApp } from '@/components/layout/MainApp';
 import { Table, isEmptyRow } from '@/components/ui/Table';
 import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
